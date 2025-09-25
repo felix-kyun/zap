@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { signup } from "../services/auth.service";
-import { useAsync } from "../hooks/useAsync";
+import { signup } from "@services/auth.service";
+import { useAsync } from "@hooks/useAsync";
 import { useEffect, useState } from "react";
-import { LabeledInput } from "../components/LabeledInput";
+import { LabeledInput } from "@components/LabeledInput";
 
 export function Signup() {
 	const navigate = useNavigate();

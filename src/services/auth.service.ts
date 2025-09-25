@@ -1,5 +1,5 @@
-import { userInfoSchema, type UserInfo } from "../schemas/user";
-import { post } from "../utils/post";
+import { userInfoSchema, type UserInfo } from "@/schemas/user";
+import { post } from "@utils/post";
 
 export async function login(username: string, password: string) {
 	const response = await post("/api/auth/login", { username, password });

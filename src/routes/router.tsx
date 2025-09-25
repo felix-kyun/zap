@@ -1,10 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Root } from "./root";
-import { dashboardLoader } from "../loaders/dashboard.loader";
-import { ErrorRoute } from "./error.route";
-import { Login } from "./login.route";
-import { Signup } from "./signup.route";
-import { Dashboard } from "./dashboard";
+import { dashboardLoader } from "@loaders/dashboard.loader";
+import { ErrorRoute } from "@routes/error.route";
+import { Login } from "@routes/login.route";
+import { Signup } from "@routes/signup.route";
+import { Dashboard } from "@routes/dashboard";
 
 export const router = createBrowserRouter([
 	{

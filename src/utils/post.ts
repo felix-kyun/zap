@@ -20,7 +20,7 @@ async function _fetch(
 	});
 }
 
-export async function post(url: string, data: Record<string, unknown>) {
+export async function post(url: string, data: Record<string, unknown> = {}) {
 	const token = Cookies.get("csrf_token");
 
 	// if no csrf token, fetch one

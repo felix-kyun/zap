@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useAsync } from "../hooks/useAsync";
-import { logout as logoutRequest } from "../services/auth.service";
-import { useStore } from "../stores/store";
-import { useUser } from "../hooks/useUser";
+import { useAsync } from "@/hooks/useAsync";
+import { logout as logoutRequest } from "@services/auth.service";
+import { useStore } from "@stores/store";
+import { useUser } from "@hooks/useUser";
 import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {

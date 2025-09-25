@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { fetchUser } from "../services/auth.service";
-import { useStore } from "../stores/store";
-import type { UserSlice } from "../stores/userSlice";
-import type { Store } from "../types/store";
-import { useAsync } from "./useAsync";
+import { fetchUser } from "@services/auth.service";
+import { useStore } from "@stores/store";
+import type { UserSlice } from "@stores/userSlice";
+import type { Store } from "@/types/store";
+import { useAsync } from "@hooks/useAsync";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/shallow";
 

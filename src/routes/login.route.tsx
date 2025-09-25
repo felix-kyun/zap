@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { login } from "../services/auth.service";
-import { useAsync } from "../hooks/useAsync";
+import { login } from "@services/auth.service";
+import { useAsync } from "@hooks/useAsync";
 import { useLocation, useNavigate } from "react-router-dom";
-import { loginSchema } from "../schemas/login";
-import { useStore } from "../stores/store";
+import { loginSchema } from "@/schemas/login";
+import { useStore } from "@stores/store";
 
 export function Login() {
 	const location = useLocation();

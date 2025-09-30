@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@serenity-kit/opaque':
+        specifier: ^0.9.0
+        version: 0.9.0
       dotenv:
         specifier: ^17.2.2
         version: 17.2.2
@@ -449,6 +452,10 @@ packages:
     resolution: {integrity: sha512-APwKy6YUhvZaEoHyM+9xqmTpviEI+9eL7LoCH+aLcvWYHJ663qG5zx7WzWZY+a9qkg5JtzcMyJ9z0WtQBMDmgA==}
     cpu: [x64]
     os: [win32]
+
+  '@serenity-kit/opaque@0.9.0':
+    resolution: {integrity: sha512-Db4Gx1JBM78ThJhtKUu5xVe+QRkDGktiLTOVcqB879ELF+gX8X6wCVxPqT9YQdehxtrU8Kub4epLuQ0sIKnBbg==}
+    hasBin: true
 
   '@swc/core-darwin-arm64@1.13.5':
     resolution: {integrity: sha512-lKNv7SujeXvKn16gvQqUQI5DdyY8v7xcoO3k06/FJbHJS90zEwZdQiMNRiqpYw/orU543tPaWgz7cIYWhbopiQ==}
@@ -1694,6 +1701,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.50.2':
     optional: true
+
+  '@serenity-kit/opaque@0.9.0': {}
 
   '@swc/core-darwin-arm64@1.13.5':
     optional: true

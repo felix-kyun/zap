@@ -1,29 +1,77 @@
 import { userInfoSchema, type UserInfo } from "@/schemas/user";
 import { post } from "@utils/post";
+import Opaque from "@services/opaque.service";
+import {
+	initialLoginSchema,
+	loginSchema,
+	type LoginResponse,
+} from "@/schemas/login";
 
-export async function login(username: string, password: string) {
-	const response = await post("/api/auth/login", { username, password });
-
-	if (!response.ok) {
-		throw new Error("Login failed");
-	}
-
-	return response.json();
-}
-
-export async function signup(data: {
+interface SignupData {
 	username: string;
 	password: string;
 	email: string;
-	name: string;
-}) {
-	const response = await post("/api/users", data);
+}
 
-	if (!response.ok) {
-		throw new Error("Signup failed");
+export async function signup({ username, password, email }: SignupData) {
+	const { state, request } = Opaque.startRegistration(password);
+	const initialResponse = await post("/api/register/start", {
+		request,
+		email,
+	});
+
+	if (!initialResponse.ok) {
+		throw new Error("Registration initiation failed");
 	}
 
-	return response.json();
+	const { response } = await initialResponse.json();
+
+	if (!response || typeof response !== "string")
+		throw new Error("Invalid response from server");
+
+	const record = Opaque.finishRegistration(password, response, state);
+
+	const finalResponse = await post("/api/register/finish", {
+		record,
+		email,
+		username,
+	});
+
+	if (!finalResponse.ok) throw new Error("Registration completion failed");
+
+	return true;
+}
+
+interface LoginData {
+	email: string;
+	password: string;
+}
+
+export async function login({
+	email,
+	password,
+}: LoginData): Promise<LoginResponse> {
+	const { state, request } = Opaque.startLogin(password);
+
+	const initialResponse = await post("/api/login/start", {
+		request,
+		email,
+	});
+
+	if (!initialResponse.ok) throw new Error("Login initiation failed");
+
+	const { response, session } = initialLoginSchema.parse(
+		await initialResponse.json(),
+	);
+
+	const finishRequest = Opaque.finishLogin(password, response, state);
+
+	const finalResponse = await post("/api/login/finish", {
+		request: finishRequest,
+		session,
+	});
+
+	return loginSchema.parse(await finalResponse.json());
 }
 
 export async function logout() {

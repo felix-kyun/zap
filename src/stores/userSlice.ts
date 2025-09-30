@@ -4,7 +4,6 @@ import type { Store } from "@/types/store";
 type UserState = {
 	id: string;
 	username: string;
-	name: string;
 	email: string;
 	loggedIn: boolean;
 };
@@ -17,7 +16,6 @@ type UserActions = {
 const initialUserState: UserState = {
 	id: "",
 	username: "",
-	name: "",
 	email: "",
 	loggedIn: false,
 };

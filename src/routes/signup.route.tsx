@@ -9,12 +9,11 @@ export function Signup() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
-	const [name, setName] = useState("");
 	const { error, status, run } = useAsync(signup);
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		run({ username, password, email, name });
+		run({ username, password, email });
 	};
 
 	useEffect(() => {
@@ -29,15 +28,6 @@ export function Signup() {
 		<div className="signup">
 			<h1>Signup Page</h1>
 			<form onSubmit={handleSubmit}>
-				<LabeledInput
-					label="Name"
-					type="text"
-					id="name"
-					name="name"
-					value={name}
-					onChange={(e) => setName(e.target.value)}
-					required
-				/>
 				<LabeledInput
 					label="Username"
 					type="text"

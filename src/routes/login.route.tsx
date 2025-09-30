@@ -9,13 +9,13 @@ export function Login() {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const setUser = useStore((state) => state.setUser);
-	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const { error, status, data, run } = useAsync(login);
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		run(username, password);
+		run({ email, password });
 	};
 
 	useEffect(() => {
@@ -36,13 +36,13 @@ export function Login() {
 			<h1>Login Page</h1>
 			<form onSubmit={handleSubmit}>
 				<div>
-					<label htmlFor="username">Username:</label>
+					<label htmlFor="email">Email:</label>
 					<input
 						type="text"
-						id="username"
-						name="username"
-						value={username}
-						onChange={(e) => setUsername(e.target.value)}
+						id="email"
+						name="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
 						required
 					/>
 				</div>

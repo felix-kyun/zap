@@ -4,12 +4,14 @@ import { logout as logoutRequest } from "@services/auth.service";
 import { useStore } from "@stores/store";
 import { useUser } from "@hooks/useUser";
 import { useNavigate } from "react-router-dom";
+import { useVault } from "@hooks/useVault";
 
 export function Dashboard() {
-	const name = useUser((state) => state.name);
+	const name = useUser((state) => state.username);
 	const logout = useAsync(logoutRequest);
 	const clearUser = useStore((state) => state.clearUser);
 	const navigate = useNavigate();
+	const vault = useVault();
 
 	const handleLogout = async (e: React.SyntheticEvent) => {
 		e.preventDefault();

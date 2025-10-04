@@ -27,9 +27,14 @@ export function Login() {
 		}
 	}, [location.search, navigate, status, setUser, data]);
 
-	if (error) {
-		throw error;
-	}
+	useEffect(() => {
+		if (error) {
+			window.alert(
+				"Login Failed, please check your credentials and try again.",
+			);
+			setPassword("");
+		}
+	}, [error]);
 
 	return (
 		<div className="login">

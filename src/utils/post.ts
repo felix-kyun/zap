@@ -1,3 +1,4 @@
+import { UnauthError } from "@/errors/UnauthError";
 import Cookies from "js-cookie";
 
 async function _fetch(
@@ -32,7 +33,10 @@ export async function post(url: string, data: Record<string, unknown> = {}) {
 
 	if (!response.ok && response.status === 401) {
 		// unauthorized, try to refresh token
-		await _fetch("/api/auth/refresh");
+		const refreshResponse = await _fetch("/api/auth/refresh");
+		if (!refreshResponse.ok && refreshResponse.status === 401)
+			throw new UnauthError();
+
 		response = await _fetch(url, {}, data);
 	}
 

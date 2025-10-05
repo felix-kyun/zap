@@ -1,22 +1,24 @@
 import type { StateCreator } from "zustand";
 import type { Store } from "@/types/store";
+import type { UserInfo } from "@/schemas/user";
 
-type UserState = {
-	id: string;
-	username: string;
-	email: string;
-	loggedIn: boolean;
-};
+type UserState =
+	| {
+			user: UserInfo;
+			loggedIn: true;
+	  }
+	| {
+			user: null;
+			loggedIn: false;
+	  };
 
 type UserActions = {
-	setUser: (user: Partial<UserState>) => void;
+	setUser: (user: UserInfo) => void;
 	clearUser: () => void;
 };
 
 const initialUserState: UserState = {
-	id: "",
-	username: "",
-	email: "",
+	user: null,
 	loggedIn: false,
 };
 
@@ -29,8 +31,12 @@ export const createUserSlice: StateCreator<
 > = (set) => ({
 	...initialUserState,
 	// actions
-	setUser: (user) => set(() => ({ ...user })),
-	clearUser: () => set(() => ({ ...initialUserState })),
-	setAuthenticated: (isAuthenticated: boolean) =>
-		set(() => ({ isAuthenticated })),
+	setUser: (user) =>
+		set(
+			() => ({ user: { ...user }, loggedIn: true }),
+			false,
+			"user/setUser",
+		),
+	clearUser: () =>
+		set(() => ({ ...initialUserState }), false, "user/clearUser"),
 });

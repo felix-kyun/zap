@@ -21,7 +21,11 @@ async function _fetch(
 	});
 }
 
-export async function post(url: string, data: Record<string, unknown> = {}) {
+export async function post(
+	url: string,
+	data: Record<string, unknown> = {},
+	retryOnUnauthorized: boolean = true,
+) {
 	const token = Cookies.get("csrf_token");
 
 	// if no csrf token, fetch one
@@ -31,7 +35,7 @@ export async function post(url: string, data: Record<string, unknown> = {}) {
 
 	let response = await _fetch(url, {}, data);
 
-	if (!response.ok && response.status === 401) {
+	if (retryOnUnauthorized && !response.ok && response.status === 401) {
 		// unauthorized, try to refresh token
 		const refreshResponse = await _fetch("/api/auth/refresh");
 		if (!refreshResponse.ok && refreshResponse.status === 401)

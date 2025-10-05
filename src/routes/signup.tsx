@@ -1,28 +1,50 @@
-import { useNavigate } from "react-router-dom";
-import { signup } from "@services/auth.service";
-import { useAsync } from "@hooks/useAsync";
-import { useEffect, useState } from "react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { checkAuthState, signup } from "@services/auth.service";
+import { useState } from "react";
 import { LabeledInput } from "@components/LabeledInput";
+import toast from "react-hot-toast";
 
-export function Signup() {
-	const navigate = useNavigate();
+export const Route = createFileRoute("/signup")({
+	component: RouteComponent,
+	loader: async () => {
+		const authenticated = await checkAuthState();
+		if (authenticated) {
+			toast("You're already logged in.");
+			throw redirect({
+				to: "/",
+				replace: true,
+			});
+		}
+	},
+});
+
+function RouteComponent() {
+	const navigate = Route.useNavigate();
+
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [email, setEmail] = useState("");
-	const { error, status, run } = useAsync(signup);
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		run({ username, password, email });
+
+		toast.promise(signup({ username, email, password }), {
+			loading: "Signing up...",
+			success: () => {
+				navigate({
+					to: "/login",
+					replace: true,
+				});
+				return "Signup successful! Please log in.";
+			},
+			error: (err) => {
+				setPassword("");
+				setUsername("");
+				setEmail("");
+				return `Signup failed: ${err.message}`;
+			},
+		});
 	};
-
-	useEffect(() => {
-		if (status === "success") {
-			navigate("/login", { replace: true });
-		}
-	}, [status, navigate]);
-
-	if (error) throw error;
 
 	return (
 		<div className="signup">

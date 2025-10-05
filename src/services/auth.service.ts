@@ -1,4 +1,5 @@
 import { userInfoSchema, type UserInfo } from "@/schemas/user";
+import Cookies from "js-cookie";
 import { post } from "@utils/post";
 import Opaque from "@services/opaque.service";
 import {
@@ -83,7 +84,9 @@ export async function logout() {
 }
 
 export async function checkAuthState(): Promise<boolean> {
-	const response = await post("/api/auth/status");
+	if (Cookies.get("authenticated") === "true") return true;
+
+	const response = await post("/api/auth/status", {}, false);
 
 	return response.ok;
 }

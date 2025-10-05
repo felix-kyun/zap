@@ -1,40 +1,48 @@
-import { useEffect, useState } from "react";
-import { login } from "@services/auth.service";
-import { useAsync } from "@hooks/useAsync";
-import { useLocation, useNavigate } from "react-router-dom";
-import { loginSchema } from "@/schemas/login";
+import toast from "react-hot-toast";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useState } from "react";
+import { checkAuthState, login } from "@services/auth.service";
 import { useStore } from "@stores/store";
 
-export function Login() {
-	const location = useLocation();
-	const navigate = useNavigate();
+export const Route = createFileRoute("/login")({
+	component: RouteComponent,
+	loader: async () => {
+		const authenticated = await checkAuthState();
+		if (authenticated) {
+			toast("You're already logged in.");
+			throw redirect({
+				to: "/",
+				replace: true,
+			});
+		}
+	},
+});
+
+function RouteComponent() {
+	const navigate = Route.useNavigate();
 	const setUser = useStore((state) => state.setUser);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const { error, status, data, run } = useAsync(login);
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
-		run({ email, password });
+		toast.promise(login({ email, password }), {
+			loading: "Logging in...",
+			success: (data) => {
+				setUser(data);
+				navigate({
+					to: "/",
+					replace: true,
+				});
+
+				return "Login successful!";
+			},
+			error: () => {
+				setPassword("");
+				return "Login failed, please check your credentials and try again.";
+			},
+		});
 	};
-
-	useEffect(() => {
-		if (status === "success") {
-			const user = data;
-			loginSchema.parse(user);
-			setUser({ ...user, loggedIn: true });
-			navigate("/", { replace: true });
-		}
-	}, [location.search, navigate, status, setUser, data]);
-
-	useEffect(() => {
-		if (error) {
-			window.alert(
-				"Login Failed, please check your credentials and try again.",
-			);
-			setPassword("");
-		}
-	}, [error]);
 
 	return (
 		<div className="login">

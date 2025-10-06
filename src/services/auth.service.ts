@@ -7,6 +7,7 @@ import {
 	loginSchema,
 	type LoginResponse,
 } from "@/schemas/login";
+import { _fetch } from "@utils/fetch";
 
 interface SignupData {
 	username: string;
@@ -86,9 +87,10 @@ export async function logout() {
 export async function checkAuthState(): Promise<boolean> {
 	if (Cookies.get("authenticated") === "true") return true;
 
-	const response = await post("/api/auth/status", {}, false);
+	const resposne = await _fetch("/api/auth/status");
+	const data = await resposne.json();
 
-	return response.ok;
+	return data && data?.authenticated === true;
 }
 
 export async function fetchUser(): Promise<UserInfo> {

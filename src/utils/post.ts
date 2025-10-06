@@ -1,31 +1,8 @@
 import { UnauthError } from "@/errors/UnauthError";
 import Cookies from "js-cookie";
+import { _fetch } from "./fetch";
 
-async function _fetch(
-	url: string,
-	options: RequestInit = {},
-	body: Record<string, unknown> = {},
-) {
-	return fetch(url, {
-		method: "POST",
-		credentials: "include",
-		redirect: "follow",
-		headers: {
-			"Content-Type": "application/json",
-			"X-CSRF-Token": Cookies.get("csrf_token") || "",
-		},
-		body: JSON.stringify({
-			...body,
-		}),
-		...options,
-	});
-}
-
-export async function post(
-	url: string,
-	data: Record<string, unknown> = {},
-	retryOnUnauthorized: boolean = true,
-) {
+export async function post(url: string, data: Record<string, unknown> = {}) {
 	const token = Cookies.get("csrf_token");
 
 	// if no csrf token, fetch one
@@ -35,7 +12,7 @@ export async function post(
 
 	let response = await _fetch(url, {}, data);
 
-	if (retryOnUnauthorized && !response.ok && response.status === 401) {
+	if (!response.ok && response.status === 401) {
 		// unauthorized, try to refresh token
 		const refreshResponse = await _fetch("/api/auth/refresh");
 		if (!refreshResponse.ok && refreshResponse.status === 401)

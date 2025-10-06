@@ -18,6 +18,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedUnlockRouteImport } from './routes/_authenticated/unlock'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
+import { Route as AuthenticatedDashboardNewRouteImport } from './routes/_authenticated/dashboard/new'
 
 const AboutLazyRouteImport = createFileRoute('/about')()
 
@@ -61,6 +62,12 @@ const AuthenticatedDashboardIndexRoute =
     path: '/dashboard/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDashboardNewRoute =
+  AuthenticatedDashboardNewRouteImport.update({
+    id: '/dashboard/new',
+    path: '/dashboard/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -69,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
   '/unlock': typeof AuthenticatedUnlockRoute
+  '/dashboard/new': typeof AuthenticatedDashboardNewRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesByTo {
@@ -78,6 +86,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
   '/unlock': typeof AuthenticatedUnlockRoute
+  '/dashboard/new': typeof AuthenticatedDashboardNewRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRoutesById {
@@ -89,6 +98,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
   '/_authenticated/unlock': typeof AuthenticatedUnlockRoute
+  '/_authenticated/dashboard/new': typeof AuthenticatedDashboardNewRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/about'
     | '/unlock'
+    | '/dashboard/new'
     | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/about'
     | '/unlock'
+    | '/dashboard/new'
     | '/dashboard'
   id:
     | '__root__'
@@ -119,6 +131,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/about'
     | '/_authenticated/unlock'
+    | '/_authenticated/dashboard/new'
     | '/_authenticated/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -189,16 +202,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/dashboard/new': {
+      id: '/_authenticated/dashboard/new'
+      path: '/dashboard/new'
+      fullPath: '/dashboard/new'
+      preLoaderRoute: typeof AuthenticatedDashboardNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedUnlockRoute: typeof AuthenticatedUnlockRoute
+  AuthenticatedDashboardNewRoute: typeof AuthenticatedDashboardNewRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUnlockRoute: AuthenticatedUnlockRoute,
+  AuthenticatedDashboardNewRoute: AuthenticatedDashboardNewRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
 }
 

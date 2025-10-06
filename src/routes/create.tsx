@@ -1,15 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { LabeledInput } from "@components/LabeledInput";
-import {
-	createInitialVault,
-	deriveKey,
-	fetchVault,
-	saveVault,
-} from "@services/vault.service";
+import { createInitialVault } from "@services/vault.service";
 import { useStore } from "@stores/store";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { checkAuthState } from "@services/auth.service";
+import { fetchVault } from "@services/server.service";
 
 export const Route = createFileRoute("/create")({
 	component: RouteComponent,
@@ -42,8 +38,9 @@ function RouteComponent() {
 	const newVault = Route.useLoaderData();
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
-	const setKey = useStore((state) => state.setKey);
+	const setKeyFromPassword = useStore((state) => state.setKeyFromPassword);
 	const setVault = useStore((state) => state.setVault);
+	const saveVault = useStore((state) => state.saveVault);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -51,10 +48,9 @@ function RouteComponent() {
 
 		toast.promise(
 			async () => {
-				const key = deriveKey(password, newVault.salt);
 				setVault(newVault);
-				setKey(key);
-				saveVault(key, newVault);
+				await setKeyFromPassword(password);
+				await saveVault();
 				setLoading(false);
 			},
 			{

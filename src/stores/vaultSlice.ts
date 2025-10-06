@@ -1,6 +1,9 @@
+import { AppError } from "@/errors/AppError";
+import { fetchVault as fetchRemoteVault } from "@services/server.service";
 import type { Store } from "@/types/store";
 import type { Vault } from "@/types/vault";
-import { checkVaultKey, deriveKey, unlockVault } from "@services/vault.service";
+import { post } from "@utils/post";
+import { createVaultWorker } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 type VaultState = {
@@ -9,10 +12,12 @@ type VaultState = {
 };
 
 type VaultActions = {
-	setKey: (key: string) => void;
+	setKeyFromPassword: (masterPassword: string) => Promise<void>;
 	setVault: (vault: Vault) => void;
-	unlockVault: (masterPassword: string) => void;
-	checkVaultPassword: (masterPassword: string) => boolean;
+	unlockVault: () => Promise<void>;
+	saveVault: () => Promise<void>;
+	fetchVault: () => Promise<void>;
+	checkVaultPassword: (masterPassword: string) => Promise<boolean>;
 };
 
 const initialVaultState: VaultState = {
@@ -30,28 +35,77 @@ export const createVaultSlice: StateCreator<
 > = (set, get) => ({
 	...initialVaultState,
 	// actions
-	setKey: (key) => set(() => ({ key }), false, "vault/setKey"),
-	setVault: (vault) => set(() => ({ vault }), false, "vault/setVault"),
-	checkVaultPassword: (masterPassword) => {
+	async setKeyFromPassword(masterPassword) {
 		const { vault } = get();
 
 		if (!vault) throw new Error("No vault to unlock");
-		if (!vault || vault.state !== "locked") return false;
 
-		const key = deriveKey(masterPassword, vault.salt);
-		return checkVaultKey(key, vault);
+		const key = await createVaultWorker(
+			"deriveKey",
+			masterPassword,
+			vault.salt,
+		);
+
+		set(() => ({ key }), false, "vault/setKeyFromPassword");
 	},
-	unlockVault: (masterPassword) => {
-		const { vault } = get();
+
+	setVault(vault) {
+		set(() => ({ vault }), false, "vault/setVault");
+	},
+
+	async unlockVault() {
+		const { vault, key } = get();
 
 		if (!vault) throw new Error("No vault to unlock");
+		if (!key) throw new Error("No key to unlock vault");
 		if (vault.state !== "locked") return;
 
-		const key = deriveKey(masterPassword, vault.salt);
-		set(
-			() => ({ vault: unlockVault(key, vault), key }),
-			false,
-			"vault/unlockVault",
+		const unlockedVault = await createVaultWorker(
+			"unlockVault",
+			key,
+			vault,
 		);
+
+		set(() => ({ vault: unlockedVault, key }), false, "vault/unlockVault");
+	},
+
+	async saveVault() {
+		const { vault, key } = get();
+
+		if (!vault) throw new Error("No vault to save");
+		if (!key) throw new Error("No key to save vault");
+
+		let vaultToSave = vault;
+
+		if (vault.state === "unlocked") {
+			vaultToSave = await createVaultWorker("lockVault", key, vault);
+		}
+
+		const response = await post("/api/vault/sync", {
+			vault: JSON.stringify(vaultToSave),
+		});
+
+		if (!response.ok) throw new AppError("Failed to save vault");
+	},
+
+	async fetchVault() {
+		get().setVault(await fetchRemoteVault());
+	},
+
+	async checkVaultPassword(masterPassword) {
+		const { vault } = get();
+
+		if (!vault) throw new Error("No vault to unlock");
+
+		if (vault.state === "unlocked")
+			throw new Error("Vault is already unlocked");
+
+		const key = await createVaultWorker(
+			"deriveKey",
+			masterPassword,
+			vault.salt,
+		);
+
+		return await createVaultWorker("checkVaultKey", key, vault);
 	},
 });

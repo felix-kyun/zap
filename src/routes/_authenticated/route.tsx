@@ -1,9 +1,9 @@
 import { checkAuthState, fetchUser } from "@services/auth.service";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { fetchVault } from "@services/vault.service";
 import { useStore } from "@stores/store";
 import { useEffect } from "react";
 import { useShallow } from "zustand/shallow";
+import { fetchVault } from "@services/server.service";
 
 type AuthenticatedLoaderData = Promise<{
 	vault: Awaited<ReturnType<typeof fetchVault>>;

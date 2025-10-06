@@ -102,8 +102,7 @@ export const vaultSchema = z.discriminatedUnion("state", [
 
 // compile time check to match ts types and zod schema
 // without using zod infered types
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 type ZodVault = z.infer<typeof vaultSchema>;
-const _typeCheckVault = {} as Vault satisfies ZodVault;
-const _typeCheckZodVault = {} as ZodVault satisfies Vault;
+export const _typeCheckVault = {} as Vault satisfies ZodVault;
+export const _typeCheckZodVault = {} as ZodVault satisfies Vault;

@@ -87,10 +87,14 @@ export async function logout() {
 export async function checkAuthState(): Promise<boolean> {
 	if (Cookies.get("authenticated") === "true") return true;
 
-	const resposne = await _fetch("/api/auth/status");
-	const data = await resposne.json();
-
-	return data && data?.authenticated === true;
+	try {
+		const response = await post("/api/auth/status");
+		const data = await response.json();
+		return response.ok && data && data?.authenticated === true;
+	} catch {
+		// handle UnauthError or else it will be redirected and cause a infinite loop
+		return false;
+	}
 }
 
 export async function fetchUser(): Promise<UserInfo> {

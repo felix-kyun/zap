@@ -6,16 +6,16 @@ const vaultTypeSchema = z.enum(["login", "note", "card", "identity", "custom"]);
 const vaultItemBaseSchema = z.object({
 	id: z.string(),
 	type: vaultTypeSchema,
-	name: z.string(),
+	name: z.string().min(1, "Name is required"),
 	createdAt: z.string(),
 	updatedAt: z.string(),
-	notes: z.string().optional(),
-	tags: z.array(z.string()).optional(),
+	notes: z.string(),
+	tags: z.array(z.object({ value: z.string() })),
 });
 
 const loginItemSchema = vaultItemBaseSchema.extend({
 	type: z.literal("login"),
-	url: z.string().optional(),
+	url: z.string(),
 	username: z.string(),
 	password: z.string(),
 });

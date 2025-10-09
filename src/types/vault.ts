@@ -6,13 +6,15 @@ export interface VaultItemBase {
 	name: string;
 	createdAt: string;
 	updatedAt: string;
-	notes?: string;
-	tags?: string[];
+	notes: string;
+	tags: {
+		value: string;
+	}[];
 }
 
 export interface LoginItem extends VaultItemBase {
 	type: "login";
-	url?: string;
+	url: string;
 	username: string;
 	password: string;
 }

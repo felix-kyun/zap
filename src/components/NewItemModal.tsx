@@ -5,6 +5,7 @@ import { CreateLoginItem } from "@components/create/Login";
 import { LabeledInput } from "@components/LabeledInput";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { LuChevronsUpDown } from "react-icons/lu";
@@ -16,6 +17,19 @@ type NewItemModalProps = {
 };
 
 export function NewItemModal({ open, close }: NewItemModalProps) {
+	// listen for esc to close modal
+	useEffect(() => {
+		if (!open) return;
+
+		const handleEvent = (e: KeyboardEvent) => {
+			if (e.key === "Escape") close();
+		};
+
+		window.addEventListener("keydown", handleEvent);
+
+		return () => window.removeEventListener("keydown", handleEvent);
+	}, [open, close]);
+
 	const form = useForm<VaultItem>({
 		resolver: zodResolver(vaultItemSchema),
 		defaultValues: {

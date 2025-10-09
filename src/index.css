@@ -20,8 +20,9 @@
 	--color-text: var(--color-neutral-200);
 	--color-border: var(--color-neutral-800);
 	--color-accent: oklch(0.7 0.12 183);
+	--color-error: oklch(0.59 0.22 18);
 }
 
 body {
-	@apply m-0 p-0 box-border bg-neutral-950 text-neutral-200;
+	@apply m-0 p-0 box-border bg-neutral-950 text-neutral-200 font-[Karla];
 }

@@ -1,4 +1,5 @@
 import type { LoginItem } from "@/types/vault";
+import { LabeledInput } from "@components/LabeledInput";
 import { useFormContext } from "react-hook-form";
 
 export function CreateLoginItem() {
@@ -8,28 +9,27 @@ export function CreateLoginItem() {
 	} = useFormContext<LoginItem>();
 
 	return (
-		<div>
-			<label htmlFor="url">
-				URL:
-				<input {...register("url")} placeholder="URL" />
-				{errors.url && <p className="error">{errors.url.message}</p>}
-			</label>
-			<br />
-			<label htmlFor="username">
-				Username:
-				<input {...register("username")} placeholder="Username" />
-				{errors.username && (
-					<p className="error">{errors.username.message}</p>
-				)}
-			</label>
-			<br />
-			<label htmlFor="password">
-				Password:
-				<input {...register("password")} placeholder="Password" />
-				{errors.password && (
-					<p className="error">{errors.password.message}</p>
-				)}
-			</label>
-		</div>
+		<>
+			<LabeledInput
+				label="Url"
+				id="url"
+				placeholder="https://example.com"
+				{...register("url")}
+				error={errors.url?.message}
+			/>
+			<LabeledInput
+				label="Username"
+				id="username"
+				{...register("username")}
+				error={errors.username?.message}
+			/>
+			<LabeledInput
+				label="password"
+				id="password"
+				type="password"
+				{...register("url")}
+				error={errors.password?.message}
+			/>
+		</>
 	);
 }

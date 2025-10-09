@@ -1,6 +1,7 @@
 import type { VaultItem } from "@/types/vault";
-import { useState } from "react";
+import { useState, type HTMLAttributes } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import { LabeledInput } from "./LabeledInput";
 
 export function TagsField() {
 	const { control, watch } = useFormContext<VaultItem>();
@@ -21,22 +22,20 @@ export function TagsField() {
 				))}
 			</div>
 			<div>
-				<label htmlFor="new-tag">
-					New Tag:
-					<input
-						id="new-tag"
-						value={tag}
-						onChange={(e) => setTag(e.target.value)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" && tag.trim() !== "") {
-								e.preventDefault();
-								append({ value: tag.trim() });
-								setTag("");
-							}
-						}}
-						placeholder="Add tag and press Enter"
-					/>
-				</label>
+				<LabeledInput
+					label="New Tag"
+					id="new-tag"
+					value={tag}
+					onChange={(e) => setTag(e.target.value)}
+					onKeyDown={(e) => {
+						if (e.key === "Enter" && tag.trim() !== "") {
+							e.preventDefault();
+							append({ value: tag.trim() });
+							setTag("");
+						}
+					}}
+					placeholder="Add tag and press Enter"
+				/>
 			</div>
 		</div>
 	);
@@ -47,21 +46,16 @@ type TagPillProps = {
 	onRemove: () => void;
 };
 
-function TagPill({ value, onRemove }: TagPillProps) {
+function TagPill({
+	value,
+	...rest
+}: TagPillProps & HTMLAttributes<HTMLSpanElement>) {
 	return (
-		<span className="border-1 rounded-3xl p-[0.3rem] text-xs mx-1 font-normal font-[Montserrat] hover:bg-black hover:text-white cursor-pointer inline-flex items-center transition duration-200">
+		<span
+			className="border-1 rounded-3xl p-[0.3rem] text-xs mx-1 font-normal font-[Montserrat] hover:bg-black hover:text-white cursor-pointer inline-flex items-center transition duration-200"
+			{...rest}
+		>
 			{value}
 		</span>
 	);
 }
-
-// <span
-// 	key={value.id}
-// 	className="bg-gray-200 m-1 p-2 rounded-xl text-sm"
-// >
-// 	{tags[index].value}
-// 	<MdCancel
-// 		onClick={() => remove(index)}
-// 		className="inline ml-1 cursor-pointer text-red-500"
-// 	/>
-// </span >

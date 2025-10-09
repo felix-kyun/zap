@@ -1,8 +1,19 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { checkAuthState, signup } from "@services/auth.service";
-import { useState } from "react";
 import { LabeledInput } from "@components/LabeledInput";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
+import logo from "../assets/zap.png";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const signupSchema = z.object({
+	username: z.string().min(1, "Username is required"),
+	password: z.string().min(1, "Password must be at least 6 characters"),
+	email: z.email("Invalid email address"),
+});
+
+type SignupFormData = z.infer<typeof signupSchema>;
 
 export const Route = createFileRoute("/signup")({
 	component: RouteComponent,
@@ -20,14 +31,17 @@ export const Route = createFileRoute("/signup")({
 
 function RouteComponent() {
 	const navigate = Route.useNavigate();
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		formState: { errors, isSubmitting },
+	} = useForm<SignupFormData>({
+		resolver: zodResolver(signupSchema),
+		delayError: 500,
+	});
 
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
-	const [email, setEmail] = useState("");
-
-	const handleSubmit = (event: React.FormEvent) => {
-		event.preventDefault();
-
+	const submitHandler = ({ username, email, password }: SignupFormData) => {
 		toast.promise(signup({ username, email, password }), {
 			loading: "Signing up...",
 			success: () => {
@@ -38,49 +52,55 @@ function RouteComponent() {
 				return "Signup successful! Please log in.";
 			},
 			error: (err) => {
-				setPassword("");
-				setUsername("");
-				setEmail("");
+				setValue("username", "");
+				setValue("email", "");
+				setValue("password", "");
 				return `Signup failed: ${err.message}`;
 			},
 		});
 	};
 
 	return (
-		<div className="signup">
-			<h1>Signup Page</h1>
-			<form onSubmit={handleSubmit}>
-				<LabeledInput
-					label="Username"
-					type="text"
-					id="username"
-					name="username"
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
-					required
-				/>
-				<LabeledInput
-					label="Email"
-					type="email"
-					id="email"
-					name="email"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-					required
-				/>
-				<LabeledInput
-					label="Password"
-					type="password"
-					id="password"
-					name="password"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					required
-				/>
-				<button type="submit" disabled={status === "loading"}>
-					Signup
-				</button>
-			</form>
-		</div>
+		<form onSubmit={handleSubmit(submitHandler)}>
+			<div className="container mx-auto min-h-screen flex items-center justify-center text-xl font-[Karla] px-4">
+				<div className="flex flex-col gap-8 w-full max-w-lg pb-10 pt-8 px-14 rounded-xl sm:border-[1px] border-border">
+					<div className="flex flex-col justify-center items-center gap-2">
+						<img src={logo} alt="Zap Logo" className="h-24" />
+						<span className="font-bold text-3xl">
+							Welcome to <span className="text-accent">Zap</span>!
+						</span>
+					</div>
+					<div className="flex flex-col gap-1 mb-8">
+						<LabeledInput
+							id="username"
+							label="Username"
+							type="text"
+							error={errors.email?.message}
+							{...register("username")}
+						/>
+						<LabeledInput
+							id="email"
+							label="Email address"
+							type="email"
+							error={errors.email?.message}
+							{...register("email")}
+						/>
+						<LabeledInput
+							id="password"
+							label="Password"
+							type="password"
+							error={errors.password?.message}
+							{...register("password")}
+						/>
+						<button
+							className="bg-accent text-text p-2 mt-4 rounded-xl w-full font-medium"
+							disabled={isSubmitting}
+						>
+							{isSubmitting ? "Signing up..." : "Sign Up"}
+						</button>
+					</div>
+				</div>
+			</div>
+		</form>
 	);
 }

@@ -78,12 +78,15 @@ function RouteComponent() {
 						<LabeledInput
 							id="email"
 							label="Email address"
+							type="email"
+							error={errors.email?.message}
 							{...register("email")}
 						/>
 						<LabeledInput
 							id="password"
 							label="Password"
 							type="password"
+							error={errors.password?.message}
 							{...register("password")}
 						/>
 						<button

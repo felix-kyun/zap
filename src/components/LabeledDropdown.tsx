@@ -1,13 +1,16 @@
 import { LuChevronsUpDown } from "react-icons/lu";
+import * as motion from "motion/react-client";
 import clsx from "clsx";
 import {
+	useCallback,
 	useEffect,
 	useRef,
 	useState,
 	type FocusEvent,
-	type RefObject,
+	type KeyboardEvent,
 } from "react";
 import { TiTick } from "react-icons/ti";
+import { AnimatePresence } from "motion/react";
 
 type LabeledDropdownProps = {
 	label: string;
@@ -25,25 +28,6 @@ function focusWithin(
 	return container.contains(relatedTarget as Node);
 }
 
-const selectNext = (optionsRef: RefObject<HTMLDivElement[]>, index: number) => {
-	if (index < optionsRef.current.length - 1) {
-		optionsRef.current[index + 1].focus();
-	} else {
-		optionsRef.current[0].focus();
-	}
-};
-
-const selectPrevious = (
-	optionsRef: RefObject<HTMLDivElement[]>,
-	index: number,
-) => {
-	if (index > 0) {
-		optionsRef.current[index - 1].focus();
-	} else {
-		optionsRef.current[optionsRef.current.length - 1].focus();
-	}
-};
-
 export function LabeledDropdown({
 	label,
 	value,
@@ -54,16 +38,70 @@ export function LabeledDropdown({
 	const [open, setOpen] = useState<boolean>(false);
 	const optionContainerRef = useRef<HTMLDivElement>(null);
 	const buttonRef = useRef<HTMLButtonElement>(null);
-	const optionsRef = useRef<HTMLDivElement[]>([]);
+	const optionsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-	const handleBlur = (e: FocusEvent) => {
-		// only fire onBlur if none of the childrens are focused
-		if (focusWithin(optionContainerRef.current, e.relatedTarget)) {
-			return;
-		}
-		setOpen(false);
-		if (onBlur) onBlur(e);
-	};
+	const handleBlur = useCallback(
+		(e: FocusEvent) => {
+			// only fire onBlur if none of the childrens are focused
+			if (focusWithin(optionContainerRef.current, e.relatedTarget)) {
+				return;
+			}
+			setOpen(false);
+			if (onBlur) onBlur(e);
+		},
+		[onBlur],
+	);
+
+	const selectPrevious = useCallback(
+		(index: number) => {
+			const prev = (index - 1) % options.length;
+			optionsRef.current[prev]?.focus();
+		},
+		[options.length],
+	);
+
+	const selectNext = useCallback(
+		(index: number) => {
+			const prev = (index + 1) % options.length;
+			optionsRef.current[prev]?.focus();
+		},
+		[options.length],
+	);
+
+	const handleKeyDown = useCallback(
+		(e: KeyboardEvent<HTMLDivElement>, option: string, index: number) => {
+			if (
+				[
+					"Enter",
+					" ",
+					"Tab",
+					"ArrowDown",
+					"ArrowUp",
+					"Escape",
+				].includes(e.key)
+			) {
+				e.preventDefault();
+				if (e.key === "Enter" || e.key === " ") {
+					onChange(option);
+					setOpen(false);
+				} else if (e.key === "ArrowDown") selectNext(index);
+				else if (e.key === "ArrowUp") selectPrevious(index);
+				else if (e.key === "Escape") {
+					setOpen(false);
+					buttonRef.current?.focus();
+				} else if (e.key === "Tab") {
+					if (e.shiftKey) selectPrevious(index);
+					else selectNext(index);
+				}
+			}
+		},
+		[onChange, selectNext, selectPrevious],
+	);
+
+	// cleanup refs to avoid memory leaks
+	useEffect(() => {
+		optionsRef.current = options.map(() => null);
+	}, [options]);
 
 	useEffect(() => {
 		// place on the current selected one
@@ -110,61 +148,50 @@ export function LabeledDropdown({
 				<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-600">
 					<LuChevronsUpDown />
 				</div>
-				{open && (
-					<div
-						className={clsx([
-							"absolute z-10 mt-2 p-1 w-full max-h-60",
-							"bg-neutral-900 border-1 border-neutral-600",
-							"rounded-xl shadow-lg",
-							"overflow-y-auto transition",
-						])}
-					>
-						{options.map((option, index) => (
-							<div
-								key={option}
-								className={clsx([
-									"m-1 p-2 pl-2 hover:bg-neutral-800 cursor-pointer",
-									"focus:bg-neutral-800 outline-none",
-									"rounded-lg overflow-hidden",
-									"flex justify-between",
-								])}
-								ref={(el) => {
-									if (el) optionsRef.current[index] = el;
-								}}
-								onMouseDown={() => {
-									onChange(option);
-									setOpen(false);
-								}}
-								onKeyDown={(e) => {
-									if (e.key === "Enter" || e.key === " ") {
-										e.preventDefault();
+				<AnimatePresence>
+					{open && (
+						<motion.div
+							initial={{ opacity: 0, scale: 0.95 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.95 }}
+							transition={{ duration: 0.15 }}
+							className={clsx([
+								"absolute z-10 mt-2 p-1 w-full max-h-60",
+								"bg-neutral-900 border-1 border-neutral-600",
+								"rounded-xl shadow-lg",
+								"overflow-y-auto",
+							])}
+						>
+							{options.map((option, index) => (
+								<div
+									key={option}
+									className={clsx([
+										"m-1 p-2 pl-2 hover:bg-neutral-800 cursor-pointer",
+										"focus:bg-neutral-800 outline-none",
+										"rounded-lg overflow-hidden",
+										"flex justify-between",
+									])}
+									ref={(el) => {
+										if (el) optionsRef.current[index] = el;
+									}}
+									onMouseDown={() => {
 										onChange(option);
 										setOpen(false);
-									} else if (e.key === "ArrowDown")
-										selectNext(optionsRef, index);
-									else if (e.key === "ArrowUp")
-										selectPrevious(optionsRef, index);
-									else if (e.key === "Escape") {
-										e.preventDefault();
-										setOpen(false);
-										buttonRef.current?.focus();
-									} else if (e.key === "Tab") {
-										e.preventDefault();
-										if (e.shiftKey)
-											selectPrevious(optionsRef, index);
-										else selectNext(optionsRef, index);
+									}}
+									onKeyDown={(e) =>
+										handleKeyDown(e, option, index)
 									}
-								}}
-								tabIndex={0}
-							>
-								<span>{option}</span>
-								<span className="text-accent text-xl pt-[1px]">
-									{option === value ? <TiTick /> : ""}
-								</span>
-							</div>
-						))}
-					</div>
-				)}
+									tabIndex={0}
+								>
+									<span>{option}</span>
+									<span className="text-accent text-xl pt-[1px]">
+										{option === value ? <TiTick /> : ""}
+									</span>
+								</div>
+							))}
+						</motion.div>
+					)}
+				</AnimatePresence>
 			</div>
 		</div>
 	);

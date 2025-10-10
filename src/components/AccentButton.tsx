@@ -1,16 +1,18 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ComponentProps } from "react";
+import * as motion from "motion/react-client";
 
-export function AccentButton({
-	children,
-	...rest
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
+type AccentButtonProps = ComponentProps<typeof motion.button>;
+
+export function AccentButton({ children, ...rest }: AccentButtonProps) {
 	return (
-		<button
+		<motion.button
+			whileHover={{ scale: 1.03 }}
+			whileTap={{ scale: 0.97 }}
 			type="submit"
 			className="bg-accent text-text p-2 mt-4 rounded-xl w-full font-medium"
 			{...rest}
 		>
 			{children}
-		</button>
+		</motion.button>
 	);
 }

@@ -1,4 +1,4 @@
-import { vaultItemSchema } from "@/schemas/vault";
+import { vaultItemSchema, vaultTypeSchema } from "@/schemas/vault";
 import type { VaultItem } from "@/types/vault";
 import { AccentButton } from "@components/AccentButton";
 import { CreateLoginItem } from "@components/create/Login";
@@ -6,10 +6,10 @@ import { LabeledInput } from "@components/LabeledInput";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { LuChevronsUpDown } from "react-icons/lu";
 import { RiCloseLargeFill } from "react-icons/ri";
+import { LabeledDropdown } from "./LabeledDropdown";
 
 type NewItemModalProps = {
 	open: boolean;
@@ -45,6 +45,7 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 		handleSubmit,
 		register,
 		watch,
+		control,
 		formState: { isSubmitting, errors },
 	} = form;
 
@@ -82,42 +83,27 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 						>
 							<div className="w-full flex gap-2">
 								<LabeledInput
-									label="name"
+									label="Name"
 									id="name"
 									{...register("name")}
 									error={errors.name?.message}
 									containerClassName="flex-5 min-w-0"
 								/>
-								<div className="flex flex-col flex-2 px-2 gap-2">
-									<label
-										htmlFor="type"
-										className="text-sm font-bold"
-									>
-										Type
-									</label>
-									<div className="relative w-full">
-										<select
-											{...register("type")}
-											className="border-[1px] w-full rounded-xl p-2 px-2 font-medium border-neutral-600 bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-accent transition duration-200 block appearance-none"
-										>
-											<option value="login">Login</option>
-											<option value="identity">
-												Identity
-											</option>
-										</select>
-										<div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-neutral-600">
-											<LuChevronsUpDown />
-										</div>
-									</div>
-								</div>
+								<Controller
+									name="type"
+									control={control}
+									render={({ field }) => (
+										<LabeledDropdown
+											label="Type"
+											value={field.value}
+											options={vaultTypeSchema.options}
+											onChange={field.onChange}
+											onBlur={field.onBlur}
+										/>
+									)}
+								/>
 							</div>
-							<LabeledInput
-								label="notes"
-								id="notes"
-								{...register("notes")}
-								error={errors.name?.message}
-							/>
-							<TagsField />
+							<TagsField type={watch("type")} />
 							{watch("type") === "login" && <CreateLoginItem />}
 							<AccentButton disabled={isSubmitting} type="submit">
 								{isSubmitting ? "Saving..." : "Save Item"}

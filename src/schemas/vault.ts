@@ -1,7 +1,13 @@
 import type { Vault } from "@/types/vault";
 import z from "zod";
 
-const vaultTypeSchema = z.enum(["login", "note", "card", "identity", "custom"]);
+export const vaultTypeSchema = z.enum([
+	"login",
+	"note",
+	"card",
+	"identity",
+	"custom",
+]);
 
 const vaultItemBaseSchema = z.object({
 	id: z.string(),
@@ -9,7 +15,6 @@ const vaultItemBaseSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	createdAt: z.string(),
 	updatedAt: z.string(),
-	notes: z.string(),
 	tags: z.array(z.object({ value: z.string() })),
 });
 
@@ -17,7 +22,7 @@ const loginItemSchema = vaultItemBaseSchema.extend({
 	type: z.literal("login"),
 	url: z.string(),
 	username: z.string(),
-	password: z.string(),
+	password: z.string().min(1, "Password is required"),
 });
 
 const noteItemSchema = vaultItemBaseSchema.extend({

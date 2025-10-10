@@ -27,7 +27,7 @@ export function CreateLoginItem() {
 				label="password"
 				id="password"
 				type="password"
-				{...register("url")}
+				{...register("password")}
 				error={errors.password?.message}
 			/>
 		</>

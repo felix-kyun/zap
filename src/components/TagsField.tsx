@@ -1,61 +1,78 @@
 import type { VaultItem } from "@/types/vault";
-import { useState, type HTMLAttributes } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { LabeledInput } from "./LabeledInput";
+import { TagPill } from "./TagPill";
+import { vaultTypeSchema } from "@/schemas/vault";
 
-export function TagsField() {
-	const { control, watch } = useFormContext<VaultItem>();
-	const { remove, append, fields } = useFieldArray({ control, name: "tags" });
+type TagsFieldProps = {
+	type: VaultItem["type"];
+};
+
+export function TagsField({ type }: TagsFieldProps) {
+	const { control } = useFormContext<VaultItem>();
+	const { append, remove, fields, update } = useFieldArray({
+		control,
+		name: "tags",
+	});
 	const [tag, setTag] = useState("");
-	const tags = watch("tags");
+
+	// Add the initial tag
+	useEffect(() => {
+		if (fields.length === 0 && vaultTypeSchema.options.includes(type)) {
+			append({ value: type });
+		}
+	}, [append, fields.length, type]);
+
+	// keep the first tag synced with the type
+	useEffect(() => {
+		if (
+			fields.length > 0 &&
+			vaultTypeSchema.options.includes(type) &&
+			type !== fields[0].value
+		)
+			update(0, { value: type });
+	}, [type, fields, update, append]);
 
 	return (
-		<div className="my-4">
-			<div className="mb-2">
-				Tags:
+		<>
+			<div className="flex flex-wrap gap-3 mb-3">
 				{fields.map((value, index) => (
 					<TagPill
 						key={value.id}
-						value={tags[index].value}
-						onRemove={() => remove(index)}
+						value={fields[index].value}
+						onClick={() => fields.length > 1 && remove(index)}
 					/>
 				))}
 			</div>
 			<div>
 				<LabeledInput
-					label="New Tag"
+					label=""
 					id="new-tag"
 					value={tag}
 					onChange={(e) => setTag(e.target.value)}
 					onKeyDown={(e) => {
-						if (e.key === "Enter" && tag.trim() !== "") {
+						if (
+							(e.key === "Enter" || e.key === " ") &&
+							tag.trim() !== ""
+						) {
 							e.preventDefault();
 							append({ value: tag.trim() });
 							setTag("");
 						}
+
+						if (
+							e.key === "Backspace" &&
+							tag === "" &&
+							fields.length > 1
+						) {
+							e.preventDefault();
+							remove(fields.length - 1);
+						}
 					}}
-					placeholder="Add tag and press Enter"
+					placeholder="Add new tags"
 				/>
 			</div>
-		</div>
-	);
-}
-
-type TagPillProps = {
-	value: string;
-	onRemove: () => void;
-};
-
-function TagPill({
-	value,
-	...rest
-}: TagPillProps & HTMLAttributes<HTMLSpanElement>) {
-	return (
-		<span
-			className="border-1 rounded-3xl p-[0.3rem] text-xs mx-1 font-normal font-[Montserrat] hover:bg-black hover:text-white cursor-pointer inline-flex items-center transition duration-200"
-			{...rest}
-		>
-			{value}
-		</span>
+		</>
 	);
 }

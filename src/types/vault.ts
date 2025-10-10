@@ -6,7 +6,6 @@ export interface VaultItemBase {
 	name: string;
 	createdAt: string;
 	updatedAt: string;
-	notes: string;
 	tags: {
 		value: string;
 	}[];

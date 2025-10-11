@@ -9,6 +9,7 @@ import { fetchVault } from "@services/server.service";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as motion from "motion/react-client";
 
 const vaultPasswordSchema = z.object({
 	password: z.string().min(1, "Password is required"),
@@ -81,7 +82,13 @@ function RouteComponent() {
 	return (
 		<form onSubmit={handleSubmit(submitHandler)}>
 			<div className="container mx-auto min-h-screen flex items-center justify-center text-xl font-[Karla] px-4">
-				<div className="flex flex-col gap-2 w-full max-w-lg pb-10 py-8 px-14 rounded-xl sm:border-[1px] border-border">
+				<motion.div
+					initial={{ opacity: 0, scale: 0.95 }}
+					animate={{ opacity: 1, scale: 1 }}
+					exit={{ opacity: 0, scale: 0.95 }}
+					transition={{ duration: 0.15, delay: 0.25 }}
+					className="flex flex-col gap-2 w-full max-w-lg pb-10 py-8 px-14 rounded-xl sm:border-[1px] border-border"
+				>
 					<div className="flex flex-col justify-center items-center mb-4">
 						<img src={logo} alt="Zap Logo" className="h-24" />
 					</div>
@@ -98,7 +105,7 @@ function RouteComponent() {
 					>
 						{isSubmitting ? "Creating..." : "Create"}
 					</button>
-				</div>
+				</motion.div>
 			</div>
 		</form>
 	);

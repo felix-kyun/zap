@@ -5,7 +5,7 @@ import { CreateLoginItem } from "@components/create/Login";
 import { LabeledInput } from "@components/LabeledInput";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { RiCloseLargeFill } from "react-icons/ri";
@@ -19,19 +19,6 @@ type NewItemModalProps = {
 };
 
 export function NewItemModal({ open, close }: NewItemModalProps) {
-	// listen for esc to close modal
-	useEffect(() => {
-		if (!open) return;
-
-		const handleEvent = (e: KeyboardEvent) => {
-			if (e.key === "Escape") close();
-		};
-
-		window.addEventListener("keydown", handleEvent);
-
-		return () => window.removeEventListener("keydown", handleEvent);
-	}, [open, close]);
-
 	const form = useForm<VaultItem>({
 		resolver: zodResolver(vaultItemSchema),
 		defaultValues: {
@@ -48,19 +35,38 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 		register,
 		watch,
 		control,
+		reset,
 		formState: { isSubmitting, errors },
 	} = form;
+
+	const closeModal = useCallback(() => {
+		close();
+		reset();
+	}, [close, reset]);
 
 	const onSubmit = (data: VaultItem) => {
 		console.log("submitted", data);
 	};
+
+	// listen for esc to close modal
+	useEffect(() => {
+		if (!open) return;
+
+		const handleEvent = (e: KeyboardEvent) => {
+			if (e.key === "Escape") closeModal();
+		};
+
+		window.addEventListener("keydown", handleEvent);
+
+		return () => window.removeEventListener("keydown", handleEvent);
+	}, [open, closeModal]);
 
 	return (
 		<AnimatePresence>
 			{open && (
 				<motion.div
 					className="fixed z-50 inset-0 flex justify-center items-center"
-					onClick={close}
+					onClick={closeModal}
 				>
 					<motion.div
 						initial={{ opacity: 0 }}
@@ -90,7 +96,7 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 								whileHover={{ scale: 1.15 }}
 								whileTap={{ scale: 0.9 }}
 								transition={{ duration: 0.075 }}
-								onClick={close}
+								onClick={closeModal}
 							>
 								<RiCloseLargeFill />
 							</motion.span>

@@ -18,12 +18,12 @@ function RouteComponent() {
 		<>
 			<NewItemModal
 				open={createNewState}
-				close={() => setCreateNewState((value) => !value)}
+				close={() => setCreateNewState(false)}
 			/>
 			<div>
 				<h1>Dashboard</h1>
 				<button
-					onClick={() => setCreateNewState(() => !createNewState)}
+					onClick={() => setCreateNewState(true)}
 					className="mb-4 px-4 py-2 bg-blue-500 text-white rounded m-4"
 				>
 					Add New Entry

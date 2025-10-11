@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { checkAuthState, login } from "@services/auth.service";
 import { useStore } from "@stores/store";
 import z from "zod";
@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import logo from "../assets/zap.png";
 import { LabeledInput } from "@components/LabeledInput";
+import { AccentButton } from "@components/AccentButton";
+import * as motion from "motion/react-client";
 
 const loginSchema = z.object({
 	email: z.email("Invalid email address"),
@@ -45,6 +47,7 @@ function RouteComponent() {
 	// TODO: make login async using worker
 	// add loading state
 	const submitHandler = async ({ email, password }: LoginFormData) => {
+		console.log("submitting", { email, password });
 		toast.promise(login({ email, password }), {
 			loading: "Logging in...",
 			success: (data) => {
@@ -56,17 +59,26 @@ function RouteComponent() {
 
 				return "Login successful!";
 			},
-			error: () => {
+			error: (error) => {
 				setValue("password", "");
-				return "Login failed, please check your credentials and try again.";
+				return "Login failed: " + (error?.message || "Unknown error");
 			},
 		});
 	};
 
 	return (
-		<form onSubmit={handleSubmit(submitHandler)}>
+		<form
+			onSubmit={handleSubmit(submitHandler)}
+			action="javascript:void(0)"
+		>
 			<div className="container mx-auto min-h-screen flex items-center justify-center text-xl font-[Karla] px-4">
-				<div className="flex flex-col gap-8 w-full max-w-lg pb-10 pt-6 px-14 rounded-xl sm:border-[1px] border-border">
+				<motion.div
+					initial={{ opacity: 0, scale: 0.95 }}
+					animate={{ opacity: 1, scale: 1 }}
+					exit={{ opacity: 0, scale: 0.95 }}
+					transition={{ duration: 0.15, delay: 0.25 }}
+					className="flex flex-col gap-8 w-full max-w-lg pb-10 pt-6 px-14 rounded-xl sm:border-[1px] border-border"
+				>
 					<div className="flex flex-col justify-center items-center gap-2">
 						<img src={logo} alt="Zap Logo" className="h-24" />
 						<span className="font-bold text-3xl">
@@ -89,23 +101,23 @@ function RouteComponent() {
 							error={errors.password?.message}
 							{...register("password")}
 						/>
-						<button
-							className="bg-accent text-text p-2 mt-4 rounded-xl w-full font-medium"
-							disabled={isSubmitting}
-						>
+						<AccentButton disabled={isSubmitting}>
 							{isSubmitting ? "Logging in..." : "Login"}
-						</button>
+						</AccentButton>
 					</div>
 
 					<div className="flex justify-center items-center">
 						<span className="text-sm font-medium">
 							Don't have an account?{" "}
-							<a href="/signup" className="text-accent">
+							<Link
+								to="/signup"
+								className="text-accent font-bold hover:underline"
+							>
 								Register
-							</a>
+							</Link>
 						</span>
 					</div>
-				</div>
+				</motion.div>
 			</div>
 		</form>
 	);

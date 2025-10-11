@@ -1,5 +1,6 @@
 import type { LoginItem } from "@/types/vault";
 import { LabeledInput } from "@components/LabeledInput";
+import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import { useFormContext } from "react-hook-form";
 
 export function CreateLoginItem() {
@@ -23,10 +24,9 @@ export function CreateLoginItem() {
 				{...register("username")}
 				error={errors.username?.message}
 			/>
-			<LabeledInput
-				label="password"
+			<LabeledPasswordInput
+				label="Password"
 				id="password"
-				type="password"
 				{...register("password")}
 				error={errors.password?.message}
 			/>

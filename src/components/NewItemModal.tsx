@@ -12,6 +12,7 @@ import { RiCloseLargeFill } from "react-icons/ri";
 import { LabeledDropdown } from "./LabeledDropdown";
 import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
+import { CreateCardItem } from "./create/Card";
 
 type NewItemModalProps = {
 	open: boolean;
@@ -136,6 +137,9 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 									<TagsField type={watch("type")} />
 									{watch("type") === "login" && (
 										<CreateLoginItem />
+									)}
+									{watch("type") === "card" && (
+										<CreateCardItem />
 									)}
 									<AccentButton
 										disabled={isSubmitting}

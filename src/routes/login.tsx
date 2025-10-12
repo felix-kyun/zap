@@ -86,7 +86,7 @@ function RouteComponent() {
 							<span className="text-accent">Zap</span>!
 						</span>
 					</div>
-					<div className="flex flex-col gap-1">
+					<div className="flex flex-col gap-4">
 						<LabeledInput
 							id="email"
 							label="Email address"

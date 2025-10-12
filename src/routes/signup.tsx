@@ -103,7 +103,7 @@ function RouteComponent() {
 							error={errors.password?.message}
 							{...register("password")}
 						/>
-						<AccentButton disabled={isSubmitting}>
+						<AccentButton className="mt-4" disabled={isSubmitting}>
 							{isSubmitting ? "Signing up..." : "Sign Up"}
 						</AccentButton>
 					</div>

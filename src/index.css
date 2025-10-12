@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap");
 
 @import "tailwindcss";
+@import "tailwind-scrollbar-hide/v4";
 
 @theme {
 	/* Neutral Colors */
@@ -19,7 +20,8 @@
 	--color-bg: var(--color-neutral-950);
 	--color-text: var(--color-neutral-200);
 	--color-border: var(--color-neutral-800);
-	--color-accent: oklch(0.7 0.12 183);
+	/* --color-accent: oklch(0.7 0.12 183); */
+	--color-accent: oklch(0.49 0.22 264);
 	--color-error: oklch(0.59 0.22 18);
 }
 

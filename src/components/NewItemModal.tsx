@@ -5,14 +5,15 @@ import { CreateLoginItem } from "@components/create/Login";
 import { LabeledInput } from "@components/LabeledInput";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { RiCloseLargeFill } from "react-icons/ri";
 import { LabeledDropdown } from "./LabeledDropdown";
-import * as motion from "motion/react-client";
-import { AnimatePresence } from "motion/react";
 import { CreateCardItem } from "./create/Card";
+import { Modal } from "./Modal";
+import { CreateIdentityItem } from "./create/Identity";
+import { DevTool } from "@hookform/devtools";
+import { CreateNoteItem } from "./create/Note";
 
 type NewItemModalProps = {
 	open: boolean;
@@ -49,112 +50,48 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 		console.log("submitted", data);
 	};
 
-	// listen for esc to close modal
-	useEffect(() => {
-		if (!open) return;
-
-		const handleEvent = (e: KeyboardEvent) => {
-			if (e.key === "Escape") closeModal();
-		};
-
-		window.addEventListener("keydown", handleEvent);
-
-		return () => window.removeEventListener("keydown", handleEvent);
-	}, [open, closeModal]);
-
 	return (
-		<AnimatePresence>
-			{open && (
-				<motion.div
-					className="fixed z-50 inset-0 flex justify-center items-center"
-					onClick={closeModal}
+		<Modal open={open} close={closeModal} title="Add New Item">
+			<FormProvider {...form}>
+				<form
+					onSubmit={handleSubmit(onSubmit, () =>
+						toast.error("Please fix the errors in the form."),
+					)}
+					className="w-full flex flex-col gap-4"
 				>
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.15 }}
-						className="absolute inset-0 bg-neutral-950/50 backdrop-blur"
-					/>
-					<motion.div
-						initial={{ opacity: 0, scale: 0.95, y: -8 }}
-						animate={{ opacity: 1, scale: 1, y: 0 }}
-						exit={{ opacity: 0, scale: 0.95, y: -8 }}
-						transition={{
-							duration: 0.15,
-						}}
-						className="z-10 container min-h-screen flex flex-col mx-auto justify-center items-center p-8"
-					>
-						<div
-							className="relative flex flex-col w-full max-w-xl px-12 pt-8 pb-12 rounded-xl shadow-lg sm:border-[1px] border-border"
-							onClick={(e) => e.stopPropagation()}
-						>
-							<span className="text-3xl font-bold mb-4">
-								Create Item
-							</span>
-							<motion.span
-								className="absolute top-8 right-8 cursor-pointer text-2xl text-neutral-600 hover:text-neutral-400 transition"
-								whileHover={{ scale: 1.15 }}
-								whileTap={{ scale: 0.9 }}
-								transition={{ duration: 0.075 }}
-								onClick={closeModal}
-							>
-								<RiCloseLargeFill />
-							</motion.span>
-							<FormProvider {...form}>
-								<form
-									onSubmit={handleSubmit(onSubmit, () =>
-										toast.error(
-											"Please fix the errors in the form.",
-										),
-									)}
-									className="w-full"
-								>
-									<div className="w-full flex gap-2">
-										<LabeledInput
-											label="Name"
-											id="name"
-											{...register("name")}
-											error={errors.name?.message}
-											containerClassName="flex-5 min-w-0"
-										/>
-										<Controller
-											name="type"
-											control={control}
-											render={({ field }) => (
-												<LabeledDropdown
-													label="Type"
-													value={field.value}
-													options={
-														vaultTypeSchema.options
-													}
-													onChange={field.onChange}
-													onBlur={field.onBlur}
-												/>
-											)}
-										/>
-									</div>
-									<TagsField type={watch("type")} />
-									{watch("type") === "login" && (
-										<CreateLoginItem />
-									)}
-									{watch("type") === "card" && (
-										<CreateCardItem />
-									)}
-									<AccentButton
-										disabled={isSubmitting}
-										type="submit"
-									>
-										{isSubmitting
-											? "Saving..."
-											: "Save Item"}
-									</AccentButton>
-								</form>
-							</FormProvider>
-						</div>
-					</motion.div>
-				</motion.div>
-			)}
-		</AnimatePresence>
+					<div className="w-full flex gap-2">
+						<LabeledInput
+							label="Name"
+							id="name"
+							{...register("name")}
+							error={errors.name?.message}
+							containerClassName="flex-5 min-w-0"
+						/>
+						<Controller
+							name="type"
+							control={control}
+							render={({ field }) => (
+								<LabeledDropdown
+									label="Type"
+									value={field.value}
+									options={vaultTypeSchema.options}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+								/>
+							)}
+						/>
+					</div>
+					<TagsField />
+					{watch("type") === "login" && <CreateLoginItem />}
+					{watch("type") === "card" && <CreateCardItem />}
+					{watch("type") === "identity" && <CreateIdentityItem />}
+					{watch("type") === "note" && <CreateNoteItem />}
+					<AccentButton disabled={isSubmitting} type="submit">
+						{isSubmitting ? "Saving..." : "Save Item"}
+					</AccentButton>
+				</form>
+			</FormProvider>
+			<DevTool control={control} />
+		</Modal>
 	);
 }

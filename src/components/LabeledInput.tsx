@@ -27,15 +27,15 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
 		ref,
 	) => {
 		return (
-			<div
-				className={`flex flex-col w-full gap-2 mb-4 ${containerClassName}`}
-			>
-				<label
-					htmlFor={id}
-					className={`font-bold text-sm ${labelClassName}`}
-				>
-					{label}
-				</label>
+			<div className={`flex flex-col w-full gap-2 ${containerClassName}`}>
+				{label && (
+					<label
+						htmlFor={id}
+						className={`font-bold text-sm ${labelClassName}`}
+					>
+						{label}
+					</label>
+				)}
 				<input
 					type={type ?? "text"}
 					name={id}

@@ -1,78 +1,86 @@
-import type { VaultItem } from "@/types/vault";
-import { useEffect, useState } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { TagArray } from "./TagArray";
+import { useRef, useState, useEffect } from "react";
+import { Modal } from "./Modal";
 import { LabeledInput } from "./LabeledInput";
-import { TagPill } from "./TagPill";
-import { vaultTypeSchema } from "@/schemas/vault";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import type { VaultItem } from "@/types/vault";
 
-type TagsFieldProps = {
-	type: VaultItem["type"];
-};
-
-export function TagsField({ type }: TagsFieldProps) {
-	const { control } = useFormContext<VaultItem>();
-	const { append, remove, fields, update } = useFieldArray({
+export function TagsField() {
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const { getValues, control } = useFormContext<VaultItem>();
+	const { update, fields, append } = useFieldArray<VaultItem>({
 		control,
 		name: "tags",
 	});
-	const [tag, setTag] = useState("");
+	const type = getValues().type;
 
-	// Add the initial tag
 	useEffect(() => {
-		if (fields.length === 0 && vaultTypeSchema.options.includes(type)) {
+		if (fields.length === 0) {
 			append({ value: type });
 		}
-	}, [append, fields.length, type]);
+	}, [fields, type, append]);
 
-	// keep the first tag synced with the type
 	useEffect(() => {
-		if (
-			fields.length > 0 &&
-			vaultTypeSchema.options.includes(type) &&
-			type !== fields[0].value
-		)
-			update(0, { value: type });
-	}, [type, fields, update, append]);
+		if (type !== fields[0]?.value) update(0, { value: type });
+	}, [type, update, fields]);
 
 	return (
 		<>
-			<div className="flex flex-wrap gap-3 mb-3">
-				{fields.map((value, index) => (
-					<TagPill
-						key={value.id}
-						value={fields[index].value}
-						onClick={() => fields.length > 1 && remove(index)}
-					/>
-				))}
-			</div>
-			<div>
+			<NewTagModal
+				open={isModalOpen}
+				close={() => setIsModalOpen(false)}
+			/>
+			<TagArray onCreate={() => setIsModalOpen(true)} />
+		</>
+	);
+}
+
+type NewTagModalProps = {
+	open: boolean;
+	close: () => void;
+};
+
+function NewTagModal({ open, close }: NewTagModalProps) {
+	const inputRef = useRef<HTMLInputElement>(null);
+	const [tag, setTag] = useState("");
+	const { control } = useFormContext<VaultItem>();
+	const { append } = useFieldArray<VaultItem>({
+		control,
+		name: "tags",
+	});
+
+	useEffect(() => {
+		if (open) inputRef.current?.focus();
+	}, [open]);
+
+	const createNewTag = () => {
+		if (tag.trim() === "") return;
+		append({ value: tag.trim() });
+		setTag("");
+	};
+
+	return (
+		<Modal open={open} close={close} title="New Tag">
+			<TagArray disableCreate className="mb-4" />
+			<div className="w-full flex gap-4 items-center">
 				<LabeledInput
-					label=""
 					id="new-tag"
+					label=""
+					placeholder="Tag name"
 					value={tag}
+					ref={inputRef}
 					onChange={(e) => setTag(e.target.value)}
 					onKeyDown={(e) => {
-						if (
-							(e.key === "Enter" || e.key === " ") &&
-							tag.trim() !== ""
-						) {
+						if (e.key === "Enter") {
 							e.preventDefault();
-							append({ value: tag.trim() });
-							setTag("");
-						}
-
-						if (
-							e.key === "Backspace" &&
-							tag === "" &&
-							fields.length > 1
-						) {
-							e.preventDefault();
-							remove(fields.length - 1);
+							createNewTag();
+						} else if (e.key === "Escape") {
+							e.stopPropagation();
+							close();
 						}
 					}}
-					placeholder="Add new tags"
 				/>
 			</div>
-		</>
+		</Modal>
 	);
 }

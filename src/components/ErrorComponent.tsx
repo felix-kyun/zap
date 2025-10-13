@@ -1,6 +1,7 @@
 import { UnauthError } from "@/errors/UnauthError";
+import { VaultLockedError } from "@/errors/VaultLocked";
 import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
-import { useNavigate } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -25,6 +26,7 @@ function ErrorComponent({
 
 export function ErrorHandler({ error }: { error: unknown }) {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [handled, setHandled] = useState(true);
 
 	useEffect(() => {
@@ -44,10 +46,17 @@ export function ErrorHandler({ error }: { error: unknown }) {
 			navigate({
 				to: "/create",
 			});
+		} else if (error instanceof VaultLockedError) {
+			navigate({
+				to: "/unlock",
+				search: {
+					redirect: location.pathname + location.search,
+				},
+			});
 		} else {
 			setHandled(false);
 		}
-	}, [error, navigate, setHandled]);
+	}, [error, navigate, setHandled, location]);
 
 	if (!handled)
 		return (

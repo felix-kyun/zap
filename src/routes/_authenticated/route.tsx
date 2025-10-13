@@ -55,5 +55,9 @@ function RouteComponent() {
 		if (!currentVault) setVault(vault);
 	}, [currentVault, setVault, vault]);
 
+	if (!currentUser || !currentVault) {
+		return null;
+	}
+
 	return <Outlet />;
 }

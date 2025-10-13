@@ -25,27 +25,24 @@ export function createInitialVault(): UnlockedVault {
 
 export function createItemBase(
 	name: string,
-	notes?: string,
-): Pick<VaultItem, "id" | "createdAt" | "updatedAt" | "name" | "notes"> {
+): Pick<VaultItem, "id" | "createdAt" | "updatedAt" | "name"> {
 	return {
 		id: crypto.randomUUID(),
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
 		name,
-		notes,
 	};
 }
 
 export function createLoginItem({
 	name,
-	notes,
 	url,
 	username,
 	password,
 }: VaultItem & { type: "login" }) {
 	return {
 		type: "login",
-		...createItemBase(name, notes),
+		...createItemBase(name),
 		url,
 		username,
 		password,

@@ -14,6 +14,8 @@ import { Modal } from "./Modal";
 import { CreateIdentityItem } from "./create/Identity";
 import { DevTool } from "@hookform/devtools";
 import { CreateNoteItem } from "./create/Note";
+import { useStore } from "@stores/store";
+import { useShallow } from "zustand/shallow";
 
 type NewItemModalProps = {
 	open: boolean;
@@ -21,6 +23,12 @@ type NewItemModalProps = {
 };
 
 export function NewItemModal({ open, close }: NewItemModalProps) {
+	const { addItem, saveVault } = useStore(
+		useShallow(({ addItem, saveVault }) => ({
+			addItem,
+			saveVault,
+		})),
+	);
 	const form = useForm<VaultItem>({
 		resolver: zodResolver(vaultItemSchema),
 		defaultValues: {
@@ -46,8 +54,15 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 		reset();
 	}, [close, reset]);
 
-	const onSubmit = (data: VaultItem) => {
-		console.log("submitted", data);
+	const onSubmit = async (data: VaultItem) => {
+		addItem(data);
+		toast.success("Item added successfully!");
+		closeModal();
+		toast.promise(saveVault(), {
+			loading: "Saving vault...",
+			success: "Vault saved!",
+			error: (error) => `Error saving vault: ${error.message}`,
+		});
 	};
 
 	return (

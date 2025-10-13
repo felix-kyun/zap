@@ -1,7 +1,7 @@
 import { AppError } from "@/errors/AppError";
 import { fetchVault as fetchRemoteVault } from "@services/server.service";
 import type { Store } from "@/types/store";
-import type { Vault } from "@/types/vault";
+import type { Vault, VaultItem } from "@/types/vault";
 import { post } from "@utils/post";
 import { createVaultWorker } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
@@ -18,6 +18,7 @@ type VaultActions = {
 	saveVault: () => Promise<void>;
 	fetchVault: () => Promise<void>;
 	checkVaultPassword: (masterPassword: string) => Promise<boolean>;
+	addItem: (item: VaultItem) => void;
 };
 
 const initialVaultState: VaultState = {
@@ -107,5 +108,17 @@ export const createVaultSlice: StateCreator<
 		);
 
 		return await createVaultWorker("checkVaultKey", key, vault);
+	},
+	addItem(item) {
+		set(
+			(draft) => {
+				if (!draft.vault) throw new Error("No vault to add item to");
+				if (draft.vault.state !== "unlocked")
+					throw new Error("Vault is not unlocked");
+				draft.vault.items.push(item);
+			},
+			false,
+			"vault/addItem",
+		);
 	},
 });

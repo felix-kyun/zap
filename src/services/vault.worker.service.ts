@@ -4,6 +4,7 @@ import type {
 	UnlockedVault,
 	VaultItem,
 	VaultUnlockData,
+	EncryptedVaultItem,
 } from "@/types/vault";
 import sodium from "libsodium-wrappers-sumo";
 import { vaultItemSchema } from "../schemas/vault";
@@ -48,31 +49,38 @@ export function checkVaultKey(key: string, { unlock }: LockedVault): boolean {
 	return false;
 }
 
-export function unlockVault(key: string, vault: LockedVault): UnlockedVault {
+async function decryptItem(
+	item: EncryptedVaultItem,
+	key: string,
+): Promise<VaultItem> {
+	const decryptedMessage = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+		null,
+		sodium.from_base64(item.ciphertext),
+		null,
+		sodium.from_base64(item.nonce),
+		sodium.from_base64(key),
+	);
+
+	const unknownItem = JSON.parse(sodium.to_string(decryptedMessage));
+	try {
+		return vaultItemSchema.parse(unknownItem);
+	} catch {
+		throw new Error("Failed to parse decrypted item");
+	}
+}
+
+export async function unlockVault(
+	key: string,
+	vault: LockedVault,
+): Promise<UnlockedVault> {
 	const { salt, items, meta, settings } = vault;
 
 	// verify key by decrypting unlock data
 	if (!checkVaultKey(key, vault)) throw new Error("Invalid key");
 
 	// decrypt items
-	const decryptedItems: VaultItem[] = [];
-	for (const item of items) {
-		const decryptedMessage =
-			sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-				null,
-				sodium.from_base64(item.ciphertext),
-				null,
-				sodium.from_base64(item.nonce),
-				sodium.from_base64(key),
-			);
-		const unknownItem = JSON.parse(sodium.to_string(decryptedMessage));
-		try {
-			const decryptedItem = vaultItemSchema.parse(unknownItem);
-			decryptedItems.push(decryptedItem);
-		} catch {
-			throw new Error("Failed to parse decrypted item");
-		}
-	}
+	const itemsPromises = items.map((item) => decryptItem(item, key));
+	const decryptedItems = await Promise.all(itemsPromises);
 
 	return {
 		state: "unlocked",

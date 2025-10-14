@@ -1,30 +1,21 @@
-import vaultService from "@services/vault.worker.service.js";
+import type {
+	VaultMethodParameters,
+	VaultMethodReturnType,
+	VaultMethods,
+} from "@/types/worker";
+import { WorkerPool } from "./WorkerPool";
 
-export type VaultMethods = typeof vaultService;
+const workerPool = new WorkerPool("./sw.js", 4);
 
-export async function createVaultWorker<T extends keyof VaultMethods>(
+export async function execute<T extends keyof VaultMethods>(
 	method: T,
-	...args: Parameters<VaultMethods[T]>
-): Promise<ReturnType<VaultMethods[T]>> {
-	const worker = new Worker(new URL("./../utils/sw.js", import.meta.url), {
-		type: "module",
-	});
+	...args: VaultMethodParameters<T>
+): Promise<VaultMethodReturnType<T>> {
+	const response = await workerPool.execute(method, ...args);
 
-	return new Promise((resolve, reject) => {
-		worker.onerror = (error) => {
-			worker.terminate();
-			reject(error);
-		};
+	if ("error" in response) {
+		throw new Error(response.error);
+	}
 
-		worker.onmessage = (event) => {
-			worker.terminate();
-
-			if (event.data && event.data.error) {
-				reject(new Error(event.data.error));
-			}
-			resolve(event.data as ReturnType<VaultMethods[T]>);
-		};
-
-		worker.postMessage({ method, args });
-	});
+	return response.result as VaultMethodReturnType<T>;
 }

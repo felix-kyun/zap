@@ -3,7 +3,7 @@ import { fetchVault as fetchRemoteVault } from "@services/server.service";
 import type { Store } from "@/types/store";
 import type { Vault, VaultItem } from "@/types/vault";
 import { post } from "@utils/post";
-import { createVaultWorker } from "@utils/VaultWorker";
+import { execute } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 type VaultState = {
@@ -46,17 +46,9 @@ export const createVaultSlice: StateCreator<
 		if (!vault) throw new Error("No vault to unlock");
 		if (vault.state !== "locked") return;
 
-		const key = await createVaultWorker(
-			"deriveKey",
-			masterPassword,
-			vault.salt,
-		);
+		const key = await execute("deriveKey", masterPassword, vault.salt);
 
-		const unlockedVault = await createVaultWorker(
-			"unlockVault",
-			key,
-			vault,
-		);
+		const unlockedVault = await execute("unlockVault", key, vault);
 
 		set(() => ({ vault: unlockedVault, key }), false, "vault/unlockVault");
 	},
@@ -70,7 +62,7 @@ export const createVaultSlice: StateCreator<
 		let vaultToSave = vault;
 
 		if (vault.state === "unlocked") {
-			vaultToSave = await createVaultWorker("lockVault", key, vault);
+			vaultToSave = await execute("lockVault", key, vault);
 		}
 
 		const response = await post("/api/vault/sync", {
@@ -92,13 +84,9 @@ export const createVaultSlice: StateCreator<
 		if (vault.state === "unlocked")
 			throw new Error("Vault is already unlocked");
 
-		const key = await createVaultWorker(
-			"deriveKey",
-			masterPassword,
-			vault.salt,
-		);
+		const key = await execute("deriveKey", masterPassword, vault.salt);
 
-		return await createVaultWorker("checkVaultKey", key, vault);
+		return await execute("checkVaultKey", key, vault);
 	},
 	addItem(item) {
 		set(

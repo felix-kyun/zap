@@ -13,14 +13,11 @@ type UnlockModalProps = {
 export function UnlockModal({ open, close }: UnlockModalProps) {
 	const [password, setPassword] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
-	const { unlockVault, setKeyFromPassword, checkVaultPassword } = useStore(
-		useShallow(
-			({ unlockVault, setKeyFromPassword, checkVaultPassword }) => ({
-				unlockVault,
-				setKeyFromPassword,
-				checkVaultPassword,
-			}),
-		),
+	const { unlockVault, checkVaultPassword } = useStore(
+		useShallow(({ unlockVault, checkVaultPassword }) => ({
+			unlockVault,
+			checkVaultPassword,
+		})),
 	);
 
 	const handleUnlock = useCallback(() => {
@@ -35,8 +32,7 @@ export function UnlockModal({ open, close }: UnlockModalProps) {
 					throw new Error("Invalid password");
 				}
 
-				await setKeyFromPassword(password);
-				await unlockVault();
+				await unlockVault(password);
 				setPassword("");
 				close();
 			},
@@ -49,7 +45,7 @@ export function UnlockModal({ open, close }: UnlockModalProps) {
 				},
 			},
 		);
-	}, [password, checkVaultPassword, setKeyFromPassword, unlockVault, close]);
+	}, [password, unlockVault, checkVaultPassword, close]);
 
 	useEffect(() => {
 		if (open) inputRef.current?.focus();

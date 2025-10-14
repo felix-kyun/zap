@@ -1,7 +1,6 @@
 import type {
 	Vault,
 	LockedVault,
-	UnlockedVault,
 	VaultItem,
 	VaultUnlockData,
 	EncryptedVaultItem,
@@ -13,8 +12,8 @@ import { vaultItemSchema } from "../schemas/vault";
 export default {
 	deriveKey,
 	checkVaultKey,
-	unlockVault,
 	lockVault,
+	decryptItem,
 };
 
 export function deriveKey(masterPassword: string, salt: string) {
@@ -67,28 +66,6 @@ async function decryptItem(
 	} catch {
 		throw new Error("Failed to parse decrypted item");
 	}
-}
-
-export async function unlockVault(
-	key: string,
-	vault: LockedVault,
-): Promise<UnlockedVault> {
-	const { salt, items, meta, settings } = vault;
-
-	// verify key by decrypting unlock data
-	if (!checkVaultKey(key, vault)) throw new Error("Invalid key");
-
-	// decrypt items
-	const itemsPromises = items.map((item) => decryptItem(item, key));
-	const decryptedItems = await Promise.all(itemsPromises);
-
-	return {
-		state: "unlocked",
-		salt,
-		meta,
-		settings,
-		items: decryptedItems,
-	};
 }
 
 export function lockVault(

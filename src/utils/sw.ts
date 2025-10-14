@@ -1,4 +1,10 @@
-import type { WorkerTask, VaultMethods, WorkerResponse } from "../types/worker";
+import type {
+	WorkerTask,
+	VaultMethods,
+	WorkerResponse,
+	VaultMethodReturnType,
+	VaultMethodParameters,
+} from "../types/worker";
 import vaultWorkerService from "../services/vault.worker.service";
 import sodium from "libsodium-wrappers-sumo";
 
@@ -15,8 +21,8 @@ self.onmessage = async function <T extends keyof VaultMethods>(
 			result: (await vaultWorkerService[method](
 				// @ts-expect-error i have zero idea why ts complains about the rest params
 				// even after the type assertion
-				...(args as Parameters<VaultMethods[T]>),
-			)) as WorkerResponse<T>["result"],
+				...(args as VaultMethodParameters<T>),
+			)) as VaultMethodReturnType<T>,
 		};
 		self.postMessage(response);
 	} catch (error) {

@@ -47,10 +47,30 @@ export const createVaultSlice: StateCreator<
 		if (vault.state !== "locked") return;
 
 		const key = await execute("deriveKey", masterPassword, vault.salt);
+		const isValid = await execute("checkVaultKey", key, vault);
 
-		const unlockedVault = await execute("unlockVault", key, vault);
+		if (!isValid) {
+			throw new AppError("Invalid master password");
+		}
 
-		set(() => ({ vault: unlockedVault, key }), false, "vault/unlockVault");
+		const decryptedItems = await Promise.all(
+			vault.items.map((item) => execute("decryptItem", item, key)),
+		);
+
+		set(
+			() => ({
+				key,
+				vault: {
+					state: "unlocked",
+					items: decryptedItems,
+					salt: vault.salt,
+					meta: vault.meta,
+					settings: vault.settings,
+				},
+			}),
+			false,
+			"vault/unlockVault",
+		);
 	},
 
 	async saveVault() {

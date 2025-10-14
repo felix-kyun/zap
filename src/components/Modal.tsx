@@ -61,7 +61,7 @@ export function Modal({
 								"relative flex flex-col w-full max-w-xl",
 								"px-12 pt-8 pb-12",
 								"rounded-xl shawdow-lg",
-								"sm:border-[1px] border-border",
+								"sm:border-[1px] border-border bg-surface",
 								containerClassName,
 							])}
 							onClick={(e) => e.stopPropagation()}

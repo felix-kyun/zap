@@ -1,4 +1,4 @@
-type VaultType = "login" | "note" | "card" | "identity" | "custom";
+export type VaultType = "login" | "note" | "card" | "identity" | "custom";
 
 export interface VaultItemBase {
 	id: string;

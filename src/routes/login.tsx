@@ -9,6 +9,7 @@ import logo from "../assets/zap.png";
 import { LabeledInput } from "@components/LabeledInput";
 import { AccentButton } from "@components/AccentButton";
 import * as motion from "motion/react-client";
+import { CenteredContainer } from "@components/CenteredContainer";
 
 const loginSchema = z.object({
 	email: z.email("Invalid email address"),
@@ -71,54 +72,46 @@ function RouteComponent() {
 			onSubmit={handleSubmit(submitHandler)}
 			action="javascript:void(0)"
 		>
-			<div className="container mx-auto min-h-screen flex items-center justify-center text-xl font-[Karla] px-4">
-				<motion.div
-					initial={{ opacity: 0, scale: 0.95 }}
-					animate={{ opacity: 1, scale: 1 }}
-					exit={{ opacity: 0, scale: 0.95 }}
-					transition={{ duration: 0.15, delay: 0.25 }}
-					className="flex flex-col gap-8 w-full max-w-lg pb-10 pt-6 px-14 rounded-xl sm:border-[1px] border-border"
-				>
-					<div className="flex flex-col justify-center items-center gap-2">
-						<img src={logo} alt="Zap Logo" className="h-24" />
-						<span className="font-bold text-3xl">
-							Welcome Back to{" "}
-							<span className="text-accent">Zap</span>!
-						</span>
-					</div>
-					<div className="flex flex-col gap-4">
-						<LabeledInput
-							id="email"
-							label="Email address"
-							type="email"
-							error={errors.email?.message}
-							{...register("email")}
-						/>
-						<LabeledInput
-							id="password"
-							label="Password"
-							type="password"
-							error={errors.password?.message}
-							{...register("password")}
-						/>
-						<AccentButton className="mt-4" disabled={isSubmitting}>
-							{isSubmitting ? "Logging in..." : "Login"}
-						</AccentButton>
-					</div>
+			<CenteredContainer>
+				<div className="flex flex-col justify-center items-center gap-2">
+					<img src={logo} alt="Zap Logo" className="h-24" />
+					<span className="font-bold text-3xl">
+						Welcome Back to <span className="text-accent">Zap</span>
+						!
+					</span>
+				</div>
+				<div className="flex flex-col gap-4">
+					<LabeledInput
+						id="email"
+						label="Email address"
+						type="email"
+						error={errors.email?.message}
+						{...register("email")}
+					/>
+					<LabeledInput
+						id="password"
+						label="Password"
+						type="password"
+						error={errors.password?.message}
+						{...register("password")}
+					/>
+					<AccentButton className="mt-4" disabled={isSubmitting}>
+						{isSubmitting ? "Logging in..." : "Login"}
+					</AccentButton>
+				</div>
 
-					<div className="flex justify-center items-center">
-						<span className="text-sm font-medium">
-							Don't have an account?{" "}
-							<Link
-								to="/signup"
-								className="text-accent font-bold hover:underline"
-							>
-								Register
-							</Link>
-						</span>
-					</div>
-				</motion.div>
-			</div>
+				<div className="flex justify-center items-center">
+					<span className="text-sm font-medium">
+						Don't have an account?{" "}
+						<Link
+							to="/signup"
+							className="text-accent font-bold hover:underline"
+						>
+							Register
+						</Link>
+					</span>
+				</div>
+			</CenteredContainer>
 		</form>
 	);
 }

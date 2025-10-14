@@ -44,7 +44,7 @@ export const LabeledInput = forwardRef<HTMLInputElement, LabeledInputProps>(
 					autoComplete="off"
 					readOnly
 					onFocus={(e) => e.target.removeAttribute("readonly")}
-					className={`border-[1px] rounded-xl py-2 px-4 font-medium border-neutral-600 bg-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-accent transition duration-200 ${inputClassName}`}
+					className={`border-[1px] rounded-xl py-2 px-4 font-medium border-border-secondary bg-prompt placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent transition duration-200 ${inputClassName}`}
 					{...inputProps}
 				/>
 				<AnimatePresence>

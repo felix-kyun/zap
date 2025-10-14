@@ -62,7 +62,7 @@ export const LabeledPasswordInput = forwardRef<
 						onFocus={(e) => e.target.removeAttribute("readonly")}
 						className={clsx([
 							"rounded-xl py-2 px-4 w-full font-medium",
-							"border-neutral-600 bg-neutral-900 placeholder:text-neutral-400 focus:ring-accent",
+							"border-border-secondary bg-prompt placeholder:text-text-secondary focus:ring-accent",
 							"border-[1px] focus:outline-none focus:ring-2",
 							"transition duration-200",
 							inputClassName,
@@ -73,7 +73,7 @@ export const LabeledPasswordInput = forwardRef<
 						type="button"
 						className={clsx([
 							"absolute text-xl top-1/2 -translate-y-1/2 right-3",
-							"text-neutral-400 hover:text-neutral-200",
+							"text-text-secondary hover:text-text cursor-pointer",
 						])}
 						tabIndex={-1}
 						onClick={toggleShowPassword}

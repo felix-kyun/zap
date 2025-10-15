@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import logo from "../assets/zap.png";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as motion from "motion/react-client";
 import { AccentButton } from "@components/AccentButton";
 import { CenteredContainer } from "@components/CenteredContainer";
 

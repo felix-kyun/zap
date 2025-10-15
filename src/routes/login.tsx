@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import logo from "../assets/zap.png";
 import { LabeledInput } from "@components/LabeledInput";
 import { AccentButton } from "@components/AccentButton";
-import * as motion from "motion/react-client";
 import { CenteredContainer } from "@components/CenteredContainer";
 
 const loginSchema = z.object({

@@ -26,6 +26,9 @@ self.onmessage = async function <T extends keyof VaultMethods>(
 		};
 		self.postMessage(response);
 	} catch (error) {
-		self.postMessage({ error: (error as Error)?.message ?? String(error) });
+		self.postMessage({
+			id,
+			error: (error as Error)?.message ?? String(error),
+		});
 	}
 };

@@ -3,7 +3,7 @@ import { Modal } from "@components/Modal";
 import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import toast from "react-hot-toast";
 import { useStore } from "@stores/store";
-import { useShallow } from "zustand/shallow";
+import { AppError } from "@/errors/AppError";
 
 type UnlockModalProps = {
 	open: boolean;
@@ -12,47 +12,42 @@ type UnlockModalProps = {
 
 export function UnlockModal({ open, close }: UnlockModalProps) {
 	const [password, setPassword] = useState("");
+	const [disableClose, setDisableClose] = useState(true);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const { unlockVault, checkVaultPassword } = useStore(
-		useShallow(({ unlockVault, checkVaultPassword }) => ({
-			unlockVault,
-			checkVaultPassword,
-		})),
-	);
+	const unlockVault = useStore((state) => state.unlockVault);
 
 	const handleUnlock = useCallback(() => {
 		if (!password) return;
 
-		toast.promise(
-			async () => {
-				const isValid = await checkVaultPassword(password);
-
-				if (!isValid) {
-					setPassword("");
-					throw new Error("Invalid password");
-				}
-
-				await unlockVault(password);
+		toast.promise(unlockVault(password), {
+			loading: "Unlocking vault...",
+			success: () => {
+				setDisableClose(false);
 				setPassword("");
 				close();
+				return "Vault unlocked!";
 			},
-			{
-				loading: "Unlocking vault...",
-				success: "Vault unlocked!",
-				error: (error) => {
-					setPassword("");
-					return `Error: ${error.message}`;
-				},
+			error: (error) => {
+				setPassword("");
+				if (error instanceof AppError) {
+					return error.message;
+				}
+				return `Error: ${error.message}`;
 			},
-		);
-	}, [password, unlockVault, checkVaultPassword, close]);
+		});
+	}, [password, unlockVault, close]);
 
 	useEffect(() => {
 		if (open) inputRef.current?.focus();
 	}, [open]);
 
 	return (
-		<Modal open={open} close={close} title="Unlock Vault">
+		<Modal
+			open={open}
+			close={close}
+			disableClose={disableClose}
+			title="Unlock Vault"
+		>
 			<LabeledPasswordInput
 				label="Master Password"
 				id="password"

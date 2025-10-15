@@ -1,13 +1,14 @@
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { RiCloseLargeFill } from "react-icons/ri";
-import { type PropsWithChildren, useEffect } from "react";
+import { type PropsWithChildren, useEffect, useCallback } from "react";
 import clsx from "clsx";
 
 type ModalProps = PropsWithChildren<{
 	open: boolean;
 	close: () => void;
 	title: string;
+	disableClose?: boolean;
 	containerClassName?: string;
 	titleClassName?: string;
 	CloseButtonClassNames?: string;
@@ -16,12 +17,18 @@ type ModalProps = PropsWithChildren<{
 export function Modal({
 	children,
 	open,
-	close,
+	close: closeFunction,
 	title,
+	disableClose = false,
 	containerClassName,
 	titleClassName,
 	CloseButtonClassNames,
 }: ModalProps) {
+	const close = useCallback(() => {
+		if (disableClose) return;
+		closeFunction();
+	}, [closeFunction, disableClose]);
+
 	useEffect(() => {
 		if (!open) return;
 
@@ -32,7 +39,7 @@ export function Modal({
 		window.addEventListener("keydown", handleEvent);
 
 		return () => window.removeEventListener("keydown", handleEvent);
-	}, [open, close]);
+	}, [open, close, disableClose]);
 	return (
 		<AnimatePresence>
 			{open && (
@@ -71,15 +78,17 @@ export function Modal({
 							>
 								{title}
 							</span>
-							<motion.span
-								className={`absolute top-8 right-8 cursor-pointer text-2xl text-neutral-600 hover:text-neutral-400 transition ${CloseButtonClassNames}`}
-								whileHover={{ scale: 1.15 }}
-								whileTap={{ scale: 0.9 }}
-								transition={{ duration: 0.075 }}
-								onClick={close}
-							>
-								<RiCloseLargeFill />
-							</motion.span>
+							{disableClose || (
+								<motion.span
+									className={`absolute top-8 right-8 cursor-pointer text-2xl text-neutral-600 hover:text-neutral-400 transition ${CloseButtonClassNames}`}
+									whileHover={{ scale: 1.15 }}
+									whileTap={{ scale: 0.9 }}
+									transition={{ duration: 0.075 }}
+									onClick={close}
+								>
+									<RiCloseLargeFill />
+								</motion.span>
+							)}
 							{children}
 						</div>
 					</motion.div>

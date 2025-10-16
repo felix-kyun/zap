@@ -5,7 +5,7 @@ import { useStore } from "@stores/store";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import logo from "../assets/zap.png";
+import logo from "@/assets/zap.png";
 import { LabeledInput } from "@components/LabeledInput";
 import { AccentButton } from "@components/AccentButton";
 import { CenteredContainer } from "@components/CenteredContainer";
@@ -47,7 +47,6 @@ function RouteComponent() {
 	// TODO: make login async using worker
 	// add loading state
 	const submitHandler = async ({ email, password }: LoginFormData) => {
-		console.log("submitting", { email, password });
 		toast.promise(login({ email, password }), {
 			loading: "Logging in...",
 			success: (data) => {

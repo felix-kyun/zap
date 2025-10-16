@@ -1,22 +1,32 @@
 import type { VaultItem } from "@/types/vault";
-import { iconMap } from "@utils/iconMap";
+import clsx from "clsx";
 
 type VaultItemPreviewProps = {
 	item: VaultItem;
 };
 
 export function VaultItemPreview({
-	item: { name, type, createdAt },
+	item: { name, tags, createdAt },
 }: VaultItemPreviewProps) {
-	const Icon = iconMap[type];
-
 	return (
-		<div className="flex border-1 rounded-lg justify-between items-center p-4 font-medium cursor-pointer border-border hover:border-accent transition-all duration-300 ease-out bg-neutral-900">
-			<span className="font-bold flex items-center gap-2">
-				<Icon />
-				{name}
+		<div
+			className={clsx([
+				"grid grid-cols-3 grid-rows-1 items-center",
+				"border-1 rounded-xl border-border",
+				"transition-all duration-300 ease-out hover:border-accent",
+				"p-4 bg-surface",
+				"cursor-pointer",
+			])}
+		>
+			<span className="font-bold flex items-center gap-2">{name}</span>
+			<span className="flex items-center gap-2 justify-center">
+				{tags.map(({ value }) => (
+					<span className="rounded-xl bg-neutral-800 py-1 px-3 font-medium text-sm">
+						{value}
+					</span>
+				))}
 			</span>
-			<span className="text-sm text-neutral-500">
+			<span className="text-sm text-neutral-500 flex justify-end">
 				Created at {new Date(createdAt).toLocaleDateString()}
 			</span>
 		</div>

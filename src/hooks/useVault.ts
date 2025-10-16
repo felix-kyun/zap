@@ -2,7 +2,7 @@ import { VaultNotFoundError } from "@/errors/VaultNotFound";
 import { useStore } from "@stores/store";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { useModal } from "./useModal";
+import { useModal } from "@hooks/useModal";
 import { UnlockModal } from "@components/UnlockModal";
 
 type UseVaultProps = {

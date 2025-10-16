@@ -7,121 +7,148 @@ import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 type VaultState = {
-    key: string | null;
-    vault: Vault | null;
+	key: string | null;
+	vault: Vault | null;
 };
 
 type VaultActions = {
-    setVault: (vault: Vault) => void;
-    unlockVault: (masterPassword: string) => Promise<void>;
-    saveVault: () => Promise<void>;
-    fetchVault: () => Promise<void>;
-    checkVaultPassword: (masterPassword: string) => Promise<boolean>;
-    addItem: (item: VaultItem) => void;
+	setVault: (vault: Vault) => void;
+	setInitialVault: (vault: Vault, masterPassword: string) => Promise<void>;
+	setKeyFromPassword: (masterPassword: string) => Promise<void>;
+	unlockVault: (masterPassword: string) => Promise<void>;
+	saveVault: () => Promise<void>;
+	fetchVault: () => Promise<void>;
+	checkVaultPassword: (masterPassword: string) => Promise<boolean>;
+	addItem: (item: VaultItem) => void;
+	clearVault: () => void;
 };
 
 const initialVaultState: VaultState = {
-    key: null,
-    vault: null,
+	key: null,
+	vault: null,
 };
 
 export type VaultSlice = VaultState & VaultActions;
 
 export const createVaultSlice: StateCreator<
-    Store,
-    [["zustand/devtools", never], ["zustand/immer", never]],
-    [],
-    VaultSlice
+	Store,
+	[["zustand/devtools", never], ["zustand/immer", never]],
+	[],
+	VaultSlice
 > = (set, get) => ({
-    ...initialVaultState,
-    // actions
+	...initialVaultState,
+	// actions
 
-    setVault(vault) {
-        set(() => ({ vault }), false, "vault/setVault");
-    },
+	setVault(vault) {
+		set(() => ({ vault }), false, "vault/setVault");
+	},
 
-    async unlockVault(masterPassword) {
-        const { vault } = get();
+	async setInitialVault(vault, masterPassword) {
+		const key = await execute("deriveKey", masterPassword, vault.salt);
+		set(() => ({ vault, key }), false, "vault/setInitialVault");
+	},
 
-        if (!vault) throw new Error("No vault to unlock");
-        if (vault.state !== "locked") return;
+	async setKeyFromPassword(masterPassword) {
+		const { vault } = get();
 
-        const [exec, terminate] = parallelExecuter();
+		if (!vault) throw new Error("No vault to set key for");
+		if (vault.state !== "locked") return;
 
-        const key = await exec("deriveKey", masterPassword, vault.salt);
-        const isValid = await exec("checkVaultKey", key, vault);
+		const key = await execute("deriveKey", masterPassword, vault.salt);
+		const isValid = await execute("checkVaultKey", key, vault);
 
-        if (!isValid) {
-            throw new AppError("Invalid master password");
-        }
+		if (!isValid) {
+			throw new AppError("Invalid master password");
+		}
 
-        const decryptedItems = await Promise.all(
-            vault.items.map((item) => exec("decryptItem", item, key)),
-        );
+		set(() => ({ key }), false, "vault/setKey");
+	},
 
-        terminate();
+	async unlockVault(masterPassword) {
+		const { vault } = get();
 
-        set(
-            () => ({
-                key,
-                vault: {
-                    state: "unlocked",
-                    items: decryptedItems,
-                    salt: vault.salt,
-                    meta: vault.meta,
-                    settings: vault.settings,
-                },
-            }),
-            false,
-            "vault/unlockVault",
-        );
-    },
+		if (!vault) throw new Error("No vault to unlock");
+		if (vault.state !== "locked") return;
 
-    async saveVault() {
-        const { vault, key } = get();
+		const [exec, terminate] = parallelExecuter();
 
-        if (!vault) throw new Error("No vault to save");
-        if (!key) throw new Error("No key to save vault");
+		const key = await exec("deriveKey", masterPassword, vault.salt);
+		const isValid = await exec("checkVaultKey", key, vault);
 
-        let vaultToSave = vault;
+		if (!isValid) {
+			throw new AppError("Invalid master password");
+		}
 
-        if (vault.state === "unlocked") {
-            vaultToSave = await execute("lockVault", key, vault);
-        }
+		const decryptedItems = await Promise.all(
+			vault.items.map((item) => exec("decryptItem", item, key)),
+		);
 
-        const response = await post("/api/vault/sync", {
-            vault: JSON.stringify(vaultToSave),
-        });
+		terminate();
 
-        if (!response.ok) throw new AppError("Failed to save vault");
-    },
+		set(
+			() => ({
+				key,
+				vault: {
+					state: "unlocked",
+					items: decryptedItems,
+					salt: vault.salt,
+					meta: vault.meta,
+					settings: vault.settings,
+				},
+			}),
+			false,
+			"vault/unlockVault",
+		);
+	},
 
-    async fetchVault() {
-        get().setVault(await fetchRemoteVault());
-    },
+	async saveVault() {
+		const { vault, key } = get();
 
-    async checkVaultPassword(masterPassword) {
-        const { vault } = get();
+		if (!vault) throw new Error("No vault to save");
+		if (!key) throw new Error("No key to save vault");
 
-        if (!vault) throw new Error("No vault to unlock");
+		let vaultToSave = vault;
 
-        if (vault.state === "unlocked")
-            throw new Error("Vault is already unlocked");
+		if (vault.state === "unlocked") {
+			vaultToSave = await execute("lockVault", key, vault);
+		}
 
-        const key = await execute("deriveKey", masterPassword, vault.salt);
+		const response = await post("/api/vault/sync", {
+			vault: JSON.stringify(vaultToSave),
+		});
 
-        return await execute("checkVaultKey", key, vault);
-    },
-    addItem(item) {
-        set(
-            (draft) => {
-                if (!draft.vault) throw new Error("No vault to add item to");
-                if (draft.vault.state !== "unlocked")
-                    throw new Error("Vault is not unlocked");
-                draft.vault.items.push(item);
-            },
-            false,
-            "vault/addItem",
-        );
-    },
+		if (!response.ok) throw new AppError("Failed to save vault");
+	},
+
+	async fetchVault() {
+		get().setVault(await fetchRemoteVault());
+	},
+
+	async checkVaultPassword(masterPassword) {
+		const { vault } = get();
+
+		if (!vault) throw new Error("No vault to unlock");
+
+		if (vault.state === "unlocked")
+			throw new Error("Vault is already unlocked");
+
+		const key = await execute("deriveKey", masterPassword, vault.salt);
+
+		return await execute("checkVaultKey", key, vault);
+	},
+	addItem(item) {
+		set(
+			(draft) => {
+				if (!draft.vault) throw new Error("No vault to add item to");
+				if (draft.vault.state !== "unlocked")
+					throw new Error("Vault is not unlocked");
+				draft.vault.items.push(item);
+			},
+			false,
+			"vault/addItem",
+		);
+	},
+	clearVault() {
+		set(() => ({ vault: null, key: null }), false, "vault/clearVault");
+	},
 });

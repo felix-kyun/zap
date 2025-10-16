@@ -3,7 +3,7 @@ import { checkAuthState, signup } from "@services/auth.service";
 import { LabeledInput } from "@components/LabeledInput";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import logo from "../assets/zap.png";
+import logo from "@/assets/zap.png";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AccentButton } from "@components/AccentButton";

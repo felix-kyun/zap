@@ -1,15 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { LabeledInput } from "@components/LabeledInput";
 import { createInitialVault } from "@services/vault.service";
 import { useStore } from "@stores/store";
 import toast from "react-hot-toast";
-import logo from "../assets/zap.png";
 import { checkAuthState } from "@services/auth.service";
 import { fetchVault } from "@services/server.service";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as motion from "motion/react-client";
+import { Modal } from "@components/Modal";
+import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 
 const vaultPasswordSchema = z.object({
 	password: z.string().min(1, "Password is required"),
@@ -46,8 +45,7 @@ export const Route = createFileRoute("/create")({
 function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const newVault = Route.useLoaderData();
-	const setKeyFromPassword = useStore((state) => state.setKeyFromPassword);
-	const setVault = useStore((state) => state.setVault);
+	const setInitialVautl = useStore((state) => state.setInitialVault);
 	const saveVault = useStore((state) => state.saveVault);
 	const {
 		register,
@@ -61,8 +59,7 @@ function RouteComponent() {
 	const submitHandler = ({ password }: VaultPasswordFormData) => {
 		toast.promise(
 			async () => {
-				setVault(newVault);
-				await setKeyFromPassword(password);
+				await setInitialVautl(newVault, password);
 				await saveVault();
 			},
 			{
@@ -81,32 +78,28 @@ function RouteComponent() {
 
 	return (
 		<form onSubmit={handleSubmit(submitHandler)}>
-			<div className="container mx-auto min-h-screen flex items-center justify-center text-xl font-[Karla] px-4">
-				<motion.div
-					initial={{ opacity: 0, scale: 0.95 }}
-					animate={{ opacity: 1, scale: 1 }}
-					exit={{ opacity: 0, scale: 0.95 }}
-					transition={{ duration: 0.15, delay: 0.25 }}
-					className="flex flex-col gap-2 w-full max-w-lg pb-10 py-8 px-14 rounded-xl sm:border-[1px] border-border"
-				>
-					<div className="flex flex-col justify-center items-center mb-4">
-						<img src={logo} alt="Zap Logo" className="h-24" />
-					</div>
-					<LabeledInput
+			<Modal
+				open={true}
+				close={() => {}}
+				disableClose={true}
+				title=""
+				containerClassName="!max-w-md"
+			>
+				<div className="flex flex-col items-center">
+					<LabeledPasswordInput
 						id="password"
-						label="Create Master Password"
-						type="password"
+						label="New Master Password"
 						error={errors.password?.message}
 						{...register("password")}
 					/>
 					<button
-						className="bg-accent text-text p-2 rounded-xl w-full font-medium"
+						className="bg-accent text-text p-2 rounded-xl w-full font-medium mt-2"
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? "Creating..." : "Create"}
 					</button>
-				</motion.div>
-			</div>
+				</div>
+			</Modal>
 		</form>
 	);
 }

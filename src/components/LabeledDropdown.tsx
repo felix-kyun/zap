@@ -168,7 +168,7 @@ export function LabeledDropdown({
 									className={clsx([
 										"m-1 p-2 pl-2 hover:bg-neutral-800 cursor-pointer",
 										"focus:bg-neutral-800 outline-none",
-										"rounded-lg overflow-hidden",
+										"rounded-xl overflow-hidden",
 										"flex justify-between",
 									])}
 									ref={(el) => {

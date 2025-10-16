@@ -1,7 +1,7 @@
-import { TagArray } from "./TagArray";
+import { TagArray } from "@components/TagArray";
 import { useRef, useState, useEffect } from "react";
-import { Modal } from "./Modal";
-import { LabeledInput } from "./LabeledInput";
+import { Modal } from "@components/Modal";
+import { LabeledInput } from "@components/LabeledInput";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import type { VaultItem } from "@/types/vault";
 

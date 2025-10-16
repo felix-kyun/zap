@@ -2,7 +2,7 @@ import { UnlockModal } from "@components/UnlockModal";
 import { useStore } from "@stores/store";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import z from "zod";
-import { useState } from "react";
+import { useModal } from "@hooks/useModal";
 
 export const Route = createFileRoute("/_authenticated/unlock")({
 	component: RouteComponent,
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/unlock")({
 });
 
 function RouteComponent() {
-	const [modalOpen, setModalOpen] = useState(true);
+	const [ManagedUnlockModal] = useModal(UnlockModal);
 
-	return <UnlockModal open={modalOpen} close={() => setModalOpen(false)} />;
+	return ManagedUnlockModal;
 }

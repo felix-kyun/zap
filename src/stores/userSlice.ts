@@ -38,5 +38,5 @@ export const createUserSlice: StateCreator<
 			"user/setUser",
 		),
 	clearUser: () =>
-		set(() => ({ ...initialUserState }), false, "user/clearUser"),
+		set(() => ({ user: null, loggedIn: null }), false, "user/clearUser"),
 });

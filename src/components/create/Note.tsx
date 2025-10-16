@@ -12,7 +12,7 @@ export function CreateNoteItem() {
 		<>
 			<textarea
 				className={clsx([
-					"border-[1px] border-neutral-600 rounded-lg",
+					"border-[1px] border-neutral-600 rounded-xl",
 					"p-2 mb-1 min-h-[150px] w-full resize-y",
 					"bg-neutral-900 text-neutral-100",
 					"focus:outline-none focus:ring-2 focus:ring-accent",

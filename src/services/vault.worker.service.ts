@@ -33,17 +33,21 @@ export function deriveKey(masterPassword: string, salt: string) {
 }
 
 export function checkVaultKey(key: string, { unlock }: LockedVault): boolean {
-	const encodedMessage = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
-		null,
-		sodium.from_base64(unlock.ciphertext),
-		null,
-		sodium.from_base64(unlock.nonce),
-		sodium.from_base64(key),
-	);
+	try {
+		const encodedMessage =
+			sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
+				null,
+				sodium.from_base64(unlock.ciphertext),
+				null,
+				sodium.from_base64(unlock.nonce),
+				sodium.from_base64(key),
+			);
+		const message = sodium.to_string(encodedMessage);
 
-	const message = sodium.to_string(encodedMessage);
-
-	if (message === "unlock") return true;
+		if (message === "unlock") return true;
+	} catch {
+		return false;
+	}
 
 	return false;
 }

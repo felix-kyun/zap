@@ -22,7 +22,7 @@
 
 	--color-bg: var(--color-neutral-950);
 	--color-surface: var(--color-neutral-900);
-	--color-prompt: var(--color-neutral-800);
+	--color-prompt: var(--color-neutral-900);
 
 	--color-border: var(--color-neutral-700);
 	--color-border-secondary: var(--color-neutral-600);
@@ -32,5 +32,5 @@
 }
 
 body {
-	@apply m-0 p-0 box-border bg-neutral-950 text-neutral-200 font-[Karla];
+	@apply m-0 p-0 box-border bg-bg text-text font-[Karla];
 }

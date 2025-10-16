@@ -49,11 +49,15 @@ function RouteComponent() {
 
 	useEffect(() => {
 		if (!currentUser) setUser(user);
-	}, [currentUser, setUser, user]);
+		// dont include vault itself or it will run on logout
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user, setUser]);
 
 	useEffect(() => {
 		if (!currentVault) setVault(vault);
-	}, [currentVault, setVault, vault]);
+		// dont include vault itself or it will run on logout
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [vault, setVault]);
 
 	if (!currentUser || !currentVault) {
 		return null;

@@ -17,7 +17,9 @@ import { Route as CreateRouteImport } from './routes/create'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedUnlockRouteImport } from './routes/_authenticated/unlock'
+import { Route as AuthenticatedDashboardRouteRouteImport } from './routes/_authenticated/dashboard/route'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
+import { Route as AuthenticatedDashboardTypeIndexRouteImport } from './routes/_authenticated/dashboard/$type/index'
 
 const AboutLazyRouteImport = createFileRoute('/about')()
 
@@ -55,11 +57,23 @@ const AuthenticatedUnlockRoute = AuthenticatedUnlockRouteImport.update({
   path: '/unlock',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDashboardRouteRoute =
+  AuthenticatedDashboardRouteRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
-    id: '/dashboard/',
-    path: '/dashboard/',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
+const AuthenticatedDashboardTypeIndexRoute =
+  AuthenticatedDashboardTypeIndexRouteImport.update({
+    id: '/$type/',
+    path: '/$type/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -68,8 +82,10 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
+  '/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/unlock': typeof AuthenticatedUnlockRoute
-  '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard/$type': typeof AuthenticatedDashboardTypeIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -79,6 +95,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutLazyRoute
   '/unlock': typeof AuthenticatedUnlockRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/dashboard/$type': typeof AuthenticatedDashboardTypeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,8 +105,10 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
   '/_authenticated/unlock': typeof AuthenticatedUnlockRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/dashboard/$type/': typeof AuthenticatedDashboardTypeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -99,8 +118,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/about'
-    | '/unlock'
     | '/dashboard'
+    | '/unlock'
+    | '/dashboard/'
+    | '/dashboard/$type'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -110,6 +131,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/unlock'
     | '/dashboard'
+    | '/dashboard/$type'
   id:
     | '__root__'
     | '/'
@@ -118,8 +140,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/about'
+    | '/_authenticated/dashboard'
     | '/_authenticated/unlock'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/dashboard/$type/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,24 +206,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUnlockRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard/': {
-      id: '/_authenticated/dashboard/'
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      preLoaderRoute: typeof AuthenticatedDashboardRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
+    '/_authenticated/dashboard/$type/': {
+      id: '/_authenticated/dashboard/$type/'
+      path: '/$type'
+      fullPath: '/dashboard/$type'
+      preLoaderRoute: typeof AuthenticatedDashboardTypeIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedUnlockRoute: typeof AuthenticatedUnlockRoute
+interface AuthenticatedDashboardRouteRouteChildren {
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedDashboardTypeIndexRoute: typeof AuthenticatedDashboardTypeIndexRoute
+}
+
+const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
+  {
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+    AuthenticatedDashboardTypeIndexRoute: AuthenticatedDashboardTypeIndexRoute,
+  }
+
+const AuthenticatedDashboardRouteRouteWithChildren =
+  AuthenticatedDashboardRouteRoute._addFileChildren(
+    AuthenticatedDashboardRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRouteRoute: typeof AuthenticatedDashboardRouteRouteWithChildren
+  AuthenticatedUnlockRoute: typeof AuthenticatedUnlockRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRouteRoute:
+    AuthenticatedDashboardRouteRouteWithChildren,
   AuthenticatedUnlockRoute: AuthenticatedUnlockRoute,
-  AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

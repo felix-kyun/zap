@@ -8,27 +8,30 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { LabeledDropdown } from "./LabeledDropdown";
-import { CreateCardItem } from "./create/Card";
-import { Modal } from "./Modal";
-import { CreateIdentityItem } from "./create/Identity";
+import { LabeledDropdown } from "@components/LabeledDropdown";
+import { CreateCardItem } from "@components/create/Card";
+import { Modal } from "@components/Modal";
+import { CreateIdentityItem } from "@components/create/Identity";
 import { DevTool } from "@hookform/devtools";
-import { CreateNoteItem } from "./create/Note";
+import { CreateNoteItem } from "@components/create/Note";
 import { useStore } from "@stores/store";
 import { useShallow } from "zustand/shallow";
 
-type NewItemModalProps = {
-	open: boolean;
-	close: () => void;
-};
-
-export function NewItemModal({ open, close }: NewItemModalProps) {
+export function NewItemModal() {
 	const { addItem, saveVault } = useStore(
 		useShallow(({ addItem, saveVault }) => ({
 			addItem,
 			saveVault,
 		})),
 	);
+
+	const [open, setOpen] = useStore(
+		useShallow((state) => [
+			state.creationModalState,
+			state.setCreationModal,
+		]),
+	);
+
 	const form = useForm<VaultItem>({
 		resolver: zodResolver(vaultItemSchema),
 		defaultValues: {
@@ -50,9 +53,9 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 	} = form;
 
 	const closeModal = useCallback(() => {
-		close();
+		setOpen(false);
 		reset();
-	}, [close, reset]);
+	}, [setOpen, reset]);
 
 	const onSubmit = async (data: VaultItem) => {
 		addItem(data);

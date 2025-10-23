@@ -1,6 +1,5 @@
-import type { LoginItem, VaultItem } from "@/types/vault";
+import type { VaultItem } from "@/types/vault";
 import { Modal } from "./Modal";
-import { getFaviconUrl } from "@utils/extractHostname";
 import { LoginItemView } from "./LoginItemView";
 
 export type ItemViewModalProps = {

@@ -1,5 +1,5 @@
 import { TagArray } from "@components/TagArray";
-import { useRef, useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal } from "@components/Modal";
 import { LabeledInput } from "@components/LabeledInput";
 import { useFieldArray, useFormContext } from "react-hook-form";
@@ -7,22 +7,6 @@ import type { VaultItem } from "@/types/vault";
 
 export function TagsField() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const { getValues, control } = useFormContext<VaultItem>();
-	const { update, fields, append } = useFieldArray<VaultItem>({
-		control,
-		name: "tags",
-	});
-	// const type = getValues().type;
-	//
-	// useEffect(() => {
-	// 	if (fields.length === 0) {
-	// 		append({ value: type });
-	// 	}
-	// }, [fields, type, append]);
-	//
-	// useEffect(() => {
-	// 	if (type !== fields[0]?.value) update(0, { value: type });
-	// }, [type, update, fields]);
 
 	return (
 		<>

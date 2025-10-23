@@ -12,17 +12,17 @@ export function TagsField() {
 		control,
 		name: "tags",
 	});
-	const type = getValues().type;
-
-	useEffect(() => {
-		if (fields.length === 0) {
-			append({ value: type });
-		}
-	}, [fields, type, append]);
-
-	useEffect(() => {
-		if (type !== fields[0]?.value) update(0, { value: type });
-	}, [type, update, fields]);
+	// const type = getValues().type;
+	//
+	// useEffect(() => {
+	// 	if (fields.length === 0) {
+	// 		append({ value: type });
+	// 	}
+	// }, [fields, type, append]);
+	//
+	// useEffect(() => {
+	// 	if (type !== fields[0]?.value) update(0, { value: type });
+	// }, [type, update, fields]);
 
 	return (
 		<>
@@ -41,17 +41,12 @@ type NewTagModalProps = {
 };
 
 function NewTagModal({ open, close }: NewTagModalProps) {
-	const inputRef = useRef<HTMLInputElement>(null);
 	const [tag, setTag] = useState("");
 	const { control } = useFormContext<VaultItem>();
 	const { append } = useFieldArray<VaultItem>({
 		control,
 		name: "tags",
 	});
-
-	useEffect(() => {
-		if (open) inputRef.current?.focus();
-	}, [open]);
 
 	const createNewTag = () => {
 		if (tag.trim() === "") return;
@@ -68,7 +63,7 @@ function NewTagModal({ open, close }: NewTagModalProps) {
 					label=""
 					placeholder="Tag name"
 					value={tag}
-					ref={inputRef}
+					autoFocus
 					onChange={(e) => setTag(e.target.value)}
 					onKeyDown={(e) => {
 						if (e.key === "Enter") {

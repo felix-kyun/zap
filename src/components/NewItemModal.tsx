@@ -12,7 +12,6 @@ import { LabeledDropdown } from "@components/LabeledDropdown";
 import { CreateCardItem } from "@components/create/Card";
 import { Modal } from "@components/Modal";
 import { CreateIdentityItem } from "@components/create/Identity";
-import { DevTool } from "@hookform/devtools";
 import { CreateNoteItem } from "@components/create/Note";
 import { useStore } from "@stores/store";
 import { useShallow } from "zustand/shallow";
@@ -37,6 +36,8 @@ export function NewItemModal() {
 		defaultValues: {
 			type: "login",
 			tags: [],
+			// replace this later on or else it will be same for every item unless page is refreshed
+			// its just to pass zod validation
 			id: crypto.randomUUID(),
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
@@ -57,9 +58,19 @@ export function NewItemModal() {
 		reset();
 	}, [setOpen, reset]);
 
+	// IMP: add some way to know if the server has newer version of the vault
+	// if so then fetch update and then add the item and save again
 	const onSubmit = async (data: VaultItem) => {
-		addItem(data);
-		toast.success("Item added successfully!");
+		try {
+			addItem({
+				...data,
+				id: crypto.randomUUID(),
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+			});
+		} catch (error) {
+			toast.error(`Error adding item: ${(error as Error).message}`);
+		}
 		closeModal();
 		toast.promise(saveVault(), {
 			loading: "Saving vault...",
@@ -81,6 +92,7 @@ export function NewItemModal() {
 						<LabeledInput
 							label="Name"
 							id="name"
+							autoFocus
 							{...register("name")}
 							error={errors.name?.message}
 							containerClassName="flex-5 min-w-0"
@@ -109,7 +121,6 @@ export function NewItemModal() {
 					</AccentButton>
 				</form>
 			</FormProvider>
-			<DevTool control={control} />
 		</Modal>
 	);
 }

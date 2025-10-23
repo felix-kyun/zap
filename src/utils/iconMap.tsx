@@ -1,4 +1,5 @@
-import { FaUser, FaUsers } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
+import { MdPassword } from "react-icons/md";
 import { FaNoteSticky, FaCreditCard } from "react-icons/fa6";
 import { BiSolidCustomize } from "react-icons/bi";
 import type { ComponentType, JSX } from "react";
@@ -9,7 +10,7 @@ type IconMap = {
 };
 
 export const iconMap: IconMap = {
-	login: FaUser,
+	login: MdPassword,
 	card: FaCreditCard,
 	identity: FaUsers,
 	note: FaNoteSticky,

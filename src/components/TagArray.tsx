@@ -14,7 +14,7 @@ type TagArrayProps =
 	  }
 	| {
 			onCreate?: never;
-			disableCreate: boolean;
+			disableCreate: true;
 			className?: string;
 	  };
 
@@ -64,7 +64,7 @@ type TagPillProps = ComponentProps<typeof motion.span> & {
 	value: string;
 };
 
-function TagPill({ value, ...rest }: TagPillProps) {
+export function TagPill({ value, ...rest }: TagPillProps) {
 	return (
 		<AnimatePresence mode="wait">
 			<motion.span

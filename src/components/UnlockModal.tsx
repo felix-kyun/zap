@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { Modal } from "@components/Modal";
 import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import toast from "react-hot-toast";
@@ -13,7 +13,6 @@ type UnlockModalProps = {
 export function UnlockModal({ open, close }: UnlockModalProps) {
 	const [password, setPassword] = useState("");
 	const [disableClose, setDisableClose] = useState(true);
-	const inputRef = useRef<HTMLInputElement>(null);
 	const unlockVault = useStore((state) => state.unlockVault);
 
 	const handleUnlock = useCallback(() => {
@@ -37,10 +36,6 @@ export function UnlockModal({ open, close }: UnlockModalProps) {
 		});
 	}, [password, unlockVault, close]);
 
-	useEffect(() => {
-		if (open) inputRef.current?.focus();
-	}, [open]);
-
 	return (
 		<Modal
 			open={open}
@@ -51,10 +46,10 @@ export function UnlockModal({ open, close }: UnlockModalProps) {
 			<LabeledPasswordInput
 				label="Master Password"
 				id="password"
-				ref={inputRef}
 				value={password}
 				onChange={(e) => setPassword(e.target.value)}
 				placeholder="Enter your vault password"
+				autoFocus
 				onKeyDown={(e) => {
 					if (e.key === "Enter") {
 						e.preventDefault();

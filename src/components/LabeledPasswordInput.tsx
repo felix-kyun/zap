@@ -76,10 +76,10 @@ export const LabeledPasswordInput = forwardRef<
 							"text-text-secondary hover:text-text cursor-pointer",
 						])}
 						tabIndex={-1}
-						onClick={toggleShowPassword}
 						whileHover={{ scale: 1.15 }}
 						whileTap={{ scale: 0.9 }}
 						transition={{ duration: 0.075 }}
+						onClick={toggleShowPassword}
 					>
 						<AnimatePresence mode="wait">
 							{showPassword ? (

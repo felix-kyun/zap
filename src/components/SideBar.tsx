@@ -6,9 +6,10 @@ import { MenuOption } from "@components/MenuOption";
 import { IoIosCreate, IoMdSettings } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
 import { logout } from "@services/auth.service";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { useCallback } from "react";
 import { useShallow } from "zustand/shallow";
+import { FaAsterisk } from "react-icons/fa";
 
 type SideBarProps = {
 	className?: string;
@@ -20,6 +21,9 @@ export function SideBar({ className }: SideBarProps) {
 	const clearUser = useStore((state) => state.clearUser);
 	const setCreationModal = useStore((state) => state.setCreationModal);
 	const navigate = useNavigate();
+	const { type: currentRouteType } = useParams({
+		from: "/_authenticated/dashboard/$type/",
+	});
 	const [search, setSearch] = useStore(
 		useShallow((state) => [state.query, state.setQuery]),
 	);
@@ -56,13 +60,29 @@ export function SideBar({ className }: SideBarProps) {
 			</div>
 			<div className="flex flex-col flex-grow justify-between">
 				<div className="flex flex-col">
+					<Link
+						to={`/dashboard/$type`}
+						params={{ type: "all" }}
+						key="all"
+					>
+						<MenuOption active={"all" === currentRouteType}>
+							<FaAsterisk />
+							All
+						</MenuOption>
+					</Link>
 					{[...vaultTypeSchema.options].map((type) => {
 						const Icon = iconMap[type];
 						return (
-							<MenuOption key={type}>
-								<Icon />
-								{type}
-							</MenuOption>
+							<Link
+								to={`/dashboard/$type`}
+								params={{ type }}
+								key={type}
+							>
+								<MenuOption active={type === currentRouteType}>
+									<Icon />
+									{type}
+								</MenuOption>
+							</Link>
 						);
 					})}
 				</div>

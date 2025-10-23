@@ -14,7 +14,7 @@ export function VaultItemPreview({
 				"grid grid-cols-3 grid-rows-1 items-center",
 				"border-1 rounded-xl border-border",
 				"transition-all duration-300 ease-out hover:border-accent",
-				"p-4 bg-surface",
+				"p-4 bg-surface h-32",
 				"cursor-pointer",
 			])}
 		>

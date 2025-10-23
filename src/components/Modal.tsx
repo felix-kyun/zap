@@ -12,6 +12,7 @@ type ModalProps = PropsWithChildren<{
 	containerClassName?: string;
 	titleClassName?: string;
 	CloseButtonClassNames?: string;
+	layoutId?: string;
 }>;
 
 export function Modal({
@@ -19,6 +20,7 @@ export function Modal({
 	open,
 	close: closeFunction,
 	title,
+	layoutId,
 	disableClose = false,
 	containerClassName,
 	titleClassName,
@@ -54,16 +56,14 @@ export function Modal({
 						transition={{ duration: 0.15 }}
 						className="absolute inset-0 bg-neutral-950/50 backdrop-blur"
 					/>
-					<motion.div
-						initial={{ opacity: 0, scale: 0.95, y: -8 }}
-						animate={{ opacity: 1, scale: 1, y: 0 }}
-						exit={{ opacity: 0, scale: 0.95, y: -8 }}
-						transition={{
-							duration: 0.15,
-						}}
-						className="z-10 container min-h-screen flex flex-col mx-auto justify-center items-center p-8"
-					>
-						<div
+					<motion.div className="z-10 container min-h-screen flex flex-col mx-auto justify-center items-center p-8">
+						<motion.div
+							initial={{ opacity: 0, scale: 0.95, y: -8 }}
+							animate={{ opacity: 1, scale: 1, y: 0 }}
+							exit={{ opacity: 0, scale: 0.95, y: -8 }}
+							transition={{
+								duration: 0.15,
+							}}
 							className={clsx([
 								"relative flex flex-col w-full max-w-xl",
 								"px-12 pt-8 pb-12",
@@ -71,6 +71,7 @@ export function Modal({
 								"sm:border-[1px] border-border bg-bg",
 								containerClassName,
 							])}
+							layoutId={layoutId}
 							onClick={(e) => e.stopPropagation()}
 						>
 							<span
@@ -90,7 +91,7 @@ export function Modal({
 								</motion.span>
 							)}
 							{children}
-						</div>
+						</motion.div>
 					</motion.div>
 				</motion.div>
 			)}

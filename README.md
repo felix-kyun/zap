@@ -7,7 +7,7 @@
   <br>
   <br>
   <a href="https://github.com/felix-kyun/zap/actions/workflows/main.yml"><img src="https://github.com/felix-kyun/zap/actions/workflows/main.yml/badge.svg"></a>
-  <a href="https://github.com/felix-kyun/zap"><img src="https://img.shields.io/github/license/felix-kyun/zap" alt="License"></a>
+  <a href="https://github.com/felix-kyun/zap/blob/a3ebf8ba2b4f4549066f58464fc604f7872b07ea/UNLICENSE"><img src="https://img.shields.io/github/license/felix-kyun/zap?label=license" alt="License"></a>
   <a href="https://github.com/felix-kyun/zap"><img src="https://img.shields.io/github/languages/top/felix-kyun/zap" alt="Top Language"></a>
 </p>
 

@@ -1,13 +1,13 @@
-import type { LoginItem, VaultItem } from "@/types/vault";
+import type { LoginItem } from "@/types/vault";
 import { getFaviconUrl } from "@utils/extractHostname";
 import { FieldRow, SensetiveFieldRow } from "./FieldRow";
 
 type LoginItemViewProps = {
-    item: VaultItem;
+    item: LoginItem;
 };
 
 export function LoginItemView({ item }: LoginItemViewProps) {
-    const { username, password, url, tags, name } = item as LoginItem;
+    const { username, password, url, tags, name } = item;
 
     return (
         <div className="flex flex-col gap-4">

@@ -10,10 +10,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function RouteComponent() {
 	const [vault, UnlockModal] = useVault();
 
-	if (vault.state === "locked") {
-		return UnlockModal;
-	}
-
 	return (
 		<>
 			{UnlockModal}

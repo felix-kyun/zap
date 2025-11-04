@@ -20,14 +20,7 @@ export function useVault({ redirectOnLock }: UseVaultProps = {}) {
 	// ensure vault is unlocked
 	useEffect(() => {
 		if (vault?.state === "locked") {
-			if (redirectOnLock) {
-				toast.error("Vault is locked, redirecting to unlock.", {
-					id: "vault-locked",
-				});
-				throw new VaultNotFoundError();
-			} else {
-				unlockModalState.open();
-			}
+			unlockModalState.open();
 		}
 	}, [vault.state, redirectOnLock, unlockModalState]);
 

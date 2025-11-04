@@ -8,27 +8,27 @@ import "@/index.css";
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({
-	routeTree,
-	defaultPreload: "intent",
-	defaultStaleTime: 5000,
-	scrollRestoration: true,
-	defaultErrorComponent: ErrorHandler,
+    routeTree,
+    defaultPreload: "intent",
+    defaultStaleTime: 5000,
+    scrollRestoration: true,
+    defaultErrorComponent: ErrorHandler,
 });
 
 declare module "@tanstack/react-router" {
-	interface Register {
-		router: typeof router;
-	}
+    interface Register {
+        router: typeof router;
+    }
 }
 
 const rootElement = document.getElementById("root")!;
 
 if (!rootElement.innerHTML) {
-	const root = createRoot(rootElement);
-	root.render(
-		<StrictMode>
-			<CustomToast />
-			<RouterProvider router={router} />
-		</StrictMode>,
-	);
+    const root = createRoot(rootElement);
+    root.render(
+        <StrictMode>
+            <CustomToast />
+            <RouterProvider router={router} />
+        </StrictMode>,
+    );
 }

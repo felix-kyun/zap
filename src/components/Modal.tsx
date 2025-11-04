@@ -1,8 +1,9 @@
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { RiCloseLargeFill } from "react-icons/ri";
-import { type PropsWithChildren, useEffect, useCallback } from "react";
+import { type PropsWithChildren, useEffect, useCallback, useRef } from "react";
 import clsx from "clsx";
+import { createPortal } from "react-dom";
 
 type ModalProps = PropsWithChildren<{
 	open: boolean;
@@ -11,7 +12,7 @@ type ModalProps = PropsWithChildren<{
 	disableClose?: boolean;
 	containerClassName?: string;
 	titleClassName?: string;
-	CloseButtonClassNames?: string;
+	closeButtonClassNames?: string;
 	layoutId?: string;
 }>;
 
@@ -24,8 +25,23 @@ export function Modal({
 	disableClose = false,
 	containerClassName,
 	titleClassName,
-	CloseButtonClassNames,
+	closeButtonClassNames,
 }: ModalProps) {
+	const container = useRef<HTMLDivElement>(null);
+
+	if (!container.current) {
+		const div = document.createElement("div");
+		container.current = div;
+	}
+
+	useEffect(() => {
+		document.body.appendChild(container.current!);
+
+		return () => {
+			document.body.removeChild(container.current!);
+		};
+	}, []);
+
 	const close = useCallback(() => {
 		if (disableClose) return;
 		closeFunction();
@@ -42,7 +58,10 @@ export function Modal({
 
 		return () => window.removeEventListener("keydown", handleEvent);
 	}, [open, close, disableClose]);
-	return (
+
+	if (!open) return null;
+
+	return createPortal(
 		<AnimatePresence>
 			{open && (
 				<motion.div
@@ -81,7 +100,11 @@ export function Modal({
 							</span>
 							{disableClose || (
 								<motion.span
-									className={`absolute top-8 right-8 cursor-pointer text-2xl text-neutral-600 hover:text-neutral-400 transition ${CloseButtonClassNames}`}
+									className={clsx([
+										"text-neutral-600 hover:text-neutral-400 transition",
+										"absolute top-8 right-8 cursor-pointer text-2xl",
+										closeButtonClassNames,
+									])}
 									whileHover={{ scale: 1.15 }}
 									whileTap={{ scale: 0.9 }}
 									transition={{ duration: 0.075 }}
@@ -95,6 +118,7 @@ export function Modal({
 					</motion.div>
 				</motion.div>
 			)}
-		</AnimatePresence>
+		</AnimatePresence>,
+		container.current,
 	);
 }

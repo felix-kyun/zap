@@ -7,7 +7,6 @@ import {
     loginSchema,
     type LoginResponse,
 } from "@/schemas/login";
-import { _fetch } from "@utils/fetch";
 
 interface SignupData {
     username: string;

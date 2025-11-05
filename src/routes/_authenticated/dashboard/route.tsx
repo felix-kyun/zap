@@ -2,13 +2,16 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { NewItemModal } from "@components/NewItemModal";
 import { SideBar } from "@components/SideBar";
 import { useVault } from "@hooks/useVault";
+import { useStore } from "@stores/store";
+import { greeting } from "@utils/greeting";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const [vault, UnlockModal] = useVault();
+	const [, UnlockModal] = useVault();
+	const username = useStore((state) => state.user?.username);
 
 	return (
 		<>
@@ -18,7 +21,9 @@ function RouteComponent() {
 				<SideBar className="min-w-64 lg:min-w-75" />
 				<div className="flex-grow-1 m-5 p-4 overflow-y-auto">
 					<div className="flex justify-between items-center mb-8">
-						<h1 className="text-3xl font-bold">Your Vault</h1>
+						<h1 className="text-3xl font-bold">
+							{greeting(username ?? "User")}
+						</h1>
 					</div>
 					<Outlet />
 				</div>

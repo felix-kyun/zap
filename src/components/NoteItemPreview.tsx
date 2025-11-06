@@ -1,6 +1,6 @@
 import type { NoteItem, VaultItem } from "@/types/vault";
 import NoteIcon from "@/assets/sticky-notes.png";
-import { PreviewItemContainer } from "./PreviewItemContainer";
+import { PreviewItemContainer } from "@components/PreviewItemContainer";
 
 type NoteItemPreviewProps = {
 	item: VaultItem;

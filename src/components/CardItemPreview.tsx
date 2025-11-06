@@ -1,5 +1,5 @@
 import type { CardItem, VaultItem } from "@/types/vault";
-import { PreviewItemContainer } from "./PreviewItemContainer";
+import { PreviewItemContainer } from "@components/PreviewItemContainer";
 
 type CardItemPreviewProps = {
 	item: VaultItem;

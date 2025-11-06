@@ -1,6 +1,6 @@
 import type { LoginItem, VaultItem } from "@/types/vault";
 import { getFaviconUrl } from "@utils/extractHostname";
-import { PreviewItemContainer } from "./PreviewItemContainer";
+import { PreviewItemContainer } from "@components/PreviewItemContainer";
 
 type LoginItemPreviewProps = {
 	item: VaultItem;

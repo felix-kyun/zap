@@ -1,6 +1,5 @@
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
-import { RiCloseLargeFill } from "react-icons/ri";
 import { type PropsWithChildren, useEffect, useCallback, useRef } from "react";
 import clsx from "clsx";
 import { createPortal } from "react-dom";
@@ -8,12 +7,13 @@ import { createPortal } from "react-dom";
 type ModalProps = PropsWithChildren<{
 	open: boolean;
 	close: () => void;
-	title: string;
-	disableClose?: boolean;
+	title?: string;
+	header?: React.ReactNode;
+	options?: React.ReactNode;
 	containerClassName?: string;
 	titleClassName?: string;
-	closeButtonClassNames?: string;
 	layoutId?: string;
+	disableClose?: boolean;
 }>;
 
 export function Modal({
@@ -21,11 +21,12 @@ export function Modal({
 	open,
 	close: closeFunction,
 	title,
+	header,
+	options,
 	layoutId,
 	disableClose = false,
 	containerClassName,
 	titleClassName,
-	closeButtonClassNames,
 }: ModalProps) {
 	const container = useRef<HTMLDivElement>(null);
 
@@ -84,8 +85,8 @@ export function Modal({
 								duration: 0.15,
 							}}
 							className={clsx([
-								"relative flex flex-col w-full max-w-xl",
-								"px-12 pt-8 pb-12",
+								"flex flex-col w-full max-w-xl gap-6",
+								"p-10",
 								"rounded-xl shawdow-lg",
 								"sm:border-[1px] border-border bg-bg",
 								containerClassName,
@@ -93,26 +94,18 @@ export function Modal({
 							layoutId={layoutId}
 							onClick={(e) => e.stopPropagation()}
 						>
-							<span
-								className={`text-3xl font-bold mb-4 ${titleClassName}`}
-							>
-								{title}
-							</span>
-							{disableClose || (
-								<motion.span
-									className={clsx([
-										"text-neutral-600 hover:text-neutral-400 transition",
-										"absolute top-8 right-8 cursor-pointer text-2xl",
-										closeButtonClassNames,
-									])}
-									whileHover={{ scale: 1.15 }}
-									whileTap={{ scale: 0.9 }}
-									transition={{ duration: 0.075 }}
-									onClick={close}
-								>
-									<RiCloseLargeFill />
-								</motion.span>
-							)}
+							<div className="flex justify-between items-center text-3xl font-bold w-full">
+								{header ? (
+									header
+								) : (
+									<span className={`${titleClassName}`}>
+										{title}
+									</span>
+								)}
+								<div className="flex items-center gap-4 justify-between">
+									{options}
+								</div>
+							</div>
 							{children}
 						</motion.div>
 					</motion.div>

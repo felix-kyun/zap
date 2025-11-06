@@ -13,7 +13,7 @@ import { useStore } from "@stores/store";
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence } from "motion/react";
 import type { FunctionComponent } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/dashboard/$type/")({
 	component: RouteComponent,
@@ -45,6 +45,22 @@ const previewMap: Record<
 	custom: VaultItemPreview,
 };
 
+// TODO: optimize filtering to filter in O(n)
+type FilterFunction = (item: VaultItem) => boolean;
+function filter(item: Array<VaultItem>, type: string, _search: string) {
+	const search: string = _search.trim();
+
+	const filters: Array<FilterFunction> = [
+		(item) => type === "all" || item.type === type,
+		(item) => item.name.toLowerCase().includes(search.toLowerCase()),
+		(item) =>
+			item.type !== "note" ||
+			item.content.toLowerCase().includes(search.toLowerCase()),
+	];
+
+	return item.filter((i) => filters.every((f) => f(i)));
+}
+
 function RouteComponent() {
 	const vault = useStore((state) => state.vault);
 	const search = useStore((state) => state.query);
@@ -53,16 +69,15 @@ function RouteComponent() {
 	const [selectedItem, setSelectedItem] = useState<VaultItem | null>(null);
 	const type = Route.useLoaderData();
 
+	const items = useMemo(() => {
+		if (!vault || vault.state === "locked") return [];
+
+		return filter(vault.items, type, search);
+	}, [vault, type, search]);
+
 	if (!vault || vault.state === "locked") {
 		return null;
 	}
-
-	const items = vault.items
-		.filter((item) => type === "all" || item.type === type)
-		.filter(
-			(item) =>
-				item.name.toLowerCase().includes(search.toLowerCase()) ?? true,
-		);
 
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

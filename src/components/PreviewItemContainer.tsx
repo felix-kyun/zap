@@ -2,7 +2,7 @@ import { useMemo, type ComponentProps, type ReactNode } from "react";
 import * as motion from "motion/react-client";
 import { useContextMenu } from "@hooks/useContextMenu";
 import { ContextMenu, type ContextMenuItem } from "./ContextMenu";
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import clsx from "clsx";
 import type { VaultItem } from "@/types/vault";
 import toast from "react-hot-toast";
@@ -44,6 +44,15 @@ export function PreviewItemContainer({
 				icon: <MdEdit />,
 				onClick: () =>
 					toast.loading("Editing item...", {
+						duration: 1000,
+					}),
+			},
+			{
+				key: "delete",
+				label: "Delete",
+				icon: <MdDelete />,
+				onClick: () =>
+					toast.error("Delete not implemented yet.", {
 						duration: 1000,
 					}),
 			},

@@ -24,7 +24,7 @@ type ContextMenuProps = {
 	items: Array<ContextMenuItem>;
 };
 
-const offset = 0;
+const offset = 2;
 
 export function ContextMenu({
 	open,
@@ -74,8 +74,7 @@ export function ContextMenu({
 	useEffect(() => {
 		if (!open) return;
 
-		const onClick = (e: MouseEvent) => {
-			e.stopPropagation();
+		const onPointerDown = (e: MouseEvent) => {
 			if (menuRef.current && menuRef.current.contains(e.target as Node))
 				return;
 			close();
@@ -86,11 +85,11 @@ export function ContextMenu({
 		};
 
 		window.addEventListener("keydown", onKeyDown);
-		window.addEventListener("click", onClick);
+		window.addEventListener("pointerdown", onPointerDown);
 
 		return () => {
 			window.removeEventListener("keydown", onKeyDown);
-			window.removeEventListener("click", onClick);
+			window.removeEventListener("pointerdown", onPointerDown);
 		};
 	}, [open, close]);
 
@@ -148,7 +147,7 @@ export function ContextMenu({
 						"fixed z-50 w-32",
 						"rounded-lg shadow-lg border-1",
 						"border-border bg-surface",
-						"overflow-hidden text-sm",
+						"p-2",
 					])}
 					role="menu"
 					ref={menuRef}
@@ -166,13 +165,9 @@ export function ContextMenu({
 							className={clsx([
 								"flex items-center gap-2 cursor-pointer",
 								"outline-none focus:bg-border hover:bg-border",
-								"p-2",
+								"rounded-lg",
 							])}
-							onMouseOver={(e) => {
-								if (item.disabled) return;
-								e.currentTarget.focus();
-							}}
-							onClick={(e) => {
+							onMouseDown={(e) => {
 								e.stopPropagation();
 								if (item.disabled) return;
 								item.onClick();

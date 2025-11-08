@@ -24,7 +24,7 @@ export function PreviewItemContainer({
 				"flex justify-start items-center",
 				"border-1 rounded-xl border-border",
 				"transition-colors duration-300 ease-out hover:border-accent",
-				"p-4 bg-surface",
+				"p-4 bg-surface max-w-md",
 				"cursor-pointer gap-2",
 			])}
 			onClick={onClick}

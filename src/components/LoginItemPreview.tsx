@@ -14,11 +14,13 @@ export function LoginItemPreview({
 	onClick,
 }: LoginItemPreviewProps) {
 	const { username, url, name } = item as LoginItem;
+
 	return (
 		<PreviewItemContainer
 			onClick={onClick}
 			layoutId={item.id}
 			index={index}
+			item={item}
 			icon={
 				<img
 					src={getFaviconUrl(url)}

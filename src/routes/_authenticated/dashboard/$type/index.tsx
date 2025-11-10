@@ -11,6 +11,7 @@ import { VaultItemPreview } from "@components/VaultItemPreview";
 import { useModalWithProps } from "@hooks/useModalWithProps";
 import { useStore } from "@stores/store";
 import { createFileRoute } from "@tanstack/react-router";
+import clsx from "clsx";
 import { AnimatePresence } from "motion/react";
 import type { FunctionComponent } from "react";
 import { useMemo, useState } from "react";
@@ -80,7 +81,12 @@ function RouteComponent() {
 	}
 
 	return (
-		<div className="grid grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] gap-4">
+		<div
+			className={clsx([
+				"grid gap-4",
+				"grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]",
+			])}
+		>
 			<AnimatePresence>
 				{items.map((item, index) => {
 					const PreviewComponent = previewMap[item.type];

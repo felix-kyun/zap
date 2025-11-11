@@ -35,13 +35,28 @@ export function Modal({
 		container.current = div;
 	}
 
+	// append root to body on mount
 	useEffect(() => {
 		document.body.appendChild(container.current!);
 
 		return () => {
-			document.body.removeChild(container.current!);
+			if (container.current?.parentNode) {
+				container.current.parentNode.removeChild(container.current);
+			}
 		};
 	}, []);
+
+	// scroll lock
+	useEffect(() => {
+		if (open) {
+			const p = document.body.style.overflow;
+			document.body.style.overflow = "hidden";
+
+			return () => {
+				document.body.style.overflow = p;
+			};
+		}
+	}, [open]);
 
 	const close = useCallback(() => {
 		if (disableClose) return;
@@ -60,23 +75,23 @@ export function Modal({
 		return () => window.removeEventListener("keydown", handleEvent);
 	}, [open, close, disableClose]);
 
-	if (!open) return null;
+	if (!container.current) return null;
 
 	return createPortal(
-		<AnimatePresence>
+		<AnimatePresence mode="wait">
 			{open && (
 				<motion.div
-					className="fixed z-50 inset-0 flex justify-center items-center"
+					className="fixed z-50 inset-0 flex justify-center items-center bg-neutral-950/50 backdrop-blur"
 					onClick={close}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.15 }}
 				>
 					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						transition={{ duration: 0.15 }}
-						className="absolute inset-0 bg-neutral-950/50 backdrop-blur"
-					/>
-					<motion.div className="z-10 container min-h-screen flex flex-col mx-auto justify-center items-center p-8">
+						key="modal-container"
+						className="z-10 container min-h-screen flex flex-col mx-auto justify-center items-center p-8"
+					>
 						<motion.div
 							initial={{ opacity: 0, scale: 0.95, y: -8 }}
 							animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -87,7 +102,7 @@ export function Modal({
 							className={clsx([
 								"flex flex-col w-full max-w-xl gap-6",
 								"p-10",
-								"rounded-xl shawdow-lg",
+								"rounded-xl shadow-lg",
 								"sm:border-[1px] border-border bg-bg",
 								containerClassName,
 							])}

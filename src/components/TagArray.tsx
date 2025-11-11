@@ -27,7 +27,7 @@ export function TagArray(props: TagArrayProps) {
 	});
 
 	return (
-		<div className={`flex flex-wrap gap-3 ${props.className}`}>
+		<div className={`flex flex-wrap gap-1.5 ${props.className}`}>
 			{getValues().tags.map(({ value }, index) => (
 				<TagPill
 					key={value}
@@ -36,39 +36,25 @@ export function TagArray(props: TagArrayProps) {
 				/>
 			))}
 			{props.onCreate && (
-				<motion.span
-					whileHover={{ scale: 1.05 }}
-					whileTap={{ scale: 0.95 }}
-					initial={{ opacity: 0, scale: 0.8 }}
-					animate={{ opacity: 1, scale: 1 }}
-					exit={{ opacity: 0, scale: 0.8 }}
-					transition={{ duration: 0.25 }}
-					className={clsx([
-						"bg-accent",
-						"rounded-xl py-2 px-3",
-						"text-xs transition-colors cursor-pointer",
-						"focus:outline-none focus:ring-2 focus:ring-accent",
-						"flex items-center justify-center",
-					])}
+				<TagPill
 					onClick={props.onCreate}
 					tabIndex={0}
-				>
-					<FaPlus />
-				</motion.span>
+					value={<FaPlus />}
+				/>
 			)}
 		</div>
 	);
 }
 
 type TagPillProps = ComponentProps<typeof motion.span> & {
-	value: string;
+	value: string | React.ReactNode;
 };
 
 export function TagPill({ value, ...rest }: TagPillProps) {
 	return (
 		<AnimatePresence mode="wait">
 			<motion.span
-				className="rounded-xl bg-accent py-1 px-3 font-medium text-sm cursor-pointer"
+				className="inline-flex items-center rounded-full bg-accent py-0.5 px-2 font-semibold text-sm cursor-pointer"
 				whileHover={{ scale: 1.05 }}
 				whileTap={{ scale: 0.95 }}
 				initial={{ opacity: 0, scale: 0.8 }}

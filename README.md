@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://github.com/felix-kyun/zap/blob/e7efa3035a8c5255adc4fd7d3ec199dfeec845d2/public/favicon.png" alt="Zap App Icon" width="120"/>
 </p>
-<h1 align="center">Zap!</h1>
+<h1 align="center"><a href="https://zap.root.sx">Zap!</a></h1>
 <p align="center">
   <b>Minimal, fast, and secure password manager</b>
   <br>

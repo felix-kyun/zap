@@ -16,19 +16,17 @@ import { CreateNoteItem } from "@components/create/Note";
 import { useStore } from "@stores/store";
 import { useShallow } from "zustand/shallow";
 
-export function NewItemModal() {
+type NewItemModalProps = {
+	open: boolean;
+	close: () => void;
+};
+
+export function NewItemModal({ open, close }: NewItemModalProps) {
 	const { addItem, saveVault } = useStore(
 		useShallow(({ addItem, saveVault }) => ({
 			addItem,
 			saveVault,
 		})),
-	);
-
-	const [open, setOpen] = useStore(
-		useShallow((state) => [
-			state.creationModalState,
-			state.setCreationModal,
-		]),
 	);
 
 	const form = useForm<VaultItem>({
@@ -54,9 +52,9 @@ export function NewItemModal() {
 	} = form;
 
 	const closeModal = useCallback(() => {
-		setOpen(false);
+		close();
 		reset();
-	}, [setOpen, reset]);
+	}, [close, reset]);
 
 	// IMP: add some way to know if the server has newer version of the vault
 	// if so then fetch update and then add the item and save again

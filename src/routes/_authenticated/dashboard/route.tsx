@@ -1,5 +1,4 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { NewItemModal } from "@components/NewItemModal";
 import { SideBar } from "@components/SideBar";
 import { useVault } from "@hooks/useVault";
 import { useStore } from "@stores/store";
@@ -16,7 +15,6 @@ function RouteComponent() {
 	return (
 		<>
 			{UnlockModal}
-			<NewItemModal />
 			<div className="flex h-screen w-screen">
 				<SideBar className="min-w-64 lg:min-w-75" />
 				<div className="flex-grow-1 m-5 p-4 overflow-y-auto">

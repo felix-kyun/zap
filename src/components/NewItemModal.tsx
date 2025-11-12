@@ -87,33 +87,34 @@ export function NewItemModal({
 	// if so then fetch update and then add the item and save again
 	const onSubmit = async (data: VaultItem) => {
 		if (mode === "edit") {
-			try {
+			toast.promise(
 				editItem({
 					...data,
 					updatedAt: new Date().toISOString(),
-				});
-			} catch (error) {
-				toast.error(`Error editing item: ${(error as Error).message}`);
-			}
+				}),
+				{
+					loading: "Saving item...",
+					success: "Item saved successfully",
+					error: "Failed to save item",
+				},
+			);
 		} else {
-			try {
+			toast.promise(
 				addItem({
 					...data,
 					id: crypto.randomUUID(),
 					createdAt: new Date().toISOString(),
 					updatedAt: new Date().toISOString(),
-				});
-			} catch (error) {
-				toast.error(`Error adding item: ${(error as Error).message}`);
-			}
+				}),
+				{
+					loading: "Creating item...",
+					success: "Item created successfully",
+					error: "Failed to create item",
+				},
+			);
 		}
 
 		closeModal();
-		toast.promise(saveVault(), {
-			loading: "Saving vault...",
-			success: "Vault saved!",
-			error: (error) => `Error saving vault: ${error.message}`,
-		});
 	};
 
 	return (

@@ -7,6 +7,7 @@ import clsx from "clsx";
 import type { VaultItem } from "@/types/vault";
 import toast from "react-hot-toast";
 import { NewItemModal } from "./NewItemModal";
+import { useStore } from "@stores/store";
 
 type PreviewItemContainerProps = ComponentProps<typeof motion.div> & {
 	index: number;
@@ -37,6 +38,7 @@ export function PreviewItemContainer({
 }: PreviewItemContainerProps) {
 	const { bind, menuOptions } = useContextMenu();
 	const [editorState, setEditorState] = useState(false);
+	const deleteItem = useStore((state) => state.deleteItem);
 
 	const defaultMenuItems: Array<ContextMenuItem> = useMemo(
 		() => [
@@ -51,8 +53,10 @@ export function PreviewItemContainer({
 				label: "Delete",
 				icon: <MdDelete />,
 				onClick: () =>
-					toast.error("Delete not implemented yet.", {
-						duration: 1000,
+					toast.promise(deleteItem(item.id), {
+						loading: "Deleting item...",
+						success: "Item deleted",
+						error: "Failed to delete item",
 					}),
 			},
 			...(menuItems

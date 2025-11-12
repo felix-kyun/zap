@@ -19,8 +19,9 @@ type VaultActions = {
 	saveVault: () => Promise<void>;
 	fetchVault: () => Promise<void>;
 	checkVaultPassword: (masterPassword: string) => Promise<boolean>;
-	addItem: (item: VaultItem) => void;
-	editItem: (item: VaultItem) => void;
+	addItem: (item: VaultItem) => Promise<void>;
+	editItem: (item: VaultItem) => Promise<void>;
+	deleteItem: (itemId: string) => Promise<void>;
 	clearVault: () => void;
 };
 
@@ -138,7 +139,7 @@ export const createVaultSlice: StateCreator<
 
 		return await execute("checkVaultKey", key, vault);
 	},
-	addItem(item) {
+	async addItem(item) {
 		set(
 			(draft) => {
 				if (!draft.vault) throw new Error("No vault to add item to");
@@ -149,8 +150,9 @@ export const createVaultSlice: StateCreator<
 			false,
 			"vault/addItem",
 		);
+		await get().saveVault();
 	},
-	editItem(item) {
+	async editItem(item) {
 		set(
 			(draft) => {
 				if (!draft.vault) throw new Error("No vault to edit item in");
@@ -166,6 +168,26 @@ export const createVaultSlice: StateCreator<
 			false,
 			"vault/editItem",
 		);
+		await get().saveVault();
+	},
+	async deleteItem(itemId) {
+		set(
+			(draft) => {
+				if (!draft.vault)
+					throw new Error("No vault to delete item from");
+				if (draft.vault.state !== "unlocked")
+					throw new Error("Vault is not unlocked");
+
+				const index = draft.vault.items.findIndex(
+					(i) => i.id === itemId,
+				);
+				if (index === -1) throw new Error("Item not found in vault");
+				draft.vault.items.splice(index, 1);
+			},
+			false,
+			"vault/deleteItem",
+		);
+		await get().saveVault();
 	},
 	clearVault() {
 		set(() => ({ vault: null, key: null }), false, "vault/clearVault");

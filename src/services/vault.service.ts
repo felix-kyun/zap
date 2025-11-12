@@ -1,7 +1,7 @@
+import { generateUUID } from "@utils/uuid";
 import sodium from "libsodium-wrappers-sumo";
 
 import type { UnlockedVault, VaultItem } from "@/types/vault";
-import { generateUUID } from "@utils/uuid";
 
 await sodium.ready;
 

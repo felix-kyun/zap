@@ -9,6 +9,7 @@ import { Modal } from "@components/Modal";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStore } from "@stores/store";
+import { generateUUID } from "@utils/uuid";
 import { useCallback } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -16,7 +17,6 @@ import { useShallow } from "zustand/shallow";
 
 import { vaultItemSchema, vaultTypeSchema } from "@/schemas/vault";
 import type { VaultItem } from "@/types/vault";
-import { generateUUID } from "@utils/uuid";
 
 type BaseProps = {
 	open: boolean;

@@ -45,7 +45,7 @@ export function SideBar({ className }: SideBarProps) {
 				mode="create"
 			/>
 			<div
-				className={`flex flex-col justify-between h-screen p-4 border-r-1 border-r-border ${className}`}
+				className={`hidden sm:flex flex-col justify-between h-screen p-4 border-r-1 border-r-border ${className}`}
 			>
 				<div className="flex flex-col">
 					<div className="flex justify-center items-center gap-2 my-2">

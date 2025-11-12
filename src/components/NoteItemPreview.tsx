@@ -16,6 +16,7 @@ export function NoteItemPreview({
 	const { name, content } = item as NoteItem;
 	return (
 		<PreviewItemContainer
+			item={item}
 			onClick={onClick}
 			layoutId={item.id}
 			index={index}

@@ -20,6 +20,7 @@ type VaultActions = {
 	fetchVault: () => Promise<void>;
 	checkVaultPassword: (masterPassword: string) => Promise<boolean>;
 	addItem: (item: VaultItem) => void;
+	editItem: (item: VaultItem) => void;
 	clearVault: () => void;
 };
 
@@ -147,6 +148,23 @@ export const createVaultSlice: StateCreator<
 			},
 			false,
 			"vault/addItem",
+		);
+	},
+	editItem(item) {
+		set(
+			(draft) => {
+				if (!draft.vault) throw new Error("No vault to edit item in");
+				if (draft.vault.state !== "unlocked")
+					throw new Error("Vault is not unlocked");
+
+				const index = draft.vault.items.findIndex(
+					(i) => i.id === item.id,
+				);
+				if (index === -1) throw new Error("Item not found in vault");
+				draft.vault.items[index] = item;
+			},
+			false,
+			"vault/editItem",
 		);
 	},
 	clearVault() {

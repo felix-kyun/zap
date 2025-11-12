@@ -43,6 +43,7 @@ export function SideBar({ className }: SideBarProps) {
 			<NewItemModal
 				open={creationModalState}
 				close={() => setCreationModalState(false)}
+				mode="create"
 			/>
 			<div
 				className={`flex flex-col justify-between h-screen p-4 border-r-1 border-r-border ${className}`}

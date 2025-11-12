@@ -15,6 +15,7 @@ export function CardItemPreview({
 	const { cardNumber, cardHolder } = item as CardItem;
 	return (
 		<PreviewItemContainer
+			item={item}
 			onClick={onClick}
 			layoutId={item.id}
 			index={index}

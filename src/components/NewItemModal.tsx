@@ -16,29 +16,56 @@ import { CreateNoteItem } from "@components/create/Note";
 import { useStore } from "@stores/store";
 import { useShallow } from "zustand/shallow";
 
-type NewItemModalProps = {
+type BaseProps = {
 	open: boolean;
 	close: () => void;
 };
 
-export function NewItemModal({ open, close }: NewItemModalProps) {
-	const { addItem, saveVault } = useStore(
-		useShallow(({ addItem, saveVault }) => ({
+type CreateProps = BaseProps & {
+	mode: "create";
+	item?: undefined;
+};
+
+type EditProps = BaseProps & {
+	item: VaultItem;
+	mode: "edit";
+};
+
+export function NewItemModal({
+	open,
+	close,
+	mode,
+	item,
+}: EditProps | CreateProps) {
+	const { addItem, saveVault, editItem } = useStore(
+		useShallow(({ addItem, saveVault, editItem }) => ({
 			addItem,
 			saveVault,
+			editItem,
 		})),
 	);
 
 	const form = useForm<VaultItem>({
 		resolver: zodResolver(vaultItemSchema),
-		defaultValues: {
-			type: "login",
-			tags: [],
-			// replace this later on or else it will be same for every item unless page is refreshed
-			// its just to pass zod validation
-			id: crypto.randomUUID(),
-			createdAt: new Date().toISOString(),
-			updatedAt: new Date().toISOString(),
+		defaultValues: async () => {
+			// in edit mode, populate the form with existing item data
+			if (mode === "edit") {
+				return item;
+			}
+
+			return {
+				type: "login",
+				tags: [],
+				// replace this later on or else it will be same for every item unless page is refreshed
+				// its just to pass zod validation
+				id: crypto.randomUUID(),
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				url: "",
+				username: "",
+				password: "",
+				name: "",
+			};
 		},
 	});
 
@@ -59,16 +86,28 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 	// IMP: add some way to know if the server has newer version of the vault
 	// if so then fetch update and then add the item and save again
 	const onSubmit = async (data: VaultItem) => {
-		try {
-			addItem({
-				...data,
-				id: crypto.randomUUID(),
-				createdAt: new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
-			});
-		} catch (error) {
-			toast.error(`Error adding item: ${(error as Error).message}`);
+		if (mode === "edit") {
+			try {
+				editItem({
+					...data,
+					updatedAt: new Date().toISOString(),
+				});
+			} catch (error) {
+				toast.error(`Error editing item: ${(error as Error).message}`);
+			}
+		} else {
+			try {
+				addItem({
+					...data,
+					id: crypto.randomUUID(),
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
+				});
+			} catch (error) {
+				toast.error(`Error adding item: ${(error as Error).message}`);
+			}
 		}
+
 		closeModal();
 		toast.promise(saveVault(), {
 			loading: "Saving vault...",
@@ -115,7 +154,7 @@ export function NewItemModal({ open, close }: NewItemModalProps) {
 					{watch("type") === "identity" && <CreateIdentityItem />}
 					{watch("type") === "note" && <CreateNoteItem />}
 					<AccentButton disabled={isSubmitting} type="submit">
-						{isSubmitting ? "Saving..." : "Save Item"}
+						{isSubmitting ? "Creating..." : "Create Item"}
 					</AccentButton>
 				</form>
 			</FormProvider>

@@ -16,6 +16,7 @@ import { useShallow } from "zustand/shallow";
 
 import { vaultItemSchema, vaultTypeSchema } from "@/schemas/vault";
 import type { VaultItem } from "@/types/vault";
+import { generateUUID } from "@utils/uuid";
 
 type BaseProps = {
 	open: boolean;
@@ -58,7 +59,7 @@ export function NewItemModal({
 				tags: [],
 				// replace this later on or else it will be same for every item unless page is refreshed
 				// its just to pass zod validation
-				id: crypto.randomUUID(),
+				id: generateUUID(),
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 				url: "",
@@ -102,7 +103,7 @@ export function NewItemModal({
 			toast.promise(
 				addItem({
 					...data,
-					id: crypto.randomUUID(),
+					id: generateUUID(),
 					createdAt: new Date().toISOString(),
 					updatedAt: new Date().toISOString(),
 				}),

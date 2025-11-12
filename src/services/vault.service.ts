@@ -1,6 +1,7 @@
 import sodium from "libsodium-wrappers-sumo";
 
 import type { UnlockedVault, VaultItem } from "@/types/vault";
+import { generateUUID } from "@utils/uuid";
 
 await sodium.ready;
 
@@ -28,7 +29,7 @@ export function createItemBase(
 	name: string,
 ): Pick<VaultItem, "id" | "createdAt" | "updatedAt" | "name"> {
 	return {
-		id: crypto.randomUUID(),
+		id: generateUUID(),
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
 		name,

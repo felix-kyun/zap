@@ -3,6 +3,7 @@ import type {
 	WorkerResponse,
 	WorkerTask,
 } from "../types/worker.js";
+import { generateUUID } from "./uuid.js";
 
 type Resolver<T extends keyof VaultMethods> = (
 	value: WorkerResponse<T>,
@@ -53,7 +54,7 @@ export class WorkerPool<T extends keyof VaultMethods> {
 		...args: Parameters<VaultMethods[T]>
 	): Promise<WorkerResponse<T>> {
 		return new Promise((resolve) => {
-			const id = crypto.randomUUID();
+			const id = generateUUID();
 			this.resolvers.set(id, resolve);
 			this.queue.push({ id, method, args });
 			this.runNext();

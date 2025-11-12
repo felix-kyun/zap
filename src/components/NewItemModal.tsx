@@ -119,7 +119,11 @@ export function NewItemModal({
 	};
 
 	return (
-		<Modal open={open} close={closeModal} title="Add New Item">
+		<Modal
+			open={open}
+			close={closeModal}
+			title={mode === "create" ? "Create New Item" : "Edit Item"}
+		>
 			<FormProvider {...form}>
 				<form
 					onSubmit={handleSubmit(onSubmit, () =>
@@ -156,7 +160,13 @@ export function NewItemModal({
 					{watch("type") === "identity" && <CreateIdentityItem />}
 					{watch("type") === "note" && <CreateNoteItem />}
 					<AccentButton disabled={isSubmitting} type="submit">
-						{isSubmitting ? "Creating..." : "Create Item"}
+						{mode === "create"
+							? isSubmitting
+								? "Creating..."
+								: "Create Item"
+							: isSubmitting
+								? "Saving..."
+								: "Save Item"}
 					</AccentButton>
 				</form>
 			</FormProvider>

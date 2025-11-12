@@ -17,7 +17,7 @@ function RouteComponent() {
 			{UnlockModal}
 			<div className="flex h-screen w-screen">
 				<SideBar className="min-w-64 lg:min-w-75" />
-				<div className="flex-grow-1 m-5 p-4 overflow-y-auto">
+				<div className="flex-grow-1 m-4 p-4 pb-0 overflow-y-auto scrollbar-hide">
 					<div className="flex justify-between items-center mb-8">
 						<h1 className="text-3xl font-bold">
 							{greeting(username ?? "User")}

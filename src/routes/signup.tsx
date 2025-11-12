@@ -1,13 +1,14 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { checkAuthState, signup } from "@services/auth.service";
-import { LabeledInput } from "@components/LabeledInput";
-import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import logo from "@/assets/zap.png";
-import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { AccentButton } from "@components/AccentButton";
 import { CenteredContainer } from "@components/CenteredContainer";
+import { LabeledInput } from "@components/LabeledInput";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { checkAuthState, signup } from "@services/auth.service";
+import { createFileRoute, Link,redirect } from "@tanstack/react-router";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import z from "zod";
+
+import logo from "@/assets/zap.png";
 
 const signupSchema = z.object({
 	username: z.string().min(1, "Username is required"),

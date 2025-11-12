@@ -1,12 +1,13 @@
-import { userInfoSchema, type UserInfo } from "@/schemas/user";
-import Cookies from "js-cookie";
-import { post } from "@utils/post";
 import Opaque from "@services/opaque.service";
+import { post } from "@utils/post";
+import Cookies from "js-cookie";
+
 import {
 	initialLoginSchema,
-	loginSchema,
 	type LoginResponse,
+	loginSchema,
 } from "@/schemas/login";
+import { type UserInfo,userInfoSchema } from "@/schemas/user";
 
 interface SignupData {
 	username: string;

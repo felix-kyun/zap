@@ -1,6 +1,7 @@
+import { post } from "@utils/post";
+
 import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
 import { vaultSchema } from "@/schemas/vault";
-import { post } from "@utils/post";
 import type { Vault } from "@/types/vault";
 
 export async function fetchVault(): Promise<Vault> {

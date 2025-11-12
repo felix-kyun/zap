@@ -1,7 +1,8 @@
-import type { LoginItem } from "@/types/vault";
 import { LabeledInput } from "@components/LabeledInput";
 import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import { useFormContext } from "react-hook-form";
+
+import type { LoginItem } from "@/types/vault";
 
 export function CreateLoginItem() {
 	const {

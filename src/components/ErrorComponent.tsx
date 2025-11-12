@@ -1,9 +1,10 @@
-import { UnauthError } from "@/errors/UnauthError";
-import { VaultLockedError } from "@/errors/VaultLocked";
-import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
+import { UnauthError } from "@/errors/UnauthError";
+import { VaultLockedError } from "@/errors/VaultLocked";
+import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
 
 type ErrorComponentProps = {
 	title?: string;

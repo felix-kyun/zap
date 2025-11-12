@@ -1,8 +1,8 @@
 import { UnlockModal } from "@components/UnlockModal";
+import { useModal } from "@hooks/useModal";
 import { useStore } from "@stores/store";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import z from "zod";
-import { useModal } from "@hooks/useModal";
 
 export const Route = createFileRoute("/_authenticated/unlock")({
 	component: RouteComponent,

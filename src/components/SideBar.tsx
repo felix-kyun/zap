@@ -1,16 +1,17 @@
 import { LabeledInput } from "@components/LabeledInput";
-import { vaultTypeSchema } from "@/schemas/vault";
-import { iconMap } from "@utils/iconMap";
-import { useStore } from "@stores/store";
 import { MenuOption } from "@components/MenuOption";
+import { NewItemModal } from "@components/NewItemModal";
+import { logout } from "@services/auth.service";
+import { useStore } from "@stores/store";
+import { Link, useNavigate, useParams } from "@tanstack/react-router";
+import { iconMap } from "@utils/iconMap";
+import { useCallback, useState } from "react";
+import { FaAsterisk } from "react-icons/fa";
 import { IoIosCreate, IoMdSettings } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
-import { logout } from "@services/auth.service";
-import { Link, useNavigate, useParams } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
 import { useShallow } from "zustand/shallow";
-import { FaAsterisk } from "react-icons/fa";
-import { NewItemModal } from "@components/NewItemModal";
+
+import { vaultTypeSchema } from "@/schemas/vault";
 
 type SideBarProps = {
 	className?: string;
@@ -35,8 +36,6 @@ export function SideBar({ className }: SideBarProps) {
 		clearUser();
 		navigate({ to: "/login" });
 	}, [navigate, clearVault, clearUser]);
-
-	console.log(`new item modal state: ${creationModalState}`);
 
 	return (
 		<>

@@ -1,7 +1,7 @@
+import clsx from "clsx";
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
-import { type PropsWithChildren, useEffect, useCallback, useRef } from "react";
-import clsx from "clsx";
+import { type PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 type ModalProps = PropsWithChildren<{

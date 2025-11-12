@@ -1,9 +1,10 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import "@/index.css";
+
 import { CustomToast } from "@components/CustomToast";
 import { ErrorHandler } from "@components/ErrorComponent";
-import "@/index.css";
+import { createRouter,RouterProvider } from "@tanstack/react-router";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
 import { routeTree } from "./routeTree.gen";
 

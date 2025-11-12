@@ -1,8 +1,9 @@
-import type { LoginItem } from "@/types/vault";
-import { getFaviconUrl } from "@utils/extractHostname";
+import { EditButton } from "@components/EditButton";
 import { FieldRow, SensetiveFieldRow } from "@components/FieldRow";
 import { Modal } from "@components/Modal";
-import { EditButton } from "@components/EditButton";
+import { getFaviconUrl } from "@utils/extractHostname";
+
+import type { LoginItem } from "@/types/vault";
 
 type LoginItemViewProps = {
 	item: LoginItem;

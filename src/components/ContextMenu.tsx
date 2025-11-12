@@ -1,13 +1,13 @@
+import clsx from "clsx";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
 import {
+	type ReactNode,
 	useCallback,
 	useEffect,
 	useRef,
 	useState,
-	type ReactNode,
 } from "react";
-import * as motion from "motion/react-client";
-import { AnimatePresence } from "motion/react";
-import clsx from "clsx";
 
 export type ContextMenuItem = {
 	key: string;
@@ -68,7 +68,7 @@ export function ContextMenu({
 		if (idx >= 0) {
 			itemRefs.current[idx]?.focus();
 		}
-	}, [open, position]);
+	}, [open, position, items]);
 
 	// close on outside click
 	useEffect(() => {
@@ -133,7 +133,7 @@ export function ContextMenu({
 				}
 			}
 		},
-		[close],
+		[close, items],
 	);
 
 	return (

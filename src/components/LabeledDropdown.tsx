@@ -1,16 +1,16 @@
-import { LuChevronsUpDown } from "react-icons/lu";
-import * as motion from "motion/react-client";
 import clsx from "clsx";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
 import {
+	type FocusEvent,
+	type KeyboardEvent,
 	useCallback,
 	useEffect,
 	useRef,
 	useState,
-	type FocusEvent,
-	type KeyboardEvent,
 } from "react";
+import { LuChevronsUpDown } from "react-icons/lu";
 import { TiTick } from "react-icons/ti";
-import { AnimatePresence } from "motion/react";
 
 type LabeledDropdownProps = {
 	label: string;

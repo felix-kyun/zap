@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
-import type { Store } from "@/types/store";
+
 import type { UserInfo } from "@/schemas/user";
+import type { Store } from "@/types/store";
 
 type UserState =
 	| {

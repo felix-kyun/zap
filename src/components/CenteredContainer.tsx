@@ -1,6 +1,6 @@
-import type { PropsWithChildren } from "react";
-import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
+import type { PropsWithChildren } from "react";
 
 export function CenteredContainer({ children }: PropsWithChildren) {
 	return (

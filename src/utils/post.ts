@@ -1,5 +1,7 @@
-import { UnauthError } from "@/errors/UnauthError";
 import Cookies from "js-cookie";
+
+import { UnauthError } from "@/errors/UnauthError";
+
 import { _fetch } from "./fetch";
 
 export async function post(url: string, data: Record<string, unknown> = {}) {

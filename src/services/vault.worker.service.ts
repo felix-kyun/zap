@@ -1,11 +1,13 @@
+import sodium from "libsodium-wrappers-sumo";
+
 import type {
-	Vault,
+	EncryptedVaultItem,
 	LockedVault,
+	Vault,
 	VaultItem,
 	VaultUnlockData,
-	EncryptedVaultItem,
 } from "@/types/vault";
-import sodium from "libsodium-wrappers-sumo";
+
 import { vaultItemSchema } from "../schemas/vault";
 
 // export methods which can be called from worker thread

@@ -1,7 +1,7 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { SideBar } from "@components/SideBar";
 import { useVault } from "@hooks/useVault";
 import { useStore } from "@stores/store";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { greeting } from "@utils/greeting";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({

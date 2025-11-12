@@ -1,8 +1,9 @@
-import { VaultNotFoundError } from "@/errors/VaultNotFound";
+import { UnlockModal } from "@components/UnlockModal";
+import { useModal } from "@hooks/useModal";
 import { useStore } from "@stores/store";
 import { useEffect } from "react";
-import { useModal } from "@hooks/useModal";
-import { UnlockModal } from "@components/UnlockModal";
+
+import { VaultNotFoundError } from "@/errors/VaultNotFound";
 
 type UseVaultProps = {
 	redirectOnLock?: boolean;

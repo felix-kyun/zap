@@ -1,7 +1,8 @@
-import ZapLogo from "@/assets/zap.png";
 import { useStore } from "@stores/store";
-import { FiLogOut } from "react-icons/fi";
 import { FaUser } from "react-icons/fa";
+import { FiLogOut } from "react-icons/fi";
+
+import ZapLogo from "@/assets/zap.png";
 import { iconMap } from "@/utils/iconMap";
 
 export function NavBar() {

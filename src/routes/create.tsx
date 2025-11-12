@@ -1,14 +1,14 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { createInitialVault } from "@services/vault.service";
-import { useStore } from "@stores/store";
-import toast from "react-hot-toast";
+import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
+import { Modal } from "@components/Modal";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { checkAuthState } from "@services/auth.service";
 import { fetchVault } from "@services/server.service";
+import { createInitialVault } from "@services/vault.service";
+import { useStore } from "@stores/store";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Modal } from "@components/Modal";
-import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 
 const vaultPasswordSchema = z.object({
 	password: z.string().min(1, "Password is required"),

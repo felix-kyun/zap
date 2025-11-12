@@ -1,13 +1,15 @@
-import { useMemo, useState, type ComponentProps, type ReactNode } from "react";
-import * as motion from "motion/react-client";
 import { useContextMenu } from "@hooks/useContextMenu";
-import { ContextMenu, type ContextMenuItem } from "./ContextMenu";
-import { MdDelete, MdEdit } from "react-icons/md";
-import clsx from "clsx";
-import type { VaultItem } from "@/types/vault";
-import toast from "react-hot-toast";
-import { NewItemModal } from "./NewItemModal";
 import { useStore } from "@stores/store";
+import clsx from "clsx";
+import * as motion from "motion/react-client";
+import { type ComponentProps, type ReactNode, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { MdDelete, MdEdit } from "react-icons/md";
+
+import type { VaultItem } from "@/types/vault";
+
+import { ContextMenu, type ContextMenuItem } from "./ContextMenu";
+import { NewItemModal } from "./NewItemModal";
 
 type PreviewItemContainerProps = ComponentProps<typeof motion.div> & {
 	index: number;
@@ -31,7 +33,6 @@ export function PreviewItemContainer({
 	onClick,
 	icon,
 	className,
-	disabled,
 	menuItems,
 	item,
 	...rest
@@ -66,7 +67,7 @@ export function PreviewItemContainer({
 					}))
 				: []),
 		],
-		[item, menuItems],
+		[item, menuItems, deleteItem],
 	);
 
 	return (

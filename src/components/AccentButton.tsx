@@ -1,7 +1,7 @@
+import clsx from "clsx";
+import * as motion from "motion/react-client";
 import type { ComponentProps } from "react";
 import type { PropsWithChildren } from "react";
-import * as motion from "motion/react-client";
-import clsx from "clsx";
 
 type AccentButtonProps = PropsWithChildren<
 	ComponentProps<typeof motion.button> & {

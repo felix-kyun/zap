@@ -1,5 +1,6 @@
-import type { UnlockedVault, VaultItem } from "@/types/vault";
 import sodium from "libsodium-wrappers-sumo";
+
+import type { UnlockedVault, VaultItem } from "@/types/vault";
 
 await sodium.ready;
 

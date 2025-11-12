@@ -1,6 +1,7 @@
-import type { IdentityItem } from "@/types/vault";
 import { LabeledInput } from "@components/LabeledInput";
 import { useFormContext } from "react-hook-form";
+
+import type { IdentityItem } from "@/types/vault";
 
 export function CreateIdentityItem() {
 	const {

@@ -1,8 +1,9 @@
+import { LabeledInput } from "@components/LabeledInput";
+import { Modal } from "@components/Modal";
 import { TagArray } from "@components/TagArray";
 import { useState } from "react";
-import { Modal } from "@components/Modal";
-import { LabeledInput } from "@components/LabeledInput";
 import { useFieldArray, useFormContext } from "react-hook-form";
+
 import type { VaultItem } from "@/types/vault";
 
 export function TagsField() {

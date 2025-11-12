@@ -1,10 +1,11 @@
-import { AppError } from "@/errors/AppError";
 import { fetchVault as fetchRemoteVault } from "@services/server.service";
-import type { Store } from "@/types/store";
-import type { Vault, VaultItem } from "@/types/vault";
 import { post } from "@utils/post";
 import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
+
+import { AppError } from "@/errors/AppError";
+import type { Store } from "@/types/store";
+import type { Vault, VaultItem } from "@/types/vault";
 
 type VaultState = {
 	key: string | null;

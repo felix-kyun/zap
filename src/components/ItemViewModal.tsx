@@ -1,7 +1,8 @@
-import type { VaultItem } from "@/types/vault";
-import { LoginItemView } from "@components/LoginItemView";
 import { CardItemView } from "@components/CardItemView";
+import { LoginItemView } from "@components/LoginItemView";
 import { NoteItemView } from "@components/NoteItemView";
+
+import type { VaultItem } from "@/types/vault";
 
 export type ItemViewModalProps = {
 	item: VaultItem | null;

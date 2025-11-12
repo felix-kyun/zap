@@ -1,6 +1,7 @@
-import type { NoteItem } from "@/types/vault";
 import clsx from "clsx";
 import { useFormContext } from "react-hook-form";
+
+import type { NoteItem } from "@/types/vault";
 
 export function CreateNoteItem() {
 	const {

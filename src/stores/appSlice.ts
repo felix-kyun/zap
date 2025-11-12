@@ -1,5 +1,6 @@
-import type { Store } from "@/types/store";
 import type { StateCreator } from "zustand";
+
+import type { Store } from "@/types/store";
 
 type AppState = {
 	creationModalState: boolean;

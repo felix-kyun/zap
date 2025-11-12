@@ -1,8 +1,9 @@
-import type { CardItem } from "@/types/vault";
+import { EditButton } from "@components/EditButton";
+import { Modal } from "@components/Modal";
 import { FcSimCardChip } from "react-icons/fc";
 import { RiVisaLine } from "react-icons/ri";
-import { Modal } from "@components/Modal";
-import { EditButton } from "@components/EditButton";
+
+import type { CardItem } from "@/types/vault";
 
 type CardItemViewProps = {
 	item: CardItem;

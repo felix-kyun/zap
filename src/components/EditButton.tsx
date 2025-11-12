@@ -1,5 +1,5 @@
-import * as motion from "motion/react-client";
 import clsx from "clsx";
+import * as motion from "motion/react-client";
 import { SlOptionsVertical } from "react-icons/sl";
 
 export function EditButton() {

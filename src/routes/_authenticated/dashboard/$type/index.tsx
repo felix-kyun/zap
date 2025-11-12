@@ -1,5 +1,3 @@
-import { vaultTypeSchema } from "@/schemas/vault";
-import type { VaultItem } from "@/types/vault";
 import { CardItemPreview } from "@components/CardItemPreview";
 import {
 	ItemViewModal,
@@ -15,6 +13,9 @@ import clsx from "clsx";
 import { AnimatePresence } from "motion/react";
 import type { FunctionComponent } from "react";
 import { useMemo, useState } from "react";
+
+import { vaultTypeSchema } from "@/schemas/vault";
+import type { VaultItem } from "@/types/vault";
 
 export const Route = createFileRoute("/_authenticated/dashboard/$type/")({
 	component: RouteComponent,

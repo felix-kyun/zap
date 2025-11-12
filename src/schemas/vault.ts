@@ -1,5 +1,6 @@
-import type { Vault } from "@/types/vault";
 import z from "zod";
+
+import type { Vault } from "@/types/vault";
 
 export const vaultTypeSchema = z.enum([
 	"login",

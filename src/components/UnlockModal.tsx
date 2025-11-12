@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
-import { Modal } from "@components/Modal";
 import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
-import toast from "react-hot-toast";
+import { Modal } from "@components/Modal";
 import { useStore } from "@stores/store";
+import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
+
 import { AppError } from "@/errors/AppError";
 
 type UnlockModalProps = {

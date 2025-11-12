@@ -1,7 +1,7 @@
 import type {
 	VaultMethods,
-	WorkerTask,
 	WorkerResponse,
+	WorkerTask,
 } from "../types/worker.js";
 
 type Resolver<T extends keyof VaultMethods> = (

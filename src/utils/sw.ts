@@ -1,12 +1,13 @@
+import sodium from "libsodium-wrappers-sumo";
+
+import vaultWorkerService from "../services/vault.worker.service";
 import type {
-	WorkerTask,
+	VaultMethodParameters,
+	VaultMethodReturnType,
 	VaultMethods,
 	WorkerResponse,
-	VaultMethodReturnType,
-	VaultMethodParameters,
+	WorkerTask,
 } from "../types/worker";
-import vaultWorkerService from "../services/vault.worker.service";
-import sodium from "libsodium-wrappers-sumo";
 
 self.onmessage = async function <T extends keyof VaultMethods>(
 	event: MessageEvent,

@@ -1,9 +1,10 @@
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
 import type { ComponentProps } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import type { VaultItem } from "@/types/vault";
 import { FaPlus } from "react-icons/fa";
-import * as motion from "motion/react-client";
-import { AnimatePresence } from "motion/react";
+
+import type { VaultItem } from "@/types/vault";
 
 type TagArrayProps =
 	| {

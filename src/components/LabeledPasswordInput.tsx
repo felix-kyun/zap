@@ -1,12 +1,12 @@
+import clsx from "clsx";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
 import {
 	forwardRef,
+	type InputHTMLAttributes,
 	useCallback,
 	useState,
-	type InputHTMLAttributes,
 } from "react";
-import * as motion from "motion/react-client";
-import { AnimatePresence } from "motion/react";
-import clsx from "clsx";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 
 type LabeledPasswordInputProps = InputHTMLAttributes<HTMLInputElement> & {

@@ -1,20 +1,21 @@
-import { vaultItemSchema, vaultTypeSchema } from "@/schemas/vault";
-import type { VaultItem } from "@/types/vault";
 import { AccentButton } from "@components/AccentButton";
+import { CreateCardItem } from "@components/create/Card";
+import { CreateIdentityItem } from "@components/create/Identity";
 import { CreateLoginItem } from "@components/create/Login";
+import { CreateNoteItem } from "@components/create/Note";
+import { LabeledDropdown } from "@components/LabeledDropdown";
 import { LabeledInput } from "@components/LabeledInput";
+import { Modal } from "@components/Modal";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useStore } from "@stores/store";
 import { useCallback } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { LabeledDropdown } from "@components/LabeledDropdown";
-import { CreateCardItem } from "@components/create/Card";
-import { Modal } from "@components/Modal";
-import { CreateIdentityItem } from "@components/create/Identity";
-import { CreateNoteItem } from "@components/create/Note";
-import { useStore } from "@stores/store";
 import { useShallow } from "zustand/shallow";
+
+import { vaultItemSchema, vaultTypeSchema } from "@/schemas/vault";
+import type { VaultItem } from "@/types/vault";
 
 type BaseProps = {
 	open: boolean;
@@ -37,10 +38,9 @@ export function NewItemModal({
 	mode,
 	item,
 }: EditProps | CreateProps) {
-	const { addItem, saveVault, editItem } = useStore(
-		useShallow(({ addItem, saveVault, editItem }) => ({
+	const { addItem, editItem } = useStore(
+		useShallow(({ addItem, editItem }) => ({
 			addItem,
-			saveVault,
 			editItem,
 		})),
 	);

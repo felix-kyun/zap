@@ -1,5 +1,6 @@
-import type { VaultItem } from "@/types/vault";
 import clsx from "clsx";
+
+import type { VaultItem } from "@/types/vault";
 
 type VaultItemPreviewProps = {
 	item: VaultItem;

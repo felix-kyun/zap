@@ -1,6 +1,6 @@
-import { forwardRef, type InputHTMLAttributes } from "react";
-import * as motion from "motion/react-client";
 import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
 type LabeledInputProps = InputHTMLAttributes<HTMLInputElement> & {
 	id: string;

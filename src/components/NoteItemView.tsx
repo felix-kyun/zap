@@ -1,7 +1,8 @@
-import type { NoteItem } from "@/types/vault";
-import NoteIcon from "@/assets/sticky-notes.png";
-import { Modal } from "@components/Modal";
 import { EditButton } from "@components/EditButton";
+import { Modal } from "@components/Modal";
+
+import NoteIcon from "@/assets/sticky-notes.png";
+import type { NoteItem } from "@/types/vault";
 
 type NoteItemViewProps = {
 	item: NoteItem;

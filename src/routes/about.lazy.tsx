@@ -1,4 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
+
 import logo from "@/assets/zap.png";
 
 export const Route = createLazyFileRoute("/about")({

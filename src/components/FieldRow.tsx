@@ -1,9 +1,9 @@
-import { useCallback, useState, type ComponentProps } from "react";
-import { LuCopy, LuEye, LuEyeOff } from "react-icons/lu";
-import * as motion from "motion/react-client";
-import { AnimatePresence } from "motion/react";
 import clsx from "clsx";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
+import { type ComponentProps,useCallback, useState } from "react";
 import toast from "react-hot-toast";
+import { LuCopy, LuEye, LuEyeOff } from "react-icons/lu";
 
 type CopyValueButtonProps = {
 	value: string;

@@ -1,10 +1,12 @@
-import { devtools } from "zustand/middleware";
-import type { Store } from "@/types/store";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 import { createUserSlice } from "@stores/userSlice";
-import { createVaultSlice } from "./vaultSlice";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
+
+import type { Store } from "@/types/store";
+
 import { createAppSlice } from "./appSlice";
+import { createVaultSlice } from "./vaultSlice";
 
 export const useStore = create<Store>()(
 	devtools(

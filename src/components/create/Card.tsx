@@ -1,7 +1,8 @@
-import type { CardItem } from "@/types/vault";
 import { LabeledInput } from "@components/LabeledInput";
 import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import { useFormContext } from "react-hook-form";
+
+import type { CardItem } from "@/types/vault";
 
 export function CreateCardItem() {
 	const {

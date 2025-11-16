@@ -5,6 +5,7 @@ import { useStore } from "@stores/store";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/shallow";
+import toast from "react-hot-toast";
 
 type AuthenticatedLoaderData = Promise<{
 	vault: Awaited<ReturnType<typeof fetchVault>>;
@@ -47,6 +48,8 @@ function RouteComponent() {
 			setVault,
 		})),
 	);
+
+	// auto lock
 	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const { state, lockVault, setting } = useStore(
 		useShallow(({ vault, lockVault }) => ({
@@ -55,17 +58,27 @@ function RouteComponent() {
 			setting: vault?.settings,
 		})),
 	);
+
 	const setVaultAutoLock = useCallback(() => {
+		const gracePeriod = 10 * 1000;
 		if (state === "unlocked") {
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
+				toast.dismiss("auto-lock");
 			}
+
 			timeoutRef.current = setTimeout(
 				() => {
-					lockVault();
+					toast.loading("Auto locking vault in 10 seconds...", {
+						id: "auto-lock",
+						duration: gracePeriod,
+					});
+
+					timeoutRef.current = setTimeout(() => {
+						lockVault();
+					}, gracePeriod);
 				},
-				// setting?.autoLockTimeout || 5 * 60 * 1000,
-				10000,
+				setting?.autoLockTimeout || 5 * 60 * 1000,
 			);
 		}
 	}, [lockVault, setting, state]);
@@ -74,7 +87,7 @@ function RouteComponent() {
 		if (timeoutRef.current) {
 			setVaultAutoLock();
 		}
-	});
+	}, 500);
 
 	useEffect(() => {
 		if (!currentUser) setUser(user);

@@ -17,6 +17,7 @@ type VaultActions = {
 	setInitialVault: (vault: Vault, masterPassword: string) => Promise<void>;
 	setKeyFromPassword: (masterPassword: string) => Promise<void>;
 	unlockVault: (masterPassword: string) => Promise<void>;
+	lockVault: () => Promise<void>;
 	saveVault: () => Promise<void>;
 	fetchVault: () => Promise<void>;
 	checkVaultPassword: (masterPassword: string) => Promise<boolean>;
@@ -102,6 +103,25 @@ export const createVaultSlice: StateCreator<
 			}),
 			false,
 			"vault/unlockVault",
+		);
+	},
+
+	async lockVault() {
+		const { vault, key } = get();
+
+		if (!vault) throw new Error("No vault to lock");
+		if (!key) throw new Error("No key to lock vault");
+		if (vault.state !== "unlocked") return;
+
+		const lockedVault = await execute("lockVault", key, vault);
+
+		set(
+			() => ({
+				vault: lockedVault,
+				key: null,
+			}),
+			false,
+			"vault/lockVault",
 		);
 	},
 

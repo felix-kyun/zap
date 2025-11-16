@@ -2,7 +2,7 @@ import { checkAuthState, fetchUser } from "@services/auth.service";
 import { fetchVault } from "@services/server.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/shallow";
 
 type AuthenticatedLoaderData = Promise<{
@@ -46,6 +46,28 @@ function RouteComponent() {
 			setVault,
 		})),
 	);
+	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const { state, lockVault, setting } = useStore(
+		useShallow(({ vault, lockVault }) => ({
+			state: vault?.state,
+			lockVault,
+			setting: vault?.settings,
+		})),
+	);
+	const setVaultAutoLock = useCallback(() => {
+		if (state === "unlocked") {
+			if (timeoutRef.current) {
+				clearTimeout(timeoutRef.current);
+			}
+			timeoutRef.current = setTimeout(
+				() => {
+					lockVault();
+				},
+				// setting?.autoLockTimeout || 5 * 60 * 1000,
+				10000,
+			);
+		}
+	}, [lockVault, setting, state]);
 
 	useEffect(() => {
 		if (!currentUser) setUser(user);
@@ -58,6 +80,43 @@ function RouteComponent() {
 		// dont include vault itself or it will run on logout
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [vault, setVault]);
+
+	// auto lock
+	useEffect(() => {
+		setVaultAutoLock();
+
+		return () => {
+			if (timeoutRef.current) {
+				clearTimeout(timeoutRef.current);
+				timeoutRef.current = null;
+			}
+		};
+	}, [state, setting]);
+
+	useEffect(() => {
+		const events = [
+			"mousemove",
+			"mousedown",
+			"keydown",
+			"touchstart",
+			"scroll",
+			"click",
+		];
+
+		const resetTimeout = () => {
+			if (timeoutRef.current) {
+				setVaultAutoLock();
+			}
+		};
+
+		for (const event of events)
+			window.addEventListener(event, resetTimeout);
+
+		return () => {
+			for (const event of events)
+				window.removeEventListener(event, resetTimeout);
+		};
+	}, []);
 
 	if (!currentUser || !currentVault) {
 		return null;

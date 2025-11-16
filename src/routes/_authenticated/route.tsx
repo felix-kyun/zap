@@ -1,3 +1,4 @@
+import { useThrottle } from "@hooks/useThrottle";
 import { checkAuthState, fetchUser } from "@services/auth.service";
 import { fetchVault } from "@services/server.service";
 import { useStore } from "@stores/store";
@@ -69,6 +70,12 @@ function RouteComponent() {
 		}
 	}, [lockVault, setting, state]);
 
+	const resetTimeout = useThrottle(() => {
+		if (timeoutRef.current) {
+			setVaultAutoLock();
+		}
+	});
+
 	useEffect(() => {
 		if (!currentUser) setUser(user);
 		// dont include vault itself or it will run on logout
@@ -103,18 +110,14 @@ function RouteComponent() {
 			"click",
 		];
 
-		const resetTimeout = () => {
-			if (timeoutRef.current) {
-				setVaultAutoLock();
-			}
-		};
+		const options = { passive: true, capture: true };
 
 		for (const event of events)
-			window.addEventListener(event, resetTimeout);
+			window.addEventListener(event, resetTimeout, options);
 
 		return () => {
 			for (const event of events)
-				window.removeEventListener(event, resetTimeout);
+				window.removeEventListener(event, resetTimeout, options);
 		};
 	}, []);
 

@@ -5,7 +5,7 @@ import { logout } from "@services/auth.service";
 import { useStore } from "@stores/store";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { iconMap } from "@utils/iconMap";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaAsterisk } from "react-icons/fa";
 import { IoIosCreate, IoMdSettings } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
@@ -21,6 +21,7 @@ export function SideBar({ className }: SideBarProps) {
 	const user = useStore((state) => state.user);
 	const clearVault = useStore((state) => state.clearVault);
 	const clearUser = useStore((state) => state.clearUser);
+	const searchBarRef = useRef<HTMLInputElement>(null);
 	const [creationModalState, setCreationModalState] = useState(false);
 	const navigate = useNavigate();
 	const { type: currentRouteType } = useParams({
@@ -36,6 +37,21 @@ export function SideBar({ className }: SideBarProps) {
 		clearUser();
 		navigate({ to: "/login" });
 	}, [navigate, clearVault, clearUser]);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "k" && e.ctrlKey) {
+				e.preventDefault();
+				searchBarRef.current?.focus();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, []);
 
 	return (
 		<>
@@ -60,6 +76,7 @@ export function SideBar({ className }: SideBarProps) {
 						id="search"
 						label=""
 						type="text"
+						ref={searchBarRef}
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
 						placeholder="Search"

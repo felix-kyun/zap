@@ -3,7 +3,7 @@ import { CenteredContainer } from "@components/CenteredContainer";
 import { LabeledInput } from "@components/LabeledInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkAuthState, signup } from "@services/auth.service";
-import { createFileRoute, Link,redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";

@@ -7,7 +7,7 @@ import {
 	type LoginResponse,
 	loginSchema,
 } from "@/schemas/login";
-import { type UserInfo,userInfoSchema } from "@/schemas/user";
+import { type UserInfo, userInfoSchema } from "@/schemas/user";
 
 interface SignupData {
 	username: string;

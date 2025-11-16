@@ -1,7 +1,7 @@
 import type { ComponentType, JSX } from "react";
 import { BiSolidCustomize } from "react-icons/bi";
 import { FaUsers } from "react-icons/fa";
-import { FaCreditCard,FaNoteSticky } from "react-icons/fa6";
+import { FaCreditCard, FaNoteSticky } from "react-icons/fa6";
 import { MdPassword } from "react-icons/md";
 
 import type { VaultType } from "@/types/vault";

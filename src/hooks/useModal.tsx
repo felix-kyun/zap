@@ -1,4 +1,4 @@
-import { type ComponentType,useCallback, useState } from "react";
+import { type ComponentType, useCallback, useState } from "react";
 
 type UseModalProps = {
 	onOpen?: () => void;

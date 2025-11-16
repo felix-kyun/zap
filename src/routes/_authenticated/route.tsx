@@ -4,8 +4,8 @@ import { fetchVault } from "@services/server.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef } from "react";
-import { useShallow } from "zustand/shallow";
 import toast from "react-hot-toast";
+import { useShallow } from "zustand/shallow";
 
 type AuthenticatedLoaderData = Promise<{
 	vault: Awaited<ReturnType<typeof fetchVault>>;
@@ -111,7 +111,7 @@ function RouteComponent() {
 				timeoutRef.current = null;
 			}
 		};
-	}, [state, setting]);
+	}, [state, setting, setVaultAutoLock]);
 
 	useEffect(() => {
 		const events = [
@@ -132,7 +132,7 @@ function RouteComponent() {
 			for (const event of events)
 				window.removeEventListener(event, resetTimeout, options);
 		};
-	}, []);
+	}, [resetTimeout]);
 
 	if (!currentUser || !currentVault) {
 		return null;

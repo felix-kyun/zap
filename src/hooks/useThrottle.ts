@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef } from "react";
 
-type ThrottledFunction<T extends (...args: any[]) => any> = ((
+type ThrottledFunction<T extends (...args: unknown[]) => unknown> = ((
 	...args: Parameters<T>
 ) => ReturnType<T> | undefined) & { cancel: () => void };
 
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends (...args: unknown[]) => unknown>(
 	func: T,
 	delay: number = 200,
 ): ThrottledFunction<T> {
@@ -32,7 +32,7 @@ export function useThrottle<T extends (...args: any[]) => any>(
 				returnValue.current = functionRef.current.apply(
 					this,
 					functionArgs,
-				);
+				) as ReturnType<T>;
 				isThrottled.current = true;
 
 				timer.current = setTimeout(() => {

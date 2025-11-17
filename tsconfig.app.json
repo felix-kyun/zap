@@ -33,6 +33,7 @@
 			"@services/*": ["services/*"],
 			"@loaders/*": ["loaders/*"],
 			"@stores/*": ["stores/*"],
+			"@errors/*": ["errors/*"],
 			"@/*": ["*"]
 		}
 	},

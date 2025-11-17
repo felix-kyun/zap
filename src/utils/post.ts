@@ -1,8 +1,6 @@
 import Cookies from "js-cookie";
-
 import { UnauthError } from "@/errors/UnauthError";
-
-import { _fetch } from "./fetch";
+import { _fetch } from "@utils/fetch";
 
 export async function post(url: string, data: Record<string, unknown> = {}) {
 	const token = Cookies.get("csrf_token");

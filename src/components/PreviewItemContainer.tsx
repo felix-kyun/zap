@@ -8,8 +8,8 @@ import { MdDelete, MdEdit } from "react-icons/md";
 
 import type { VaultItem } from "@/types/vault";
 
-import { ContextMenu, type ContextMenuItem } from "./ContextMenu";
-import { NewItemModal } from "./NewItemModal";
+import { ContextMenu, type ContextMenuItem } from "@components/ContextMenu";
+import { NewItemModal } from "@components/NewItemModal";
 
 type PreviewItemContainerProps = ComponentProps<typeof motion.div> & {
 	index: number;

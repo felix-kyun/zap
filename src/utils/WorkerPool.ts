@@ -1,9 +1,5 @@
-import type {
-	VaultMethods,
-	WorkerResponse,
-	WorkerTask,
-} from "../types/worker.js";
-import { generateUUID } from "./uuid.js";
+import type { VaultMethods, WorkerResponse, WorkerTask } from "@/types/worker";
+import { generateUUID } from "@utils/uuid";
 
 type Resolver<T extends keyof VaultMethods> = (
 	value: WorkerResponse<T>,

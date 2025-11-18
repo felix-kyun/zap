@@ -12,6 +12,7 @@ import { IoLogOut } from "react-icons/io5";
 import { useShallow } from "zustand/shallow";
 
 import { vaultTypeSchema } from "@/schemas/vault";
+import { Settings } from "@components/Settings";
 
 type SideBarProps = {
 	className?: string;
@@ -23,6 +24,7 @@ export function SideBar({ className }: SideBarProps) {
 	const clearUser = useStore((state) => state.clearUser);
 	const searchBarRef = useRef<HTMLInputElement>(null);
 	const [creationModalState, setCreationModalState] = useState(false);
+	const [settingsModalState, setSettingsModalState] = useState(false);
 	const navigate = useNavigate();
 	const { type: currentRouteType } = useParams({
 		from: "/_authenticated/dashboard/$type/",
@@ -59,6 +61,10 @@ export function SideBar({ className }: SideBarProps) {
 				open={creationModalState}
 				close={() => setCreationModalState(false)}
 				mode="create"
+			/>
+			<Settings
+				open={settingsModalState}
+				close={() => setSettingsModalState(false)}
 			/>
 			<div
 				className={`hidden sm:flex flex-col justify-between h-screen p-4 border-r-1 border-r-border ${className}`}
@@ -117,8 +123,9 @@ export function SideBar({ className }: SideBarProps) {
 						<MenuOption onClick={() => setCreationModalState(true)}>
 							<IoIosCreate /> Create New
 						</MenuOption>
-						<MenuOption>
-							<IoMdSettings /> Settings
+						<MenuOption onClick={() => setSettingsModalState(true)}>
+							<IoMdSettings />
+							Settings
 						</MenuOption>
 						<MenuOption onClick={handleLogout}>
 							<IoLogOut /> Log Out

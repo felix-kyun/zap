@@ -1,3 +1,5 @@
+import { ContextMenu, type ContextMenuItem } from "@components/ContextMenu";
+import { NewItemModal } from "@components/NewItemModal";
 import { useContextMenu } from "@hooks/useContextMenu";
 import { useStore } from "@stores/store";
 import clsx from "clsx";
@@ -7,9 +9,6 @@ import toast from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
 
 import type { VaultItem } from "@/types/vault";
-
-import { ContextMenu, type ContextMenuItem } from "@components/ContextMenu";
-import { NewItemModal } from "@components/NewItemModal";
 
 type PreviewItemContainerProps = ComponentProps<typeof motion.div> & {
 	index: number;

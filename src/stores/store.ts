@@ -1,12 +1,11 @@
+import { createAppSlice } from "@stores/appSlice";
 import { createUserSlice } from "@stores/userSlice";
+import { createVaultSlice } from "@stores/vaultSlice";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 import type { Store } from "@/types/store";
-
-import { createAppSlice } from "@stores/appSlice";
-import { createVaultSlice } from "@stores/vaultSlice";
 
 export const useStore = create<Store>()(
 	devtools(

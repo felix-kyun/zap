@@ -1,5 +1,6 @@
-import type { VaultMethods, WorkerResponse, WorkerTask } from "@/types/worker";
 import { generateUUID } from "@utils/uuid";
+
+import type { VaultMethods, WorkerResponse, WorkerTask } from "@/types/worker";
 
 type Resolver<T extends keyof VaultMethods> = (
 	value: WorkerResponse<T>,

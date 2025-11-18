@@ -1,6 +1,7 @@
 import { LabeledInput } from "@components/LabeledInput";
 import { MenuOption } from "@components/MenuOption";
 import { NewItemModal } from "@components/NewItemModal";
+import { Settings } from "@components/Settings";
 import { logout } from "@services/auth.service";
 import { useStore } from "@stores/store";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
@@ -12,7 +13,6 @@ import { IoLogOut } from "react-icons/io5";
 import { useShallow } from "zustand/shallow";
 
 import { vaultTypeSchema } from "@/schemas/vault";
-import { Settings } from "@components/Settings";
 
 type SideBarProps = {
 	className?: string;

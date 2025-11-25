@@ -15,28 +15,42 @@ interface SignupData {
 	email: string;
 }
 
-export async function signup({ username, password, email }: SignupData) {
+interface TempRegistrationResponse {
+	response: string;
+	state: string;
+}
+
+export async function startSignup({
+	password,
+	email,
+}: Omit<SignupData, "username">): Promise<TempRegistrationResponse> {
 	const { state, request } = Opaque.startRegistration(password);
 	const initialResponse = await post("/api/register/start", {
 		request,
 		email,
 	});
 
-	if (!initialResponse.ok) {
-		throw new Error("Registration initiation failed");
-	}
+	if (!initialResponse.ok) throw new Error("Registration initiation failed");
 
 	const { response } = await initialResponse.json();
 
 	if (!response || typeof response !== "string")
 		throw new Error("Invalid response from server");
 
+	return { state, response };
+}
+
+export async function finishSignup(
+	{ username, password, email, otp }: SignupData & { otp: string },
+	{ response, state }: TempRegistrationResponse,
+) {
 	const record = Opaque.finishRegistration(password, response, state);
 
 	const finalResponse = await post("/api/register/finish", {
 		record,
 		email,
 		username,
+		otp,
 	});
 
 	if (!finalResponse.ok) throw new Error("Registration completion failed");

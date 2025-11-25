@@ -16,7 +16,6 @@ export function AccentButton({
 }: AccentButtonProps) {
 	return (
 		<motion.button
-			whileHover={{ scale: 1.03 }}
 			whileTap={{ scale: 0.97 }}
 			type="submit"
 			className={clsx([

@@ -2,13 +2,19 @@ import { AccentButton } from "@components/AccentButton";
 import { CenteredContainer } from "@components/CenteredContainer";
 import { LabeledInput } from "@components/LabeledInput";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { checkAuthState, signup } from "@services/auth.service";
+import {
+	checkAuthState,
+	startSignup,
+	finishSignup,
+} from "@services/auth.service";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
 
 import logo from "@/assets/zap.png";
+import { useRef, useState } from "react";
+import { OtpComponent } from "@components/OtpComponent";
 
 const signupSchema = z.object({
 	username: z.string().min(1, "Username is required"),
@@ -34,85 +40,165 @@ export const Route = createFileRoute("/signup")({
 
 function RouteComponent() {
 	const navigate = Route.useNavigate();
+	const [showOtp, setShowOtp] = useState(false);
+	const registrationDataRef = useRef<{
+		response: string;
+		state: string;
+	} | null>(null);
+
 	const {
 		register,
 		handleSubmit,
 		setValue,
+		getValues,
 		formState: { errors, isSubmitting },
 	} = useForm<SignupFormData>({
 		resolver: zodResolver(signupSchema),
 		delayError: 500,
 	});
 
-	const submitHandler = ({ username, email, password }: SignupFormData) => {
-		toast.promise(signup({ username, email, password }), {
-			loading: "Signing up...",
-			success: () => {
-				navigate({
-					to: "/login",
-					replace: true,
-				});
-				return "Signup successful! Please log in.";
-			},
-			error: (err) => {
-				setValue("username", "");
-				setValue("email", "");
-				setValue("password", "");
-				return `Signup failed: ${err.message}`;
-			},
+	// const submitHandler = ({ username, email, password }: SignupFormData) => {
+	// 	toast.promise(signup({ username, email, password }), {
+	// 		loading: "Signing up...",
+	// 		success: () => {
+	// 			navigate({
+	// 				to: "/login",
+	// 				replace: true,
+	// 			});
+	// 			return "Signup successful! Please log in.";
+	// 		},
+	// 		error: (err) => {
+	// 			setValue("username", "");
+	// 			setValue("email", "");
+	// 			setValue("password", "");
+	// 			return `Signup failed: ${err.message}`;
+	// 		},
+	// 	});
+	// };
+
+	const submitHandler = async ({ email, password }: SignupFormData) => {
+		toast.loading("Initiating signup...", {
+			id: "signup",
+			duration: Infinity,
 		});
+
+		try {
+			const data = await startSignup({ email, password });
+			registrationDataRef.current = data;
+			setShowOtp(true);
+			toast.success("OTP sent to your email.", {
+				id: "signup",
+				duration: 5000,
+			});
+		} catch (err: unknown) {
+			setShowOtp(false);
+			setValue("password", "");
+			setValue("email", "");
+			setValue("username", "");
+			toast.error(
+				"Signup initiation failed: " +
+					(err instanceof Error ? err.message : "Unknown error"),
+				{ id: "signup", duration: 5000 },
+			);
+			return;
+		}
+	};
+
+	const finalizeSignup = async (otp: string) => {
+		if (!registrationDataRef.current) {
+			toast.error(
+				"Registration data missing. Please try signing up again.",
+			);
+			setShowOtp(false);
+			return;
+		}
+
+		toast.promise(
+			finishSignup(
+				{
+					email: getValues("email"),
+					password: getValues("password"),
+					username: getValues("username"),
+					otp,
+				},
+				registrationDataRef.current,
+			),
+			{
+				loading: "Signing up...",
+				success: () => {
+					navigate({
+						to: "/login",
+						replace: true,
+					});
+					return "Signup successful! Please log in.";
+				},
+				error: (err) => {
+					setShowOtp(false);
+					setValue("password", "");
+					setValue("email", "");
+					setValue("username", "");
+					return `Signup failed: ${
+						err instanceof Error ? err.message : "Unknown error"
+					}`;
+				},
+			},
+		);
 	};
 
 	return (
-		<form
-			onSubmit={handleSubmit(submitHandler)}
-			action="javascript:void(0)"
-		>
-			<CenteredContainer>
-				<div className="flex flex-col justify-center items-center gap-2">
-					<img src={logo} alt="Zap Logo" className="h-24" />
-					<span className="font-bold text-3xl">
-						Welcome to <span className="text-accent">Zap</span>!
-					</span>
-				</div>
-				<div className="flex flex-col gap-4">
-					<LabeledInput
-						id="username"
-						label="Username"
-						type="text"
-						error={errors.email?.message}
-						{...register("username")}
-					/>
-					<LabeledInput
-						id="email"
-						label="Email address"
-						type="email"
-						error={errors.email?.message}
-						{...register("email")}
-					/>
-					<LabeledInput
-						id="password"
-						label="Password"
-						type="password"
-						error={errors.password?.message}
-						{...register("password")}
-					/>
-					<AccentButton className="mt-4" disabled={isSubmitting}>
-						{isSubmitting ? "Signing up..." : "Sign Up"}
-					</AccentButton>
-				</div>
-				<div className="flex justify-center items-center">
-					<span className="text-sm font-medium">
-						Already have an account?{" "}
-						<Link
-							to="/login"
-							className="text-accent font-bold hover:underline"
-						>
-							Login
-						</Link>
-					</span>
-				</div>
-			</CenteredContainer>
-		</form>
+		<CenteredContainer>
+			{!showOtp && (
+				<form
+					onSubmit={handleSubmit(submitHandler)}
+					action="javascript:void(0)"
+					className="flex flex-col gap-8"
+				>
+					<div className="flex flex-col justify-center items-center gap-2">
+						<img src={logo} alt="Zap Logo" className="h-24" />
+						<span className="font-bold text-3xl">
+							Welcome to <span className="text-accent">Zap</span>!
+						</span>
+					</div>
+					<div className="flex flex-col gap-4">
+						<LabeledInput
+							id="username"
+							label="Username"
+							type="text"
+							error={errors.email?.message}
+							{...register("username")}
+						/>
+						<LabeledInput
+							id="email"
+							label="Email address"
+							type="email"
+							error={errors.email?.message}
+							{...register("email")}
+						/>
+						<LabeledInput
+							id="password"
+							label="Password"
+							type="password"
+							error={errors.password?.message}
+							{...register("password")}
+						/>
+						<AccentButton className="mt-4" disabled={isSubmitting}>
+							{isSubmitting ? "Signing up..." : "Sign Up"}
+						</AccentButton>
+					</div>
+					<div className="flex justify-center items-center">
+						<span className="text-sm font-medium">
+							Already have an account?{" "}
+							<Link
+								to="/login"
+								className="text-accent font-bold hover:underline"
+							>
+								Login
+							</Link>
+						</span>
+					</div>
+				</form>
+			)}
+			{showOtp && <OtpComponent onSubmit={finalizeSignup} />}
+		</CenteredContainer>
 	);
 }

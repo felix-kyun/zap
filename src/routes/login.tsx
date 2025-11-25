@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import z from "zod";
 
 import logo from "@/assets/zap.png";
+import { useEffect } from "react";
 
 const loginSchema = z.object({
 	email: z.email("Invalid email address"),
@@ -39,11 +40,16 @@ function RouteComponent() {
 		register,
 		handleSubmit,
 		setValue,
+		setFocus,
 		formState: { isSubmitting, errors },
 	} = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema),
 		delayError: 500,
 	});
+
+	useEffect(() => {
+		setFocus("email");
+	}, []);
 
 	// TODO: make login async using worker
 	// add loading state

@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import z from "zod";
 
 import logo from "@/assets/zap.png";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OtpComponent } from "@components/OtpComponent";
 
 const signupSchema = z.object({
@@ -51,30 +51,18 @@ function RouteComponent() {
 		handleSubmit,
 		setValue,
 		getValues,
+		setFocus,
 		formState: { errors, isSubmitting },
 	} = useForm<SignupFormData>({
 		resolver: zodResolver(signupSchema),
 		delayError: 500,
 	});
 
-	// const submitHandler = ({ username, email, password }: SignupFormData) => {
-	// 	toast.promise(signup({ username, email, password }), {
-	// 		loading: "Signing up...",
-	// 		success: () => {
-	// 			navigate({
-	// 				to: "/login",
-	// 				replace: true,
-	// 			});
-	// 			return "Signup successful! Please log in.";
-	// 		},
-	// 		error: (err) => {
-	// 			setValue("username", "");
-	// 			setValue("email", "");
-	// 			setValue("password", "");
-	// 			return `Signup failed: ${err.message}`;
-	// 		},
-	// 	});
-	// };
+	useEffect(() => {
+		if (!showOtp) {
+			setFocus("username");
+		}
+	}, [showOtp]);
 
 	const submitHandler = async ({ email, password }: SignupFormData) => {
 		toast.loading("Initiating signup...", {

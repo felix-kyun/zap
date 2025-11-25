@@ -92,6 +92,7 @@ export function OtpComponent({ onSubmit }: OtpComponentProps) {
 						key={index}
 						type="text"
 						maxLength={1}
+						autoFocus={index === 0}
 						value={value}
 						inputMode="numeric"
 						disabled={isSubmitting}
@@ -113,7 +114,10 @@ export function OtpComponent({ onSubmit }: OtpComponentProps) {
 					/>
 				))}
 			</div>
-			<AccentButton disabled={isSubmitting} onClick={submit}>
+			<AccentButton
+				disabled={isSubmitting}
+				onClick={() => submit(otp.join(""))}
+			>
 				{isSubmitting ? "Verifying..." : "Submit"}
 			</AccentButton>
 		</div>

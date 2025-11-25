@@ -11,9 +11,9 @@ export function OtpComponent({ onSubmit }: OtpComponentProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-	const submit = async () => {
+	const submit = async (otp: string) => {
 		setIsSubmitting(true);
-		await onSubmit(otp.join(""));
+		await onSubmit(otp);
 		setIsSubmitting(false);
 	};
 
@@ -34,7 +34,8 @@ export function OtpComponent({ onSubmit }: OtpComponentProps) {
 		}
 
 		// auto submit
-		if (newOtp.every((digit) => digit !== "")) await submit();
+		if (newOtp.every((digit) => digit !== ""))
+			await submit(newOtp.join(""));
 	};
 
 	const handleKeyDown = (
@@ -74,7 +75,8 @@ export function OtpComponent({ onSubmit }: OtpComponentProps) {
 		setOtp(newOtp);
 
 		requestAnimationFrame(async () => {
-			if (newOtp.every((digit) => digit !== "")) await submit();
+			if (newOtp.every((digit) => digit !== ""))
+				await submit(newOtp.join(""));
 			else if (inputRefs.current[Math.min(i, 5)]) {
 				inputRefs.current[Math.min(i, 5)]?.focus();
 			}

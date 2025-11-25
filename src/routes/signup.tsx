@@ -164,7 +164,7 @@ function RouteComponent() {
 							id="username"
 							label="Username"
 							type="text"
-							error={errors.email?.message}
+							error={errors.username?.message}
 							{...register("username")}
 						/>
 						<LabeledInput

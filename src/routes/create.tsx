@@ -1,3 +1,4 @@
+import { AccentButton } from "@components/AccentButton";
 import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import { Modal } from "@components/Modal";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/create")({
 function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const newVault = Route.useLoaderData();
-	const setInitialVautl = useStore((state) => state.setInitialVault);
+	const setInitialVault = useStore((state) => state.setInitialVault);
 	const saveVault = useStore((state) => state.saveVault);
 	const {
 		register,
@@ -59,7 +60,7 @@ function RouteComponent() {
 	const submitHandler = ({ password }: VaultPasswordFormData) => {
 		toast.promise(
 			async () => {
-				await setInitialVautl(newVault, password);
+				await setInitialVault(newVault, password);
 				await saveVault();
 			},
 			{
@@ -77,14 +78,14 @@ function RouteComponent() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(submitHandler)}>
-			<Modal
-				open={true}
-				close={() => {}}
-				disableClose={true}
-				title=""
-				containerClassName="!max-w-md"
-			>
+		<Modal
+			open={true}
+			close={() => {}}
+			disableClose={true}
+			title=""
+			containerClassName="!max-w-md"
+		>
+			<form onSubmit={handleSubmit(submitHandler)}>
 				<div className="flex flex-col items-center">
 					<LabeledPasswordInput
 						id="password"
@@ -92,14 +93,11 @@ function RouteComponent() {
 						error={errors.password?.message}
 						{...register("password")}
 					/>
-					<button
-						className="bg-accent text-text p-2 rounded-xl w-full font-medium mt-2"
-						disabled={isSubmitting}
-					>
+					<AccentButton disabled={isSubmitting} type="submit">
 						{isSubmitting ? "Creating..." : "Create"}
-					</button>
+					</AccentButton>
 				</div>
-			</Modal>
-		</form>
+			</form>
+		</Modal>
 	);
 }

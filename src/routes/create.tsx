@@ -7,7 +7,7 @@ import { fetchVault } from "@services/server.service";
 import { createInitialVault } from "@services/vault.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { createRef, useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
@@ -61,7 +61,7 @@ function RouteComponent() {
 
 	useEffect(() => {
 		setFocus("password");
-	}, []);
+	}, [setFocus]);
 
 	const submitHandler = ({ password }: VaultPasswordFormData) => {
 		toast.promise(

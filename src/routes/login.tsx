@@ -5,12 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { checkAuthState, login } from "@services/auth.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
 
 import logo from "@/assets/zap.png";
-import { useEffect } from "react";
 
 const loginSchema = z.object({
 	email: z.email("Invalid email address"),
@@ -49,7 +49,7 @@ function RouteComponent() {
 
 	useEffect(() => {
 		setFocus("email");
-	}, []);
+	}, [setFocus]);
 
 	// TODO: make login async using worker
 	// add loading state

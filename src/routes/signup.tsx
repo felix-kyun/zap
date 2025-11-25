@@ -1,20 +1,20 @@
 import { AccentButton } from "@components/AccentButton";
 import { CenteredContainer } from "@components/CenteredContainer";
 import { LabeledInput } from "@components/LabeledInput";
+import { OtpComponent } from "@components/OtpComponent";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	checkAuthState,
-	startSignup,
 	finishSignup,
+	startSignup,
 } from "@services/auth.service";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
 
 import logo from "@/assets/zap.png";
-import { useEffect, useRef, useState } from "react";
-import { OtpComponent } from "@components/OtpComponent";
 
 const signupSchema = z.object({
 	username: z.string().min(1, "Username is required"),
@@ -62,7 +62,7 @@ function RouteComponent() {
 		if (!showOtp) {
 			setFocus("username");
 		}
-	}, [showOtp]);
+	}, [showOtp, setFocus]);
 
 	const submitHandler = async ({ email, password }: SignupFormData) => {
 		toast.loading("Initiating signup...", {

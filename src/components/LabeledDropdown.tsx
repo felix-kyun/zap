@@ -12,11 +12,11 @@ import {
 import { LuChevronsUpDown } from "react-icons/lu";
 import { TiTick } from "react-icons/ti";
 
-type LabeledDropdownProps = {
+type LabeledDropdownProps<T extends string> = {
 	label: string;
-	value: string;
-	options: string[];
-	onChange: (value: string) => void;
+	value: T;
+	options: T[];
+	onChange: (value: T) => void;
 	onBlur?: (e: FocusEvent<unknown>) => void;
 };
 
@@ -28,13 +28,13 @@ function focusWithin(
 	return container.contains(relatedTarget as Node);
 }
 
-export function LabeledDropdown({
+export function LabeledDropdown<T extends string>({
 	label,
 	value,
 	options,
 	onChange,
 	onBlur,
-}: LabeledDropdownProps) {
+}: LabeledDropdownProps<T>) {
 	const [open, setOpen] = useState<boolean>(false);
 	const optionContainerRef = useRef<HTMLDivElement>(null);
 	const buttonRef = useRef<HTMLButtonElement>(null);
@@ -69,7 +69,7 @@ export function LabeledDropdown({
 	);
 
 	const handleKeyDown = useCallback(
-		(e: KeyboardEvent<HTMLDivElement>, option: string, index: number) => {
+		(e: KeyboardEvent<HTMLDivElement>, option: T, index: number) => {
 			if (
 				[
 					"Enter",
@@ -117,9 +117,11 @@ export function LabeledDropdown({
 
 	return (
 		<div className={`flex flex-col flex-2 px-2 gap-2`}>
-			<label htmlFor="type" className={`text-sm font-bold`}>
-				{label}
-			</label>
+			{label !== "" && (
+				<label htmlFor="type" className={`text-sm font-bold`}>
+					{label}
+				</label>
+			)}
 			<div
 				className="relative w-full"
 				onBlur={handleBlur}

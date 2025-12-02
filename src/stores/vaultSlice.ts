@@ -24,6 +24,7 @@ type VaultActions = {
 	addItem: (item: VaultItem) => Promise<void>;
 	editItem: (item: VaultItem) => Promise<void>;
 	deleteItem: (itemId: string) => Promise<void>;
+	updateSettings: (settings: Partial<Vault["settings"]>) => Promise<void>;
 	clearVault: () => void;
 };
 
@@ -207,6 +208,21 @@ export const createVaultSlice: StateCreator<
 			},
 			false,
 			"vault/deleteItem",
+		);
+		await get().saveVault();
+	},
+	async updateSettings(settings) {
+		set(
+			(draft) => {
+				if (!draft.vault)
+					throw new Error("No vault to update settings for");
+				draft.vault.settings = {
+					...draft.vault.settings,
+					...settings,
+				};
+			},
+			false,
+			"vault/updateSettings",
 		);
 		await get().saveVault();
 	},

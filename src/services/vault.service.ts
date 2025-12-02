@@ -20,7 +20,7 @@ export function createInitialVault(): UnlockedVault {
 			updatedAt: new Date().toISOString(),
 		},
 		settings: {
-			autoLockTimeout: 300000, // 5 minutes
+			autoLockTimeout: 5 * 60 * 1000, // 5 minutes
 		},
 	};
 }

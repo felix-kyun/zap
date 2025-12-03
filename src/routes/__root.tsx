@@ -1,10 +1,13 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { AnimatePresence } from "motion/react";
 
 function RootLayout() {
 	return (
 		<>
-			<Outlet />
+			<AnimatePresence mode="wait">
+				<Outlet />
+			</AnimatePresence>
 			<TanStackRouterDevtools position="top-right" />
 		</>
 	);

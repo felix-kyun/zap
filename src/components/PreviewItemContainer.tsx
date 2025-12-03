@@ -82,7 +82,7 @@ export function PreviewItemContainer({
 				className={clsx([
 					"flex justify-start items-center",
 					"border-1 rounded-xl border-border",
-					"transition-colors duration-300 ease-out hover:border-accent",
+					"transition-colors duration-300 ease-out hover:border-accent/30",
 					"p-4 bg-surface max-w-md",
 					"cursor-pointer gap-2",
 					className,

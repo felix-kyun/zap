@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
 
-import logo from "@/assets/zap.png";
+import { GoogleLoginButton } from "@components/GoogleLoginButton";
 
 const loginSchema = z.object({
 	email: z.email("Invalid email address"),
@@ -74,50 +74,46 @@ function RouteComponent() {
 	};
 
 	return (
-		<form
-			onSubmit={handleSubmit(submitHandler)}
-			action="javascript:void(0)"
-		>
-			<CenteredContainer>
-				<div className="flex flex-col justify-center items-center gap-2">
-					<img src={logo} alt="Zap Logo" className="h-24" />
-					<span className="font-bold text-3xl">
-						Welcome Back to <span className="text-accent">Zap</span>
-						!
-					</span>
-				</div>
-				<div className="flex flex-col gap-4">
-					<LabeledInput
-						id="email"
-						label="Email address"
-						type="email"
-						error={errors.email?.message}
-						{...register("email")}
-					/>
-					<LabeledInput
-						id="password"
-						label="Password"
-						type="password"
-						error={errors.password?.message}
-						{...register("password")}
-					/>
-					<AccentButton className="mt-4" disabled={isSubmitting}>
+		<CenteredContainer>
+			<form
+				onSubmit={handleSubmit(submitHandler)}
+				action="javascript:void(0)"
+				className="flex flex-col gap-4"
+			>
+				<span className="flex justify-center font-semibold text-2xl">
+					Welcome Back
+				</span>
+				<LabeledInput
+					id="email"
+					label="Email address"
+					type="email"
+					error={errors.email?.message}
+					{...register("email")}
+				/>
+				<LabeledInput
+					id="password"
+					label="Password"
+					type="password"
+					error={errors.password?.message}
+					{...register("password")}
+				/>
+				<div className="flex flex-col gap-4 mt-4">
+					<AccentButton disabled={isSubmitting}>
 						{isSubmitting ? "Logging in..." : "Login"}
 					</AccentButton>
+					<GoogleLoginButton
+						onSuccess={() => navigate({ to: "/", replace: true })}
+					/>
 				</div>
-
 				<div className="flex justify-center items-center">
-					<span className="text-sm font-medium">
-						Don't have an account?{" "}
-						<Link
-							to="/signup"
-							className="text-accent font-bold hover:underline"
-						>
-							Register
+					<span className="text-sm">
+						First time here?{" "}
+						<Link to="/signup" className="text-accent font-bold">
+							Register Now
 						</Link>
 					</span>
 				</div>
-			</CenteredContainer>
-		</form>
+			</form>
+		</CenteredContainer>
 	);
 }

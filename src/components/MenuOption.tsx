@@ -12,12 +12,9 @@ export function MenuOption({ children, onClick, active }: MenuOptionProps) {
 		<div
 			onClick={onClick}
 			className={clsx([
-				"flex items-center gap-2 rounded-xl px-3 py-3 cursor-pointer outline-none",
-				"border-2",
-				active ? "hover:bg-accent/30" : "hover:bg-neutral-800",
-				active
-					? "bg-accent/20 border-accent"
-					: "bg-transparent border-bg",
+				"flex items-center gap-2 rounded-xl px-3 py-3 cursor-pointer outline-none m-1",
+				"hover:bg-neutral-900 focus:bg-neutral-900 outline-none",
+				active && "bg-neutral-800",
 				"transition-colors duration-300 ease-out",
 			])}
 		>

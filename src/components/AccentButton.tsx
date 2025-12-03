@@ -19,7 +19,7 @@ export function AccentButton({
 			whileTap={{ scale: 0.97 }}
 			type="submit"
 			className={clsx([
-				"bg-accent text-text p-2 rounded-xl w-full font-medium",
+				"bg-accent text-bg p-2 rounded-xl w-full font-medium",
 				className,
 			])}
 			{...rest}

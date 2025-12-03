@@ -3,13 +3,16 @@ name: Build and Deploy to VPS
 
 on:
     push:
-        branches:
-            - master
+        branches: [ master ]
+    pull_request:
+        branches: [ master ]
     workflow_dispatch:
 
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v3

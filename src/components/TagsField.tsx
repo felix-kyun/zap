@@ -41,7 +41,7 @@ function NewTagModal({ open, close }: NewTagModalProps) {
 
 	return (
 		<Modal open={open} close={close} title="New Tag">
-			<TagArray disableCreate className="mb-4" />
+			<TagArray disableCreate />
 			<div className="w-full flex gap-4 items-center">
 				<LabeledInput
 					id="new-tag"

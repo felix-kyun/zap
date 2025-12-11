@@ -62,7 +62,7 @@ export function NewItemModal({
 				id: generateUUID(),
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
-				url: "",
+				url: "https://",
 				username: "",
 				password: "",
 				name: "",

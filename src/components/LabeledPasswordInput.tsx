@@ -44,12 +44,29 @@ export const LabeledPasswordInput = forwardRef<
 			<div
 				className={`flex flex-col w-full gap-2 mb-4 ${containerClassName}`}
 			>
-				<label
-					htmlFor={id}
-					className={`font-bold text-sm ${labelClassName}`}
-				>
-					{label}
-				</label>
+				{(label || error) && (
+					<div className="flex justify-between items-center w-full">
+						<label
+							htmlFor={id}
+							className={`font-bold text-sm ${labelClassName}`}
+						>
+							{label}
+						</label>
+						<AnimatePresence>
+							{error && (
+								<motion.span
+									className="text-error text-sm"
+									initial={{ opacity: 0, height: 0 }}
+									animate={{ opacity: 1, height: "auto" }}
+									exit={{ opacity: 0, height: 0 }}
+									transition={{ duration: 0.25, delay: 0.15 }}
+								>
+									{error}
+								</motion.span>
+							)}
+						</AnimatePresence>
+					</div>
+				)}
 				<div className="relative w-full">
 					<input
 						key={showPassword ? "text" : "password"}
@@ -106,19 +123,6 @@ export const LabeledPasswordInput = forwardRef<
 						</AnimatePresence>
 					</motion.button>
 				</div>
-				<AnimatePresence>
-					{error && (
-						<motion.span
-							className="text-error text-sm"
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							exit={{ opacity: 0, height: 0 }}
-							transition={{ duration: 0.25, delay: 0.15 }}
-						>
-							{error}
-						</motion.span>
-					)}
-				</AnimatePresence>
 			</div>
 		);
 	},

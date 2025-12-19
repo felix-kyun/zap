@@ -1,10 +1,13 @@
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Cookies from "js-cookie";
 
 import { UnauthError } from "@/errors/UnauthError";
 import { VaultLockedError } from "@/errors/VaultLocked";
 import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
+import { UserNotFoundError } from "@errors/UserNotFound";
+import { logout } from "@services/auth.service";
 
 type ErrorComponentProps = {
 	title?: string;
@@ -54,6 +57,13 @@ export function ErrorHandler({ error }: { error: unknown }) {
 					redirect: location.pathname + location.search,
 				},
 			});
+		} else if (error instanceof UserNotFoundError) {
+			Cookies.remove("authenticated");
+			logout().then(() =>
+				navigate({
+					to: "/login",
+				}),
+			);
 		} else {
 			setHandled(false);
 		}

@@ -76,7 +76,7 @@ async function decryptItem(
 
 export function lockVault(
 	key: string,
-	{ salt, items, meta, settings }: Vault,
+	{ salt, items, meta, settings, createdAt, updatedAt }: Vault,
 ): Vault {
 	// encrypt items
 	const encryptedItems = items.map((item) => {
@@ -106,6 +106,8 @@ export function lockVault(
 		settings,
 		items: encryptedItems,
 		unlock: createUnlockData(key),
+		createdAt,
+		updatedAt,
 	};
 }
 

@@ -60,8 +60,6 @@ export interface EncryptedVaultItem {
 
 export interface VaultMeta {
 	version: string;
-	createdAt: string;
-	updatedAt: string;
 }
 
 export interface VaultSettings {
@@ -79,6 +77,8 @@ interface BaseVault {
 	salt: string;
 	meta: VaultMeta;
 	settings: VaultSettings;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface UnlockedVault extends BaseVault {

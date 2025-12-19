@@ -69,8 +69,6 @@ export const encryptedVaultItemSchema = z.object({
 
 const vaultMetaSchema = z.object({
 	version: z.string(),
-	createdAt: z.string(),
-	updatedAt: z.string(),
 });
 
 const vaultSettingsSchema = z.object({
@@ -88,6 +86,8 @@ const vaultBaseSchema = z.object({
 	salt: z.string(),
 	meta: vaultMetaSchema,
 	settings: vaultSettingsSchema,
+	createdAt: z.string(),
+	updatedAt: z.string(),
 });
 
 export const encryptedVaultSchema = vaultBaseSchema.extend({

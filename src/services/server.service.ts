@@ -12,11 +12,19 @@ export async function fetchVault(): Promise<Vault> {
 		throw new UserNotFoundError();
 	}
 
-	const data = await response.json();
-	if (data.vault === "") throw new VaultNotCreatedError();
+	let data: unknown;
+	try {
+		data = await response.json();
+	} catch {
+		throw new VaultNotCreatedError();
+	}
 
 	try {
-		const vault = vaultSchema.parse(JSON.parse(data.vault));
+		const vault = vaultSchema.parse({
+			...(data as Object),
+			// add discriminator
+			state: "locked",
+		});
 		return vault;
 	} catch {
 		throw new Error("Invalid vault data received from server");

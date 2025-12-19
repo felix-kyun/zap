@@ -15,13 +15,13 @@ export function createInitialVault(): UnlockedVault {
 		salt,
 		items: [],
 		meta: {
-			version: "1.0",
-			createdAt: new Date().toISOString(),
-			updatedAt: new Date().toISOString(),
+			version: "0.1",
 		},
 		settings: {
 			autoLockTimeout: 5 * 60 * 1000, // 5 minutes
 		},
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
 	};
 }
 

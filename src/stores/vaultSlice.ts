@@ -1,11 +1,11 @@
 import { fetchVault as fetchRemoteVault } from "@services/server.service";
-import { post } from "@utils/post";
 import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 import { AppError } from "@/errors/AppError";
 import type { Store } from "@/types/store";
 import type { Vault, VaultItem } from "@/types/vault";
+import { _fetch } from "@utils/fetch";
 
 type VaultState = {
 	key: string | null;
@@ -100,6 +100,8 @@ export const createVaultSlice: StateCreator<
 					salt: vault.salt,
 					meta: vault.meta,
 					settings: vault.settings,
+					createdAt: vault.createdAt,
+					updatedAt: vault.updatedAt,
 				},
 			}),
 			false,
@@ -138,9 +140,14 @@ export const createVaultSlice: StateCreator<
 			vaultToSave = await execute("lockVault", key, vault);
 		}
 
-		const response = await post("/api/vault/sync", {
-			vault: JSON.stringify(vaultToSave),
-		});
+		// const response = await post("/api/vault/sync", {
+		// 	...vaultToSave,
+		// });
+		const response = await _fetch(
+			"/api/vault/sync",
+			{},
+			{ ...vaultToSave },
+		);
 
 		if (!response.ok) throw new AppError("Failed to save vault");
 	},

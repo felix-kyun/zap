@@ -41,14 +41,11 @@ export const Route = createFileRoute("/create")({
 			return;
 		}
 	},
-	loader: () => createInitialVault(),
 });
 
 function RouteComponent() {
 	const navigate = Route.useNavigate();
-	const newVault = Route.useLoaderData();
-	const setInitialVault = useStore((state) => state.setInitialVault);
-	const saveVault = useStore((state) => state.saveVault);
+	const createInitialVault = useStore((state) => state.createInitialVault);
 	const {
 		register,
 		handleSubmit,
@@ -64,23 +61,17 @@ function RouteComponent() {
 	}, [setFocus]);
 
 	const submitHandler = ({ password }: VaultPasswordFormData) => {
-		toast.promise(
-			async () => {
-				await setInitialVault(newVault, password);
-				await saveVault();
+		toast.promise(() => createInitialVault(password), {
+			loading: "Creating vault...",
+			success: () => {
+				navigate({
+					to: "/dashboard",
+					from: "/create",
+				});
+				return "Vault created!";
 			},
-			{
-				loading: "Creating vault...",
-				success: () => {
-					navigate({
-						to: "/dashboard",
-						from: "/create",
-					});
-					return "Vault created!";
-				},
-				error: (err) => `Error: ${err.message}`,
-			},
-		);
+			error: (err) => `Error: ${err.message}`,
+		});
 	};
 
 	return (

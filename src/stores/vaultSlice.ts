@@ -6,6 +6,9 @@ import { AppError } from "@/errors/AppError";
 import type { Store } from "@/types/store";
 import type { Vault, VaultItem } from "@/types/vault";
 import { _fetch } from "@utils/fetch";
+import { serverFetch } from "@utils/serverFetch";
+import { findAndRemove } from "@utils/findAndRemove";
+import { createInitialVault as createInitialVaultService } from "@services/vault.service";
 
 type VaultState = {
 	key: string | null;
@@ -14,7 +17,7 @@ type VaultState = {
 
 type VaultActions = {
 	setVault: (vault: Vault) => void;
-	setInitialVault: (vault: Vault, masterPassword: string) => Promise<void>;
+	createInitialVault: (masterPassword: string) => Promise<void>;
 	setKeyFromPassword: (masterPassword: string) => Promise<void>;
 	unlockVault: (masterPassword: string) => Promise<void>;
 	lockVault: () => Promise<void>;
@@ -48,9 +51,28 @@ export const createVaultSlice: StateCreator<
 		set(() => ({ vault }), false, "vault/setVault");
 	},
 
-	async setInitialVault(vault, masterPassword) {
+	async createInitialVault(masterPassword) {
+		const vault = createInitialVaultService();
 		const key = await execute("deriveKey", masterPassword, vault.salt);
 		set(() => ({ vault, key }), false, "vault/setInitialVault");
+
+		try {
+			const lockedVault = await execute("lockVault", key, vault);
+			const response = await serverFetch(
+				"/api/vault",
+				"POST",
+				lockedVault,
+			);
+			if (!response.ok)
+				throw new Error("Failed to create vault on server");
+		} catch (error) {
+			set(
+				() => ({ vault: null, key: null }),
+				false,
+				"vault/createInitialVault/rollback",
+			);
+			throw error;
+		}
 	},
 
 	async setKeyFromPassword(masterPassword) {
@@ -140,14 +162,7 @@ export const createVaultSlice: StateCreator<
 			vaultToSave = await execute("lockVault", key, vault);
 		}
 
-		// const response = await post("/api/vault/sync", {
-		// 	...vaultToSave,
-		// });
-		const response = await _fetch(
-			"/api/vault/sync",
-			{},
-			{ ...vaultToSave },
-		);
+		const response = await serverFetch("/api/vault", "PUT", vaultToSave);
 
 		if (!response.ok) throw new AppError("Failed to save vault");
 	},
@@ -169,69 +184,176 @@ export const createVaultSlice: StateCreator<
 		return await execute("checkVaultKey", key, vault);
 	},
 	async addItem(item) {
+		const vault = get().vault;
+
+		// validations
+		if (!item || !item.id) throw new Error("Invalid item");
+		if (!vault) throw new Error("No vault to add item to");
+		if (vault.state !== "unlocked" || get().key === null)
+			throw new Error("Vault is not unlocked");
+
 		set(
 			(draft) => {
-				if (!draft.vault) throw new Error("No vault to add item to");
-				if (draft.vault.state !== "unlocked")
-					throw new Error("Vault is not unlocked");
-				draft.vault.items.push(item);
+				if (draft.vault && draft.vault.state === "unlocked")
+					draft.vault.items.push(item);
 			},
 			false,
 			"vault/addItem",
 		);
-		await get().saveVault();
+
+		try {
+			const encryptedItem = await execute(
+				"encryptItem",
+				item,
+				get().key!,
+			);
+
+			const response = await serverFetch(
+				"/api/vault/items",
+				"POST",
+				encryptedItem,
+			);
+
+			if (!response.ok) throw new Error("Failed to add item to server");
+		} catch (error) {
+			set(
+				(draft) => {
+					if (draft.vault && draft.vault.state === "unlocked")
+						findAndRemove(
+							draft.vault.items,
+							(i) => i.id === item.id,
+						);
+				},
+				false,
+				"vault/addItem/rollback",
+			);
+			throw error;
+		}
 	},
 	async editItem(item) {
+		const vault = get().vault;
+
+		// validations
+		if (!item || !item.id) throw new Error("Invalid item");
+		if (!vault) throw new Error("No vault to edit item in");
+		if (vault.state !== "unlocked" || get().key === null)
+			throw new Error("Vault is not unlocked");
+
+		const index = vault.items.findIndex((i) => i.id === item.id);
+		if (index === -1) throw new Error("Item not found in vault");
+
+		const oldItem = vault.items[index];
 		set(
 			(draft) => {
-				if (!draft.vault) throw new Error("No vault to edit item in");
-				if (draft.vault.state !== "unlocked")
-					throw new Error("Vault is not unlocked");
-
-				const index = draft.vault.items.findIndex(
-					(i) => i.id === item.id,
-				);
-				if (index === -1) throw new Error("Item not found in vault");
-				draft.vault.items[index] = item;
+				if (draft.vault && draft.vault.state === "unlocked")
+					draft.vault.items[index] = item;
 			},
 			false,
 			"vault/editItem",
 		);
-		await get().saveVault();
+
+		try {
+			const encryptedItem = await execute(
+				"encryptItem",
+				item,
+				get().key!,
+			);
+
+			const response = await serverFetch(
+				"/api/vault/items",
+				"PUT",
+				encryptedItem,
+			);
+
+			if (!response.ok) throw new Error("Failed to add item to server");
+		} catch (error) {
+			set(
+				(draft) => {
+					if (draft.vault && draft.vault.state === "unlocked")
+						draft.vault.items[index] = oldItem;
+				},
+				false,
+				"vault/editItem/rollback",
+			);
+			throw error;
+		}
 	},
 	async deleteItem(itemId) {
+		const vault = get().vault;
+
+		if (!itemId) throw new Error("Invalid item ID");
+		if (!vault) throw new Error("No vault to delete item from");
+		if (vault.state !== "unlocked")
+			throw new Error("Vault is not unlocked");
+
+		const index = vault.items.findIndex((i) => i.id === itemId);
+		if (index === -1) throw new Error("Item not found in vault");
+		const item = vault.items[index];
+
 		set(
 			(draft) => {
-				if (!draft.vault)
-					throw new Error("No vault to delete item from");
-				if (draft.vault.state !== "unlocked")
-					throw new Error("Vault is not unlocked");
-
-				const index = draft.vault.items.findIndex(
-					(i) => i.id === itemId,
-				);
-				if (index === -1) throw new Error("Item not found in vault");
-				draft.vault.items.splice(index, 1);
+				if (draft.vault && draft.vault.state === "unlocked")
+					draft.vault.items.splice(index, 1);
 			},
 			false,
 			"vault/deleteItem",
 		);
-		await get().saveVault();
+
+		try {
+			const response = await serverFetch(
+				`/api/vault/items/${itemId}`,
+				"DELETE",
+			);
+			if (!response.ok)
+				throw new Error("Failed to delete item from server");
+		} catch (error) {
+			set(
+				(draft) => {
+					if (draft.vault && draft.vault.state === "unlocked")
+						draft.vault.items[index] = item;
+				},
+				false,
+				"vault/deleteItem/rollback",
+			);
+			throw error;
+		}
 	},
 	async updateSettings(settings) {
+		const vault = get().vault;
+		if (!vault) throw new Error("No vault to update settings for");
+
+		const currentSettings = vault.settings;
 		set(
 			(draft) => {
-				if (!draft.vault)
-					throw new Error("No vault to update settings for");
-				draft.vault.settings = {
-					...draft.vault.settings,
-					...settings,
-				};
+				if (draft.vault)
+					draft.vault.settings = {
+						...draft.vault.settings,
+						...settings,
+					};
 			},
 			false,
 			"vault/updateSettings",
 		);
-		await get().saveVault();
+
+		try {
+			const response = await serverFetch("/api/vault", "PATCH", {
+				settings: {
+					...currentSettings,
+					...settings,
+				},
+			});
+			if (!response.ok)
+				throw new Error("Failed to update vault settings on server");
+		} catch (error) {
+			set(
+				(draft) => {
+					if (draft.vault) draft.vault.settings = currentSettings;
+				},
+				false,
+				"vault/updateSettings/rollback",
+			);
+			throw error;
+		}
 	},
 	clearVault() {
 		set(() => ({ vault: null, key: null }), false, "vault/clearVault");

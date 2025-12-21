@@ -9,7 +9,7 @@ import { iconMap } from "@utils/iconMap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaAsterisk } from "react-icons/fa";
 import { IoIosCreate, IoMdSettings } from "react-icons/io";
-import { IoLogOut } from "react-icons/io5";
+import { IoLogOut, IoLockClosed } from "react-icons/io5";
 import { useShallow } from "zustand/shallow";
 
 import { vaultTypeSchema } from "@/schemas/vault";
@@ -22,6 +22,7 @@ export function SideBar({ className }: SideBarProps) {
 	const user = useStore((state) => state.user);
 	const clearVault = useStore((state) => state.clearVault);
 	const clearUser = useStore((state) => state.clearUser);
+	const lockVault = useStore((state) => state.lockVault);
 	const searchBarRef = useRef<HTMLInputElement>(null);
 	const [creationModalState, setCreationModalState] = useState(false);
 	const [settingsModalState, setSettingsModalState] = useState(false);
@@ -126,6 +127,9 @@ export function SideBar({ className }: SideBarProps) {
 						<MenuOption onClick={() => setSettingsModalState(true)}>
 							<IoMdSettings />
 							Settings
+						</MenuOption>
+						<MenuOption onClick={lockVault}>
+							<IoLockClosed /> Lock Vault
 						</MenuOption>
 						<MenuOption onClick={handleLogout}>
 							<IoLogOut /> Log Out

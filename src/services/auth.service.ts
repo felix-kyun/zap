@@ -74,7 +74,12 @@ export async function login({
 		email,
 	});
 
-	if (!initialResponse.ok) throw new Error("Login initiation failed");
+	if (!initialResponse.ok) {
+		if (initialResponse.status === 404) {
+			throw new Error("User not found");
+		}
+		throw new Error("Login initiation failed");
+	}
 
 	const { response, session } = initialLoginSchema.parse(
 		await initialResponse.json(),

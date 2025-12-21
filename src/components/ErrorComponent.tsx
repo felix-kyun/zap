@@ -10,20 +10,17 @@ import { UserNotFoundError } from "@errors/UserNotFound";
 import { logout } from "@services/auth.service";
 
 type ErrorComponentProps = {
-	title?: string;
-	message?: string;
+	message: string;
 };
-function ErrorComponent({
-	title = "Sorry, an unexpected error has occurred.",
-	message,
-}: ErrorComponentProps) {
+
+// oops! followed by message
+function ErrorComponent({ message }: ErrorComponentProps) {
 	return (
-		<div>
-			<h1>Oops! </h1>
-			<p> {title} </p>
-			<p>
-				<code>{message}</code>
-			</p>
+		<div className="flex flex-col items-center justify-center gap-4 min-h-screen text-neutral-500">
+			<span className="text-7xl font-extrabold">Oops!</span>
+			<h1 className="text-2xl font-semibold">
+				{message || "An unexpected error occurred."}
+			</h1>
 		</div>
 	);
 }
@@ -69,8 +66,9 @@ export function ErrorHandler({ error }: { error: unknown }) {
 		}
 	}, [error, navigate, setHandled, location]);
 
-	if (!handled)
-		return (
-			<ErrorComponent title="An error occurred" message={String(error)} />
-		);
+	if (!handled) {
+		if (error instanceof Error)
+			return <ErrorComponent message={error.message} />;
+		else return <ErrorComponent message={String(error)} />;
+	}
 }

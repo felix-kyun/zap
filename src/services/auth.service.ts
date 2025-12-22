@@ -1,5 +1,4 @@
 import { Opaque } from "@services/opaque.service";
-import { post } from "@utils/post";
 import Cookies from "js-cookie";
 
 import {
@@ -8,6 +7,7 @@ import {
 	loginSchema,
 } from "@/schemas/login";
 import { type UserInfo, userInfoSchema } from "@/schemas/user";
+import { Api } from "./api.service";
 
 interface SignupData {
 	username: string;
@@ -32,7 +32,7 @@ class AuthService {
 		email,
 	}: Omit<SignupData, "username">): Promise<string> {
 		const request = Opaque.startRegistration(password);
-		const initialResponse = await post("/api/register/start", {
+		const initialResponse = await Api.post("/api/register/start", {
 			request,
 			email,
 		});
@@ -54,7 +54,7 @@ class AuthService {
 	) {
 		const record = Opaque.finishRegistration(response);
 
-		const finalResponse = await post("/api/register/finish", {
+		const finalResponse = await Api.post("/api/register/finish", {
 			record,
 			email,
 			username,
@@ -69,7 +69,7 @@ class AuthService {
 	async login({ email, password }: LoginData): Promise<LoginResponse> {
 		const request = Opaque.startLogin(password);
 
-		const initialResponse = await post("/api/login/start", {
+		const initialResponse = await Api.post("/api/login/start", {
 			request,
 			email,
 		});
@@ -87,7 +87,7 @@ class AuthService {
 
 		const finishRequest = Opaque.finishLogin(response);
 
-		const finalResponse = await post("/api/login/finish", {
+		const finalResponse = await Api.post("/api/login/finish", {
 			request: finishRequest,
 			session,
 		});
@@ -96,7 +96,7 @@ class AuthService {
 	}
 
 	async logout() {
-		const response = await post("/api/auth/logout");
+		const response = await Api.post("/api/auth/logout");
 
 		if (!response.ok) {
 			throw new Error("Logout failed");
@@ -107,7 +107,7 @@ class AuthService {
 		if (Cookies.get("authenticated") === "true") return true;
 
 		try {
-			const response = await post("/api/auth/status");
+			const response = await Api.post("/api/auth/status");
 			const data = await response.json();
 			return response.ok && data && data?.authenticated === true;
 		} catch {
@@ -117,7 +117,7 @@ class AuthService {
 	}
 
 	async fetchUser(): Promise<UserInfo> {
-		const response = await post("/api/auth/me");
+		const response = await Api.post("/api/auth/me");
 
 		if (!response.ok) {
 			throw new Error("Failed to fetch user");

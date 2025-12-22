@@ -1,14 +1,13 @@
-import { fetchVault as fetchRemoteVault } from "@services/server.service";
 import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 import { AppError } from "@/errors/AppError";
 import type { Store } from "@/types/store";
 import type { Vault, VaultItem } from "@/types/vault";
-import { _fetch } from "@utils/fetch";
-import { serverFetch } from "@utils/serverFetch";
 import { findAndRemove } from "@utils/findAndRemove";
 import { createInitialVault as createInitialVaultService } from "@services/vault.service";
+import { Api } from "@services/api.service";
+import { Server } from "@services/server.service";
 
 type VaultState = {
 	key: string | null;
@@ -58,11 +57,7 @@ export const createVaultSlice: StateCreator<
 
 		try {
 			const lockedVault = await execute("lockVault", key, vault);
-			const response = await serverFetch(
-				"/api/vault",
-				"POST",
-				lockedVault,
-			);
+			const response = await Api.fetch("/api/vault", "POST", lockedVault);
 			if (!response.ok)
 				throw new Error("Failed to create vault on server");
 		} catch (error) {
@@ -162,13 +157,13 @@ export const createVaultSlice: StateCreator<
 			vaultToSave = await execute("lockVault", key, vault);
 		}
 
-		const response = await serverFetch("/api/vault", "PUT", vaultToSave);
+		const response = await Api.fetch("/api/vault", "PUT", vaultToSave);
 
 		if (!response.ok) throw new AppError("Failed to save vault");
 	},
 
 	async fetchVault() {
-		get().setVault(await fetchRemoteVault());
+		get().setVault(await Server.fetchVault());
 	},
 
 	async checkVaultPassword(masterPassword) {
@@ -208,7 +203,7 @@ export const createVaultSlice: StateCreator<
 				get().key!,
 			);
 
-			const response = await serverFetch(
+			const response = await Api.fetch(
 				"/api/vault/items",
 				"POST",
 				encryptedItem,
@@ -259,7 +254,7 @@ export const createVaultSlice: StateCreator<
 				get().key!,
 			);
 
-			const response = await serverFetch(
+			const response = await Api.fetch(
 				`/api/vault/items/${item.id}`,
 				"PUT",
 				encryptedItem,
@@ -300,7 +295,7 @@ export const createVaultSlice: StateCreator<
 		);
 
 		try {
-			const response = await serverFetch(
+			const response = await Api.fetch(
 				`/api/vault/items/${itemId}`,
 				"DELETE",
 			);
@@ -336,7 +331,7 @@ export const createVaultSlice: StateCreator<
 		);
 
 		try {
-			const response = await serverFetch("/api/vault", "PATCH", {
+			const response = await Api.fetch("/api/vault", "PATCH", {
 				settings: {
 					...currentSettings,
 					...settings,

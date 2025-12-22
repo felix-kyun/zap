@@ -1,6 +1,6 @@
 import { useThrottle } from "@hooks/useThrottle";
 import { Auth } from "@services/auth.service";
-import { fetchVault } from "@services/server.service";
+import { Server } from "@services/server.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef } from "react";
@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { useShallow } from "zustand/shallow";
 
 type AuthenticatedLoaderData = Promise<{
-	vault: Awaited<ReturnType<typeof fetchVault>>;
+	vault: Awaited<ReturnType<typeof Server.fetchVault>>;
 	user: Awaited<ReturnType<typeof Auth.fetchUser>>;
 }>;
 
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated")({
 		const user = useStore.getState().user;
 
 		return {
-			vault: vault ? vault : await fetchVault(),
+			vault: vault ? vault : await Server.fetchVault(),
 			user: user ? user : await Auth.fetchUser(),
 		};
 	},

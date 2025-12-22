@@ -35,18 +35,3 @@ export function createItemBase(
 		name,
 	};
 }
-
-export function createLoginItem({
-	name,
-	url,
-	username,
-	password,
-}: VaultItem & { type: "login" }) {
-	return {
-		type: "login",
-		...createItemBase(name),
-		url,
-		username,
-		password,
-	};
-}

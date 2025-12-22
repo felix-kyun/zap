@@ -55,10 +55,7 @@ export function checkVaultKey(key: string, { unlock }: LockedVault): boolean {
 	return false;
 }
 
-async function decryptItem(
-	item: EncryptedVaultItem,
-	key: string,
-): Promise<VaultItem> {
+function decryptItem(item: EncryptedVaultItem, key: string): VaultItem {
 	const decryptedMessage = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
 		null,
 		sodium.from_base64(item.ciphertext),
@@ -75,10 +72,7 @@ async function decryptItem(
 	}
 }
 
-async function encryptItem(
-	item: VaultItem,
-	key: string,
-): Promise<EncryptedVaultItem> {
+function encryptItem(item: VaultItem, key: string): EncryptedVaultItem {
 	const nonce = sodium.randombytes_buf(
 		sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
 	);

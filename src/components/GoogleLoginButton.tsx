@@ -1,6 +1,6 @@
-import { post } from "@utils/post";
 import { useEffect } from "react";
 import { AccentButton } from "./AccentButton";
+import { Api } from "@services/api.service";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
 
@@ -21,7 +21,7 @@ const initializeGoogle = (onSuccess?: () => void) => {
 		client_id: GOOGLE_CLIENT_ID,
 		callback: async (response: { credential: string }) => {
 			const idToken = response.credential;
-			await post("/api/oauth/google", {
+			await Api.post("/api/oauth/google", {
 				idToken,
 			});
 			onSuccess?.();

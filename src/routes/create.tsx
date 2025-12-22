@@ -3,7 +3,7 @@ import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import { Modal } from "@components/Modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Auth } from "@services/auth.service";
-import { fetchVault } from "@services/server.service";
+import { Server } from "@services/server.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/create")({
 			});
 
 		try {
-			const fetchedVault = await fetchVault();
+			const fetchedVault = await Server.fetchVault();
 
 			if (fetchedVault) {
 				toast.error("Vault already exists, redirecting to dashboard.");

@@ -260,7 +260,7 @@ export const createVaultSlice: StateCreator<
 			);
 
 			const response = await serverFetch(
-				"/api/vault/items",
+				`/api/vault/items/${item.id}`,
 				"PUT",
 				encryptedItem,
 			);

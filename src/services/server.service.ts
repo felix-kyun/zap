@@ -1,7 +1,9 @@
+import { UserNotFoundError } from "@errors/UserNotFound";
+
 import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
 import { vaultSchema } from "@/schemas/vault";
 import type { Vault } from "@/types/vault";
-import { UserNotFoundError } from "@errors/UserNotFound";
+
 import { Api } from "./api.service";
 
 class ServerService {
@@ -21,7 +23,7 @@ class ServerService {
 
 		try {
 			const vault = vaultSchema.parse({
-				...(data as Object),
+				...(data as object),
 				// add discriminator
 				state: "locked",
 			});

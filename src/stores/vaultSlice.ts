@@ -1,13 +1,13 @@
+import { Api } from "@services/api.service";
+import { Server } from "@services/server.service";
+import { createInitialVault as createInitialVaultService } from "@services/vault.service";
+import { findAndRemove } from "@utils/findAndRemove";
 import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 import { AppError } from "@/errors/AppError";
 import type { Store } from "@/types/store";
 import type { Vault, VaultItem } from "@/types/vault";
-import { findAndRemove } from "@utils/findAndRemove";
-import { createInitialVault as createInitialVaultService } from "@services/vault.service";
-import { Api } from "@services/api.service";
-import { Server } from "@services/server.service";
 
 type VaultState = {
 	key: string | null;

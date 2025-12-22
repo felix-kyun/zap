@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import type { ComponentProps } from "react";
@@ -5,7 +6,6 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { FaPlus } from "react-icons/fa";
 
 import type { VaultItem } from "@/types/vault";
-import clsx from "clsx";
 
 type TagArrayProps =
 	| {

@@ -2,17 +2,17 @@ import { LabeledInput } from "@components/LabeledInput";
 import { MenuOption } from "@components/MenuOption";
 import { NewItemModal } from "@components/NewItemModal";
 import { Settings } from "@components/Settings";
+import { Auth } from "@services/auth.service";
 import { useStore } from "@stores/store";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { iconMap } from "@utils/iconMap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaAsterisk } from "react-icons/fa";
 import { IoIosCreate, IoMdSettings } from "react-icons/io";
-import { IoLogOut, IoLockClosed } from "react-icons/io5";
+import { IoLockClosed,IoLogOut } from "react-icons/io5";
 import { useShallow } from "zustand/shallow";
 
 import { vaultTypeSchema } from "@/schemas/vault";
-import { Auth } from "@services/auth.service";
 
 type SideBarProps = {
 	className?: string;

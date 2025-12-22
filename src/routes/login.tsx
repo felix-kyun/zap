@@ -1,5 +1,6 @@
 import { AccentButton } from "@components/AccentButton";
 import { CenteredContainer } from "@components/CenteredContainer";
+import { GoogleLoginButton } from "@components/GoogleLoginButton";
 import { LabeledInput } from "@components/LabeledInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Auth } from "@services/auth.service";
@@ -9,8 +10,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
-
-import { GoogleLoginButton } from "@components/GoogleLoginButton";
 
 const loginSchema = z.object({
 	email: z.email("Invalid email address"),

@@ -17,11 +17,6 @@ export function AutoLockTimeout() {
 		(state) => state.vault?.settings.autoLockTimeout,
 	);
 
-	// wont happen but safety
-	if (autoLockTimeout === undefined) {
-		return null;
-	}
-
 	const options = useMemo<ValidOption[]>(() => {
 		return Object.keys(map) as ValidOption[];
 	}, []);
@@ -32,6 +27,8 @@ export function AutoLockTimeout() {
 	};
 
 	const value = useMemo<ValidOption>(() => {
+		if (autoLockTimeout === undefined) return "5 Minutes";
+
 		const entry = Object.entries(map).find(
 			([, v]) => v === autoLockTimeout,
 		);

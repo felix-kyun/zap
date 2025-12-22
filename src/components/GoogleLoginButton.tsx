@@ -1,11 +1,13 @@
-import { useEffect } from "react";
-import { AccentButton } from "./AccentButton";
 import { Api } from "@services/api.service";
+import { useEffect } from "react";
+
+import { AccentButton } from "./AccentButton";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
 
 declare global {
 	interface Window {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		google: any;
 	}
 }
@@ -59,7 +61,7 @@ export function GoogleLoginButton({ onSuccess }: GoogleLoginButtonProps) {
 		return () => {
 			document.body.removeChild(script);
 		};
-	}, []);
+	}, [onSuccess]);
 
 	return (
 		<>

@@ -1,5 +1,6 @@
-import type { Nullable } from "@/types/utils";
 import * as opaque from "@serenity-kit/opaque";
+
+import type { Nullable } from "@/types/utils";
 
 class OpaqueService {
 	private constructor() {}

@@ -1,13 +1,13 @@
+import { UserNotFoundError } from "@errors/UserNotFound";
+import { Auth } from "@services/auth.service";
 import { useLocation, useNavigate } from "@tanstack/react-router";
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Cookies from "js-cookie";
 
 import { UnauthError } from "@/errors/UnauthError";
 import { VaultLockedError } from "@/errors/VaultLocked";
 import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
-import { UserNotFoundError } from "@errors/UserNotFound";
-import { Auth } from "@services/auth.service";
 
 type ErrorComponentProps = {
 	message: string;

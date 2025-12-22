@@ -1,4 +1,5 @@
 import { Modal } from "@components/Modal";
+
 import { AutoLockTimeout } from "./settings/AutoLockTimeout";
 
 type SettingsProps = {

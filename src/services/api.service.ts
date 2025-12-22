@@ -10,13 +10,13 @@ class ApiService {
 		method: T,
 		...args: T extends "GET"
 			? [options?: Omit<OptsWithoutMethod, "body">]
-			: [body?: {}, options?: OptsWithoutMethod]
+			: [body?: object, options?: OptsWithoutMethod]
 	) {
 		let body, options;
 		if (method === "GET")
 			options = args[0] as Omit<OptsWithoutMethod, "body"> | undefined;
 		else {
-			body = args[0] as {} | undefined;
+			body = args[0] as object | undefined;
 			options = args[1] as OptsWithoutMethod | undefined;
 		}
 
@@ -35,7 +35,7 @@ class ApiService {
 		return fetch(url, opts);
 	}
 
-	async fetch<T extends HttpMethod, U extends {}>(
+	async fetch<T extends HttpMethod, U extends object>(
 		url: string,
 		method: T,
 		...args: T extends "GET" ? [] : [data?: U]

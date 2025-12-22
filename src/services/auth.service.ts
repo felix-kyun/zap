@@ -7,6 +7,7 @@ import {
 	loginSchema,
 } from "@/schemas/login";
 import { type UserInfo, userInfoSchema } from "@/schemas/user";
+
 import { Api } from "./api.service";
 
 interface SignupData {

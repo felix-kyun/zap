@@ -20,6 +20,13 @@ class ApiService {
 			options = args[1] as OptsWithoutMethod | undefined;
 		}
 
+		if (import.meta.env.DEV) {
+			console.debug(`API Request: ${method} ${url}`, {
+				body,
+				options,
+			});
+		}
+
 		const opts: RequestInit = {
 			credentials: "include",
 			redirect: "follow",
@@ -27,12 +34,13 @@ class ApiService {
 				"Content-Type": "application/json",
 				"X-CSRF-Token": Cookies.get("csrf_token") || "",
 			},
+			method,
 			...options,
 		};
 
-		opts.body = opts.method === "GET" ? undefined : JSON.stringify(body);
+		opts.body = method === "GET" ? undefined : JSON.stringify(body);
 
-		return fetch(url, opts);
+		return window.fetch(url, opts);
 	}
 
 	async fetch<T extends HttpMethod, U extends object>(

@@ -1,4 +1,4 @@
-import Opaque from "@services/opaque.service";
+import { Opaque } from "@services/opaque.service";
 import { post } from "@utils/post";
 import Cookies from "js-cookie";
 
@@ -15,120 +15,123 @@ interface SignupData {
 	email: string;
 }
 
-interface TempRegistrationResponse {
-	response: string;
-	state: string;
-}
-
-export async function startSignup({
-	password,
-	email,
-}: Omit<SignupData, "username">): Promise<TempRegistrationResponse> {
-	const { state, request } = Opaque.startRegistration(password);
-	const initialResponse = await post("/api/register/start", {
-		request,
-		email,
-	});
-
-	if (!initialResponse.ok) throw new Error("Registration initiation failed");
-
-	const { response } = await initialResponse.json();
-
-	if (!response || typeof response !== "string")
-		throw new Error("Invalid response from server");
-
-	return { state, response };
-}
-
-export async function finishSignup(
-	{ username, password, email, otp }: SignupData & { otp: string },
-	{ response, state }: TempRegistrationResponse,
-) {
-	const record = Opaque.finishRegistration(password, response, state);
-
-	const finalResponse = await post("/api/register/finish", {
-		record,
-		email,
-		username,
-		otp,
-	});
-
-	if (!finalResponse.ok) throw new Error("Registration completion failed");
-
-	return true;
-}
-
 interface LoginData {
 	email: string;
 	password: string;
 }
 
-export async function login({
-	email,
-	password,
-}: LoginData): Promise<LoginResponse> {
-	const { state, request } = Opaque.startLogin(password);
+class AuthService {
+	private constructor() {}
 
-	const initialResponse = await post("/api/login/start", {
-		request,
+	static async initialize() {
+		return new AuthService();
+	}
+
+	async startSignup({
+		password,
 		email,
-	});
+	}: Omit<SignupData, "username">): Promise<string> {
+		const request = Opaque.startRegistration(password);
+		const initialResponse = await post("/api/register/start", {
+			request,
+			email,
+		});
 
-	if (!initialResponse.ok) {
-		if (initialResponse.status === 404) {
-			throw new Error("User not found");
+		if (!initialResponse.ok)
+			throw new Error("Registration initiation failed");
+
+		const { response } = await initialResponse.json();
+
+		if (!response || typeof response !== "string")
+			throw new Error("Invalid response from server");
+
+		return response;
+	}
+
+	async finishSignup(
+		{ username, email, otp }: SignupData & { otp: string },
+		response: string,
+	) {
+		const record = Opaque.finishRegistration(response);
+
+		const finalResponse = await post("/api/register/finish", {
+			record,
+			email,
+			username,
+			otp,
+		});
+
+		if (!finalResponse.ok)
+			throw new Error("Registration completion failed");
+
+		return true;
+	}
+	async login({ email, password }: LoginData): Promise<LoginResponse> {
+		const request = Opaque.startLogin(password);
+
+		const initialResponse = await post("/api/login/start", {
+			request,
+			email,
+		});
+
+		if (!initialResponse.ok) {
+			if (initialResponse.status === 404) {
+				throw new Error("User not found");
+			}
+			throw new Error("Login initiation failed");
 		}
-		throw new Error("Login initiation failed");
+
+		const { response, session } = initialLoginSchema.parse(
+			await initialResponse.json(),
+		);
+
+		const finishRequest = Opaque.finishLogin(response);
+
+		const finalResponse = await post("/api/login/finish", {
+			request: finishRequest,
+			session,
+		});
+
+		return loginSchema.parse(await finalResponse.json());
 	}
 
-	const { response, session } = initialLoginSchema.parse(
-		await initialResponse.json(),
-	);
+	async logout() {
+		const response = await post("/api/auth/logout");
 
-	const finishRequest = Opaque.finishLogin(password, response, state);
+		if (!response.ok) {
+			throw new Error("Logout failed");
+		}
+	}
 
-	const finalResponse = await post("/api/login/finish", {
-		request: finishRequest,
-		session,
-	});
+	async checkAuthState(): Promise<boolean> {
+		if (Cookies.get("authenticated") === "true") return true;
 
-	return loginSchema.parse(await finalResponse.json());
+		try {
+			const response = await post("/api/auth/status");
+			const data = await response.json();
+			return response.ok && data && data?.authenticated === true;
+		} catch {
+			// handle UnauthError or else it will be redirected and cause a infinite loop
+			return false;
+		}
+	}
+
+	async fetchUser(): Promise<UserInfo> {
+		const response = await post("/api/auth/me");
+
+		if (!response.ok) {
+			throw new Error("Failed to fetch user");
+		}
+
+		try {
+			const data = await response.json();
+			const userInfo = userInfoSchema.parse(data);
+
+			return userInfo;
+		} catch {
+			throw new Error("Invalid user data received from server");
+		}
+	}
 }
 
-export async function logout() {
-	const response = await post("/api/auth/logout");
-
-	if (!response.ok) {
-		throw new Error("Logout failed");
-	}
-}
-
-export async function checkAuthState(): Promise<boolean> {
-	if (Cookies.get("authenticated") === "true") return true;
-
-	try {
-		const response = await post("/api/auth/status");
-		const data = await response.json();
-		return response.ok && data && data?.authenticated === true;
-	} catch {
-		// handle UnauthError or else it will be redirected and cause a infinite loop
-		return false;
-	}
-}
-
-export async function fetchUser(): Promise<UserInfo> {
-	const response = await post("/api/auth/me");
-
-	if (!response.ok) {
-		throw new Error("Failed to fetch user");
-	}
-
-	try {
-		const data = await response.json();
-		const userInfo = userInfoSchema.parse(data);
-
-		return userInfo;
-	} catch {
-		throw new Error("Invalid user data received from server");
-	}
-}
+export const Auth = await AuthService.initialize();

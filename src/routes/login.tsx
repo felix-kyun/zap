@@ -2,7 +2,7 @@ import { AccentButton } from "@components/AccentButton";
 import { CenteredContainer } from "@components/CenteredContainer";
 import { LabeledInput } from "@components/LabeledInput";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { checkAuthState, login } from "@services/auth.service";
+import { Auth } from "@services/auth.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -22,7 +22,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export const Route = createFileRoute("/login")({
 	component: RouteComponent,
 	loader: async () => {
-		const authenticated = await checkAuthState();
+		const authenticated = await Auth.checkAuthState();
 		if (authenticated) {
 			toast("You're already logged in.");
 			throw redirect({
@@ -54,7 +54,7 @@ function RouteComponent() {
 	// TODO: make login async using worker
 	// add loading state
 	const submitHandler = async ({ email, password }: LoginFormData) => {
-		toast.promise(login({ email, password }), {
+		toast.promise(Auth.login({ email, password }), {
 			loading: "Logging in...",
 			success: (data) => {
 				setUser(data);

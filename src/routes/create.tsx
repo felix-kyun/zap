@@ -2,7 +2,7 @@ import { AccentButton } from "@components/AccentButton";
 import { LabeledPasswordInput } from "@components/LabeledPasswordInput";
 import { Modal } from "@components/Modal";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { checkAuthState } from "@services/auth.service";
+import { Auth } from "@services/auth.service";
 import { fetchVault } from "@services/server.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, redirect } from "@tanstack/react-router";
@@ -20,7 +20,7 @@ type VaultPasswordFormData = z.infer<typeof vaultPasswordSchema>;
 export const Route = createFileRoute("/create")({
 	component: RouteComponent,
 	beforeLoad: async () => {
-		const authenticated = await checkAuthState();
+		const authenticated = await Auth.checkAuthState();
 
 		if (!authenticated)
 			throw redirect({

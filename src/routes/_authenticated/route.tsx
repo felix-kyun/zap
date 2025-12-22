@@ -1,5 +1,5 @@
 import { useThrottle } from "@hooks/useThrottle";
-import { checkAuthState, fetchUser } from "@services/auth.service";
+import { Auth } from "@services/auth.service";
 import { fetchVault } from "@services/server.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
@@ -9,12 +9,12 @@ import { useShallow } from "zustand/shallow";
 
 type AuthenticatedLoaderData = Promise<{
 	vault: Awaited<ReturnType<typeof fetchVault>>;
-	user: Awaited<ReturnType<typeof fetchUser>>;
+	user: Awaited<ReturnType<typeof Auth.fetchUser>>;
 }>;
 
 export const Route = createFileRoute("/_authenticated")({
 	beforeLoad: async () => {
-		const authenticated = await checkAuthState();
+		const authenticated = await Auth.checkAuthState();
 
 		if (!authenticated)
 			throw redirect({
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated")({
 
 		return {
 			vault: vault ? vault : await fetchVault(),
-			user: user ? user : await fetchUser(),
+			user: user ? user : await Auth.fetchUser(),
 		};
 	},
 	component: RouteComponent,

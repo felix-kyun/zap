@@ -3,11 +3,7 @@ import { CenteredContainer } from "@components/CenteredContainer";
 import { LabeledInput } from "@components/LabeledInput";
 import { OtpComponent } from "@components/OtpComponent";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-	checkAuthState,
-	finishSignup,
-	startSignup,
-} from "@services/auth.service";
+import { Auth } from "@services/auth.service";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,7 +24,7 @@ type SignupFormData = z.infer<typeof signupSchema>;
 export const Route = createFileRoute("/signup")({
 	component: RouteComponent,
 	loader: async () => {
-		const authenticated = await checkAuthState();
+		const authenticated = await Auth.checkAuthState();
 		if (authenticated) {
 			toast("You're already logged in.");
 			throw redirect({
@@ -69,7 +65,7 @@ function RouteComponent() {
 		});
 
 		try {
-			const data = await startSignup({ email, password });
+			const data = await Auth.startSignup({ email, password });
 			registrationDataRef.current = data;
 			setShowOtp(true);
 			toast.success("OTP sent to your email.", {
@@ -100,7 +96,7 @@ function RouteComponent() {
 		}
 
 		toast.promise(
-			finishSignup(
+			Auth.finishSignup(
 				{
 					email: getValues("email"),
 					password: getValues("password"),

@@ -7,7 +7,7 @@ import { UnauthError } from "@/errors/UnauthError";
 import { VaultLockedError } from "@/errors/VaultLocked";
 import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
 import { UserNotFoundError } from "@errors/UserNotFound";
-import { logout } from "@services/auth.service";
+import { Auth } from "@services/auth.service";
 
 type ErrorComponentProps = {
 	message: string;
@@ -56,7 +56,7 @@ export function ErrorHandler({ error }: { error: unknown }) {
 			});
 		} else if (error instanceof UserNotFoundError) {
 			Cookies.remove("authenticated");
-			logout().then(() =>
+			Auth.logout().then(() =>
 				navigate({
 					to: "/login",
 				}),

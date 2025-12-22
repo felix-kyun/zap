@@ -1,7 +1,7 @@
 import { Api } from "@services/api.service";
 import { Server } from "@services/server.service";
+import { Utils } from "@services/utils.service";
 import { createInitialVault as createInitialVaultService } from "@services/vault.service";
-import { findAndRemove } from "@utils/findAndRemove";
 import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
@@ -214,7 +214,7 @@ export const createVaultSlice: StateCreator<
 			set(
 				(draft) => {
 					if (draft.vault && draft.vault.state === "unlocked")
-						findAndRemove(
+						Utils.findAndRemove(
 							draft.vault.items,
 							(i) => i.id === item.id,
 						);

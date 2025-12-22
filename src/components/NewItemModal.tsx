@@ -9,7 +9,6 @@ import { Modal } from "@components/Modal";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStore } from "@stores/store";
-import { generateUUID } from "@utils/uuid";
 import { useCallback } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -17,6 +16,7 @@ import { useShallow } from "zustand/shallow";
 
 import { vaultItemSchema, vaultTypeSchema } from "@/schemas/vault";
 import type { VaultItem } from "@/types/vault";
+import { Utils } from "@services/utils.service";
 
 type BaseProps = {
 	open: boolean;
@@ -59,7 +59,7 @@ export function NewItemModal({
 				tags: [],
 				// replace this later on or else it will be same for every item unless page is refreshed
 				// its just to pass zod validation
-				id: generateUUID(),
+				id: Utils.generateUUID(),
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 				url: "https://",
@@ -103,7 +103,7 @@ export function NewItemModal({
 			toast.promise(
 				addItem({
 					...data,
-					id: generateUUID(),
+					id: Utils.generateUUID(),
 					createdAt: new Date().toISOString(),
 					updatedAt: new Date().toISOString(),
 				}),

@@ -4,7 +4,6 @@ import { Modal } from "@components/Modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkAuthState } from "@services/auth.service";
 import { fetchVault } from "@services/server.service";
-import { createInitialVault } from "@services/vault.service";
 import { useStore } from "@stores/store";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";

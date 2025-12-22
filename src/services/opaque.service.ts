@@ -1,54 +1,73 @@
+import type { Nullable } from "@/types/utils";
 import * as opaque from "@serenity-kit/opaque";
 
-await opaque.ready;
+class OpaqueService {
+	private constructor() {}
 
-function startRegistration(password: string) {
-	const { clientRegistrationState, registrationRequest } =
-		opaque.client.startRegistration({
-			password,
+	static async initialize() {
+		await opaque.ready;
+		return new OpaqueService();
+	}
+
+	#password: Nullable<string> = null;
+	#registrationState: Nullable<string> = null;
+	#loginState: Nullable<string> = null;
+
+	startRegistration(password: string) {
+		const { clientRegistrationState, registrationRequest } =
+			opaque.client.startRegistration({
+				password,
+			});
+
+		this.#password = password;
+		this.#registrationState = clientRegistrationState;
+
+		return registrationRequest;
+	}
+
+	finishRegistration(response: string) {
+		if (!this.#registrationState || !this.#password) {
+			throw new Error("Registration not started properly");
+		}
+
+		const { registrationRecord } = opaque.client.finishRegistration({
+			password: this.#password,
+			registrationResponse: response,
+			clientRegistrationState: this.#registrationState,
 		});
 
-	return {
-		state: clientRegistrationState,
-		request: registrationRequest,
-	};
+		return registrationRecord;
+	}
+
+	startLogin(password: string) {
+		const { clientLoginState, startLoginRequest } =
+			opaque.client.startLogin({
+				password,
+			});
+
+		this.#password = password;
+		this.#loginState = clientLoginState;
+
+		return startLoginRequest;
+	}
+
+	finishLogin(response: string) {
+		if (!this.#loginState || !this.#password) {
+			throw new Error("Login not started properly");
+		}
+
+		const ret = opaque.client.finishLogin({
+			password: this.#password,
+			clientLoginState: this.#loginState,
+			loginResponse: response,
+		});
+
+		if (!ret) {
+			throw new Error("Invalid Credentials");
+		}
+
+		return ret.finishLoginRequest;
+	}
 }
 
-function finishRegistration(password: string, response: string, state: string) {
-	const { registrationRecord } = opaque.client.finishRegistration({
-		password,
-		registrationResponse: response,
-		clientRegistrationState: state,
-	});
-
-	return registrationRecord;
-}
-
-function startLogin(password: string) {
-	const { clientLoginState, startLoginRequest } = opaque.client.startLogin({
-		password,
-	});
-
-	return {
-		state: clientLoginState,
-		request: startLoginRequest,
-	};
-}
-
-function finishLogin(password: string, response: string, state: string) {
-	const ret = opaque.client.finishLogin({
-		password,
-		clientLoginState: state,
-		loginResponse: response,
-	});
-
-	if (!ret) throw new Error("Invalid Credentials");
-	return ret.finishLoginRequest;
-}
-
-export default {
-	startRegistration,
-	finishRegistration,
-	startLogin,
-	finishLogin,
-};
+export const Opaque = await OpaqueService.initialize();

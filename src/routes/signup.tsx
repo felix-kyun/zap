@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import z from "zod";
 
 import logo from "@/assets/zap.png";
+import type { Nullable } from "@/types/utils";
 
 const signupSchema = z.object({
 	username: z.string().min(1, "Username is required"),
@@ -41,10 +42,7 @@ export const Route = createFileRoute("/signup")({
 function RouteComponent() {
 	const navigate = Route.useNavigate();
 	const [showOtp, setShowOtp] = useState(false);
-	const registrationDataRef = useRef<{
-		response: string;
-		state: string;
-	} | null>(null);
+	const registrationDataRef = useRef<Nullable<string>>(null);
 
 	const {
 		register,

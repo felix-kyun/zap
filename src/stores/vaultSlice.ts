@@ -1,24 +1,21 @@
 import { Api } from "@services/api.service";
 import { Server } from "@services/server.service";
 import { Utils } from "@services/utils.service";
-import {
-	createInitialVault as createInitialVaultService,
-	Vault,
-} from "@services/vault.service";
+import { Vault } from "@services/vault.service";
 import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 import { AppError } from "@/errors/AppError";
 import type { Store } from "@/types/store";
-import type { Vault, VaultItem } from "@/types/vault";
+import type { Vault as TVault, VaultItem } from "@/types/vault";
 
 type VaultState = {
 	key: string | null;
-	vault: Vault | null;
+	vault: TVault | null;
 };
 
 type VaultActions = {
-	setVault: (vault: Vault) => void;
+	setVault: (vault: TVault) => void;
 	createInitialVault: (masterPassword: string) => Promise<void>;
 	setKeyFromPassword: (masterPassword: string) => Promise<void>;
 	unlockVault: (masterPassword: string) => Promise<void>;
@@ -29,7 +26,7 @@ type VaultActions = {
 	addItem: (item: VaultItem) => Promise<void>;
 	editItem: (item: VaultItem) => Promise<void>;
 	deleteItem: (itemId: string) => Promise<void>;
-	updateSettings: (settings: Partial<Vault["settings"]>) => Promise<void>;
+	updateSettings: (settings: Partial<TVault["settings"]>) => Promise<void>;
 	clearVault: () => void;
 };
 

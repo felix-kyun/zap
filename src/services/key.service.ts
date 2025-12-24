@@ -49,6 +49,8 @@ class KeyService {
 			sodium.from_base64(nonce),
 			sodium.from_base64(derivedKey),
 		);
+
+		return sodium.to_base64(decrypted);
 	}
 
 	createSalt() {

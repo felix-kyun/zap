@@ -14,22 +14,42 @@ class ExecutorService {
 		this.#creator = creator;
 	}
 
+	#singleExecutor: WorkerPool<keyof VaultMethods> | null = null;
+	#autoTerminateTimeout: ReturnType<typeof setTimeout> | null = null;
 	async execute<T extends keyof VaultMethods>(
 		method: T,
 		...args: VaultMethodParameters<T>
 	): Promise<VaultMethodReturnType<T>> {
-		const worker = new WorkerPool(this.#creator, 1);
+		let worker: WorkerPool<keyof VaultMethods>;
+
+		if (this.#singleExecutor) {
+			worker = this.#singleExecutor;
+			if (this.#autoTerminateTimeout) {
+				clearTimeout(this.#autoTerminateTimeout);
+				this.#autoTerminateTimeout = null;
+			}
+		} else {
+			worker = new WorkerPool(this.#creator, 1);
+			this.#singleExecutor = worker;
+		}
+
 		const response = await worker.execute(method, ...args);
-		worker.terminate();
 
 		if ("error" in response) {
 			throw new Error(response.error);
 		}
 
+		this.#autoTerminateTimeout = setTimeout(() => {
+			if (this.#singleExecutor) {
+				this.#singleExecutor.terminate();
+				this.#singleExecutor = null;
+			}
+		}, 60 * 1000);
+
 		return response.result as VaultMethodReturnType<T>;
 	}
 
-	parallelExecuter(threads?: number) {
+	createExecutor(threads?: number) {
 		const pool = new WorkerPool(this.#creator, threads);
 
 		const exec = async <T extends keyof VaultMethods>(
@@ -47,7 +67,7 @@ class ExecutorService {
 
 		const terminate = () => pool.terminate();
 
-		return [exec, terminate] as const;
+		return { exec, terminate } as const;
 	}
 }
 

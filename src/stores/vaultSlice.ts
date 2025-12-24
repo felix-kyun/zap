@@ -97,21 +97,21 @@ export const createVaultSlice: StateCreator<
 		if (!vault) throw new Error("No vault to unlock");
 		if (vault.state !== "locked") return;
 
-		const [exec, terminate] = Executor.parallelExecuter();
+		const pexec = Executor.createExecutor();
 
-		const key = await exec("deriveKey", masterPassword, vault.salt);
-		const isValid = await exec("checkVaultKey", key, vault);
+		const key = await pexec.exec("deriveKey", masterPassword, vault.salt);
+		const isValid = await pexec.exec("checkVaultKey", key, vault);
 
 		if (!isValid) {
-			terminate();
+			pexec.terminate();
 			throw new AppError("Invalid master password");
 		}
 
 		const decryptedItems = await Promise.all(
-			vault.items.map((item) => exec("decryptItem", item, key)),
+			vault.items.map((item) => pexec.exec("decryptItem", item, key)),
 		);
 
-		terminate();
+		pexec.terminate();
 
 		set(
 			() => ({

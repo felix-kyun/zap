@@ -52,7 +52,7 @@ class ExecutorService {
 }
 
 const vaultWorkerCreator = () =>
-	new Worker(new URL("./sw.js", import.meta.url), {
+	new Worker(new URL("../worker/sw.js", import.meta.url), {
 		type: "module",
 	});
 

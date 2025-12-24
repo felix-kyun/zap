@@ -1,8 +1,9 @@
 import { Api } from "@services/api.service";
+import { Executor } from "@services/executor.service";
+import { Key } from "@services/key.service";
 import { Server } from "@services/server.service";
 import { Utils } from "@services/utils.service";
 import { Vault } from "@services/vault.service";
-import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
 import { AppError } from "@/errors/AppError";
@@ -52,11 +53,11 @@ export const createVaultSlice: StateCreator<
 
 	async createInitialVault(masterPassword) {
 		const vault = Vault.createInitialVault();
-		const key = await execute("deriveKey", masterPassword, vault.salt);
+		const key = await Key.deriveKey(masterPassword, vault.salt);
 		set(() => ({ vault, key }), false, "vault/setInitialVault");
 
 		try {
-			const lockedVault = await execute("lockVault", key, vault);
+			const lockedVault = await Executor.execute("lockVault", key, vault);
 			const response = await Api.fetch("/api/vault", "POST", lockedVault);
 			if (!response.ok)
 				throw new Error("Failed to create vault on server");
@@ -76,8 +77,12 @@ export const createVaultSlice: StateCreator<
 		if (!vault) throw new Error("No vault to set key for");
 		if (vault.state !== "locked") return;
 
-		const key = await execute("deriveKey", masterPassword, vault.salt);
-		const isValid = await execute("checkVaultKey", key, vault);
+		const key = await Executor.execute(
+			"deriveKey",
+			masterPassword,
+			vault.salt,
+		);
+		const isValid = await Executor.execute("checkVaultKey", key, vault);
 
 		if (!isValid) {
 			throw new AppError("Invalid master password");
@@ -92,7 +97,7 @@ export const createVaultSlice: StateCreator<
 		if (!vault) throw new Error("No vault to unlock");
 		if (vault.state !== "locked") return;
 
-		const [exec, terminate] = parallelExecuter();
+		const [exec, terminate] = Executor.parallelExecuter();
 
 		const key = await exec("deriveKey", masterPassword, vault.salt);
 		const isValid = await exec("checkVaultKey", key, vault);
@@ -133,7 +138,7 @@ export const createVaultSlice: StateCreator<
 		if (!key) throw new Error("No key to lock vault");
 		if (vault.state !== "unlocked") return;
 
-		const lockedVault = await execute("lockVault", key, vault);
+		const lockedVault = await Executor.execute("lockVault", key, vault);
 
 		set(
 			() => ({
@@ -154,7 +159,7 @@ export const createVaultSlice: StateCreator<
 		let vaultToSave = vault;
 
 		if (vault.state === "unlocked") {
-			vaultToSave = await execute("lockVault", key, vault);
+			vaultToSave = await Executor.execute("lockVault", key, vault);
 		}
 
 		const response = await Api.fetch("/api/vault", "PUT", vaultToSave);
@@ -174,9 +179,13 @@ export const createVaultSlice: StateCreator<
 		if (vault.state === "unlocked")
 			throw new Error("Vault is already unlocked");
 
-		const key = await execute("deriveKey", masterPassword, vault.salt);
+		const key = await Executor.execute(
+			"deriveKey",
+			masterPassword,
+			vault.salt,
+		);
 
-		return await execute("checkVaultKey", key, vault);
+		return await Executor.execute("checkVaultKey", key, vault);
 	},
 	async addItem(item) {
 		const vault = get().vault;
@@ -197,7 +206,7 @@ export const createVaultSlice: StateCreator<
 		);
 
 		try {
-			const encryptedItem = await execute(
+			const encryptedItem = await Executor.execute(
 				"encryptItem",
 				item,
 				get().key!,
@@ -248,7 +257,7 @@ export const createVaultSlice: StateCreator<
 		);
 
 		try {
-			const encryptedItem = await execute(
+			const encryptedItem = await Executor.execute(
 				"encryptItem",
 				item,
 				get().key!,

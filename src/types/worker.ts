@@ -1,7 +1,7 @@
 // dont use relative paths as workers can load them
-import vaultWorkerService from "../services/vault.worker.service";
+import { VaultWorker } from "@services/vault.worker.service";
 
-export type VaultMethods = typeof vaultWorkerService;
+export type VaultMethods = typeof VaultWorker;
 export type VaultMethodParameters<T extends keyof VaultMethods> = Parameters<
 	VaultMethods[T]
 >;

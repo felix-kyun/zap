@@ -1,6 +1,4 @@
-import sodium from "libsodium-wrappers-sumo";
-
-import vaultWorkerService from "../services/vault.worker.service";
+import { VaultWorker } from "../services/vault.worker.service";
 import type {
 	VaultMethodParameters,
 	VaultMethodReturnType,
@@ -14,12 +12,12 @@ self.onmessage = async function <T extends keyof VaultMethods>(
 ) {
 	const { id, method, args } = event.data as WorkerTask<T>;
 
-	await sodium.ready;
+	await VaultWorker.ready();
 
 	try {
 		const response: WorkerResponse<T> = {
 			id,
-			result: (await vaultWorkerService[method](
+			result: (await VaultWorker[method](
 				// @ts-expect-error i have zero idea why ts complains about the rest params
 				// even after the type assertion
 				...(args as VaultMethodParameters<T>),

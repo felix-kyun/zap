@@ -1,6 +1,7 @@
 import sodium from "libsodium-wrappers-sumo";
 
 import type { UnlockedVault } from "@/types/vault";
+
 import { Key } from "./key.service";
 
 class VaultService {

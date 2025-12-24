@@ -1,6 +1,8 @@
-import { Cacheable } from "@/decorators/cacheable";
-import { execute } from "@utils/VaultWorker";
 import sodium from "libsodium-wrappers-sumo";
+
+import { Cacheable } from "@/decorators/cacheable";
+
+import { Executor } from "./executor.service";
 
 class KeyService {
 	private constructor() {}
@@ -12,7 +14,7 @@ class KeyService {
 
 	@Cacheable
 	async deriveKey(password: string, salt: string) {
-		return execute("deriveKey", password, salt);
+		return Executor.execute("deriveKey", password, salt);
 	}
 
 	generateKeyPair() {

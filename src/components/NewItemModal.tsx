@@ -8,6 +8,7 @@ import { LabeledInput } from "@components/LabeledInput";
 import { Modal } from "@components/Modal";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Utils } from "@services/utils.service";
 import { useStore } from "@stores/store";
 import { useCallback } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -16,7 +17,6 @@ import { useShallow } from "zustand/shallow";
 
 import { vaultItemSchema, vaultTypeSchema } from "@/schemas/vault";
 import type { VaultItem } from "@/types/vault";
-import { Utils } from "@services/utils.service";
 
 type BaseProps = {
 	open: boolean;

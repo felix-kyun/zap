@@ -69,7 +69,6 @@ export interface VaultSettings {
 export interface VaultUnlockData {
 	nonce: string;
 	ciphertext: string;
-	target: string;
 }
 
 interface BaseVault {
@@ -77,6 +76,7 @@ interface BaseVault {
 	salt: string;
 	meta: VaultMeta;
 	settings: VaultSettings;
+	unlock: VaultUnlockData;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -89,7 +89,6 @@ export interface UnlockedVault extends BaseVault {
 export interface LockedVault extends BaseVault {
 	state: "locked";
 	items: EncryptedVaultItem[];
-	unlock: VaultUnlockData;
 }
 
 export type Vault = UnlockedVault | LockedVault;

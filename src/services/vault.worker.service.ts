@@ -2,7 +2,6 @@ import sodium from "libsodium-wrappers-sumo";
 
 import type {
 	EncryptedVaultItem,
-	LockedVault,
 	Vault,
 	VaultItem,
 	VaultUnlockData,
@@ -33,6 +32,26 @@ class VaultWorkerService {
 		return {
 			pub: sodium.to_base64(keyPair.publicKey),
 			priv: sodium.to_base64(keyPair.privateKey),
+		};
+	}
+
+	generateUnlockCiphertext(key: string) {
+		const nonce = sodium.randombytes_buf(
+			sodium.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
+		);
+
+		const message = sodium.from_string("unlock");
+		const ciphertext = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(
+			message,
+			null,
+			null,
+			nonce,
+			sodium.from_base64(key),
+		);
+
+		return {
+			nonce: sodium.to_base64(nonce),
+			ciphertext: sodium.to_base64(ciphertext),
 		};
 	}
 
@@ -79,14 +98,17 @@ class VaultWorkerService {
 		return sodium.to_base64(key);
 	}
 
-	checkVaultKey(key: string, { unlock }: LockedVault): boolean {
+	checkVaultKey(
+		key: string,
+		{ ciphertext, nonce }: VaultUnlockData,
+	): boolean {
 		try {
 			const encodedMessage =
 				sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(
 					null,
-					sodium.from_base64(unlock.ciphertext),
+					sodium.from_base64(ciphertext),
 					null,
-					sodium.from_base64(unlock.nonce),
+					sodium.from_base64(nonce),
 					sodium.from_base64(key),
 				);
 			const message = sodium.to_string(encodedMessage);
@@ -178,7 +200,6 @@ class VaultWorkerService {
 		return {
 			nonce: sodium.to_base64(nonce),
 			ciphertext: sodium.to_base64(ciphertext),
-			target: "unlock",
 		};
 	}
 }

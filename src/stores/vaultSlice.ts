@@ -1,5 +1,4 @@
 import { Api } from "@services/api.service";
-import { Executor } from "@services/executor.service";
 import { Key } from "@services/key.service";
 import { Server } from "@services/server.service";
 import { Utils } from "@services/utils.service";
@@ -8,7 +7,7 @@ import type { StateCreator } from "zustand";
 
 import { AppError } from "@/errors/AppError";
 import type { Store } from "@/types/store";
-import type { Vault as TVault, VaultItem } from "@/types/vault";
+import type { LockedVault, Vault as TVault, VaultItem } from "@/types/vault";
 
 type VaultState = {
 	key: string | null;
@@ -18,7 +17,6 @@ type VaultState = {
 type VaultActions = {
 	setVault: (vault: TVault) => void;
 	createInitialVault: (masterPassword: string) => Promise<void>;
-	setKeyFromPassword: (masterPassword: string) => Promise<void>;
 	unlockVault: (masterPassword: string) => Promise<void>;
 	lockVault: () => Promise<void>;
 	saveVault: () => Promise<void>;
@@ -52,12 +50,17 @@ export const createVaultSlice: StateCreator<
 	},
 
 	async createInitialVault(masterPassword) {
-		const vault = Vault.createInitialVault();
-		const key = await Key.deriveKey(masterPassword, vault.salt);
+		const salt = await Key.generateSalt();
+		const key = await Key.deriveKey(masterPassword, salt);
+		const vault = await Vault.createInitialVault(key, salt);
 		set(() => ({ vault, key }), false, "vault/setInitialVault");
 
 		try {
-			const lockedVault = await Executor.execute("lockVault", key, vault);
+			const lockedVault: LockedVault = {
+				...vault,
+				state: "locked",
+				items: [],
+			};
 			const response = await Api.fetch("/api/vault", "POST", lockedVault);
 			if (!response.ok)
 				throw new Error("Failed to create vault on server");
@@ -71,20 +74,16 @@ export const createVaultSlice: StateCreator<
 		}
 	},
 
-	async setKeyFromPassword(masterPassword) {
+	async checkVaultPassword(masterPassword) {
 		const { vault } = get();
 
-		if (!vault) throw new Error("No vault to set key for");
-		if (vault.state !== "locked") return;
+		if (!vault) throw new Error("No vault to unlock");
+		if (vault.state === "unlocked")
+			throw new Error("Vault is already unlocked");
 
 		const key = await Key.deriveKey(masterPassword, vault.salt);
-		const isValid = await Executor.execute("checkVaultKey", key, vault);
 
-		if (!isValid) {
-			throw new AppError("Invalid master password");
-		}
-
-		set(() => ({ key }), false, "vault/setKey");
+		return await Vault.checkVaultKey(key, vault.unlock);
 	},
 
 	async unlockVault(masterPassword) {
@@ -93,35 +92,24 @@ export const createVaultSlice: StateCreator<
 		if (!vault) throw new Error("No vault to unlock");
 		if (vault.state !== "locked") return;
 
-		const pexec = Executor.createExecutor();
-
 		const key = await Key.deriveKey(masterPassword, vault.salt);
-		const isValid = await pexec.exec("checkVaultKey", key, vault);
+		const isValid = await Vault.checkVaultKey(key, vault.unlock);
 
 		if (!isValid) {
-			pexec.terminate();
 			throw new AppError("Invalid master password");
 		}
 
-		const decryptedItems = await Promise.all(
-			vault.items.map((item) => pexec.exec("decryptItem", item, key)),
-		);
-
-		pexec.terminate();
+		const decryptedItems = await Vault.decryptItems(key, vault.items);
 
 		set(
-			() => ({
-				key,
-				vault: {
+			(draft) => {
+				draft.key = key;
+				draft.vault = {
+					...vault,
 					state: "unlocked",
 					items: decryptedItems,
-					salt: vault.salt,
-					meta: vault.meta,
-					settings: vault.settings,
-					createdAt: vault.createdAt,
-					updatedAt: vault.updatedAt,
-				},
-			}),
+				};
+			},
 			false,
 			"vault/unlockVault",
 		);
@@ -134,24 +122,17 @@ export const createVaultSlice: StateCreator<
 		if (!key) throw new Error("No key to lock vault");
 		if (vault.state !== "unlocked") return;
 
-		const pexec = Executor.createExecutor();
-
-		const encryptedItems = await Promise.all(
-			vault.items.map((item) => pexec.exec("encryptItem", item, key)),
-		);
-
-		const lockedVault: TVault = {
-			...vault,
-			state: "locked",
-			items: encryptedItems,
-			unlock: await pexec.exec("createUnlockData", key),
-		};
+		const encryptedItems = await Vault.encryptItems(key, vault.items);
 
 		set(
-			() => ({
-				vault: lockedVault,
-				key: null,
-			}),
+			(draft) => {
+				draft.vault = {
+					...vault,
+					state: "locked",
+					items: encryptedItems,
+				};
+				draft.key = null;
+			},
 			false,
 			"vault/lockVault",
 		);
@@ -166,7 +147,11 @@ export const createVaultSlice: StateCreator<
 		let vaultToSave = vault;
 
 		if (vault.state === "unlocked") {
-			vaultToSave = await Executor.execute("lockVault", key, vault);
+			vaultToSave = {
+				...vault,
+				state: "locked",
+				items: await Vault.encryptItems(key, vault.items),
+			};
 		}
 
 		const response = await Api.fetch("/api/vault", "PUT", vaultToSave);
@@ -178,18 +163,6 @@ export const createVaultSlice: StateCreator<
 		get().setVault(await Server.fetchVault());
 	},
 
-	async checkVaultPassword(masterPassword) {
-		const { vault } = get();
-
-		if (!vault) throw new Error("No vault to unlock");
-
-		if (vault.state === "unlocked")
-			throw new Error("Vault is already unlocked");
-
-		const key = await Key.deriveKey(masterPassword, vault.salt);
-
-		return await Executor.execute("checkVaultKey", key, vault);
-	},
 	async addItem(item) {
 		const vault = get().vault;
 
@@ -209,11 +182,7 @@ export const createVaultSlice: StateCreator<
 		);
 
 		try {
-			const encryptedItem = await Executor.execute(
-				"encryptItem",
-				item,
-				get().key!,
-			);
+			const encryptedItem = await Vault.encryptItem(get().key!, item);
 
 			const response = await Api.fetch(
 				"/api/vault/items",
@@ -260,11 +229,7 @@ export const createVaultSlice: StateCreator<
 		);
 
 		try {
-			const encryptedItem = await Executor.execute(
-				"encryptItem",
-				item,
-				get().key!,
-			);
+			const encryptedItem = await Vault.encryptItem(get().key!, item);
 
 			const response = await Api.fetch(
 				`/api/vault/items/${item.id}`,

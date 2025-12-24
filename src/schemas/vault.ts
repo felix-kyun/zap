@@ -78,7 +78,6 @@ const vaultSettingsSchema = z.object({
 const vaultUnlockDataSchema = z.object({
 	nonce: z.string(),
 	ciphertext: z.string(),
-	target: z.string(),
 });
 
 const vaultBaseSchema = z.object({
@@ -86,6 +85,7 @@ const vaultBaseSchema = z.object({
 	salt: z.string(),
 	meta: vaultMetaSchema,
 	settings: vaultSettingsSchema,
+	unlock: vaultUnlockDataSchema,
 	createdAt: z.string(),
 	updatedAt: z.string(),
 });
@@ -93,7 +93,6 @@ const vaultBaseSchema = z.object({
 export const encryptedVaultSchema = vaultBaseSchema.extend({
 	state: z.literal("locked"),
 	items: z.array(encryptedVaultItemSchema),
-	unlock: vaultUnlockDataSchema,
 });
 
 export const decryptedVaultSchema = vaultBaseSchema.extend({

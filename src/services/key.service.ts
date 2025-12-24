@@ -4,6 +4,11 @@ import { Cacheable } from "@/decorators/cacheable";
 
 import { Executor } from "@services/executor.service";
 
+/*
+ * TODO:
+ * - generate sub keys from master key for specific purpose
+ */
+
 class KeyService {
 	private constructor() {}
 

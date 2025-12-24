@@ -77,11 +77,7 @@ export const createVaultSlice: StateCreator<
 		if (!vault) throw new Error("No vault to set key for");
 		if (vault.state !== "locked") return;
 
-		const key = await Executor.execute(
-			"deriveKey",
-			masterPassword,
-			vault.salt,
-		);
+		const key = await Key.deriveKey(masterPassword, vault.salt);
 		const isValid = await Executor.execute("checkVaultKey", key, vault);
 
 		if (!isValid) {
@@ -99,7 +95,7 @@ export const createVaultSlice: StateCreator<
 
 		const pexec = Executor.createExecutor();
 
-		const key = await pexec.exec("deriveKey", masterPassword, vault.salt);
+		const key = await Key.deriveKey(masterPassword, vault.salt);
 		const isValid = await pexec.exec("checkVaultKey", key, vault);
 
 		if (!isValid) {
@@ -138,7 +134,18 @@ export const createVaultSlice: StateCreator<
 		if (!key) throw new Error("No key to lock vault");
 		if (vault.state !== "unlocked") return;
 
-		const lockedVault = await Executor.execute("lockVault", key, vault);
+		const pexec = Executor.createExecutor();
+
+		const encryptedItems = await Promise.all(
+			vault.items.map((item) => pexec.exec("encryptItem", item, key)),
+		);
+
+		const lockedVault: TVault = {
+			...vault,
+			state: "locked",
+			items: encryptedItems,
+			unlock: await pexec.exec("createUnlockData", key),
+		};
 
 		set(
 			() => ({
@@ -179,11 +186,7 @@ export const createVaultSlice: StateCreator<
 		if (vault.state === "unlocked")
 			throw new Error("Vault is already unlocked");
 
-		const key = await Executor.execute(
-			"deriveKey",
-			masterPassword,
-			vault.salt,
-		);
+		const key = await Key.deriveKey(masterPassword, vault.salt);
 
 		return await Executor.execute("checkVaultKey", key, vault);
 	},

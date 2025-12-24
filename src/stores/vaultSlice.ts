@@ -1,7 +1,10 @@
 import { Api } from "@services/api.service";
 import { Server } from "@services/server.service";
 import { Utils } from "@services/utils.service";
-import { createInitialVault as createInitialVaultService } from "@services/vault.service";
+import {
+	createInitialVault as createInitialVaultService,
+	Vault,
+} from "@services/vault.service";
 import { execute, parallelExecuter } from "@utils/VaultWorker";
 import type { StateCreator } from "zustand";
 
@@ -51,7 +54,7 @@ export const createVaultSlice: StateCreator<
 	},
 
 	async createInitialVault(masterPassword) {
-		const vault = createInitialVaultService();
+		const vault = Vault.createInitialVault();
 		const key = await execute("deriveKey", masterPassword, vault.salt);
 		set(() => ({ vault, key }), false, "vault/setInitialVault");
 

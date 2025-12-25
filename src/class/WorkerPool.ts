@@ -1,4 +1,4 @@
-import { Utils } from "@services/utils.service";
+import { Utils } from "@services/utils";
 
 import type { VaultMethods, WorkerResponse, WorkerTask } from "@/types/worker";
 

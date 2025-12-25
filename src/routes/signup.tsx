@@ -3,7 +3,7 @@ import { CenteredContainer } from "@components/CenteredContainer";
 import { LabeledInput } from "@components/LabeledInput";
 import { OtpComponent } from "@components/OtpComponent";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Auth } from "@services/auth.service";
+import { Auth } from "@services/auth";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";

@@ -8,7 +8,7 @@ import { LabeledInput } from "@components/LabeledInput";
 import { Modal } from "@components/Modal";
 import { TagsField } from "@components/TagsField";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Utils } from "@services/utils.service";
+import { Utils } from "@services/utils";
 import { useStore } from "@stores/store";
 import { useCallback } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";

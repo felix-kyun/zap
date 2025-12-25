@@ -2,7 +2,7 @@ import sodium from "libsodium-wrappers-sumo";
 
 import { Cacheable } from "@/decorators/cacheable";
 
-import { Executor } from "@services/executor.service";
+import { Executor } from "@services/executor";
 
 /*
  * TODO:

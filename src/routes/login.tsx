@@ -3,7 +3,7 @@ import { CenteredContainer } from "@components/CenteredContainer";
 import { GoogleLoginButton } from "@components/GoogleLoginButton";
 import { LabeledInput } from "@components/LabeledInput";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Auth } from "@services/auth.service";
+import { Auth } from "@services/auth";
 import { useStore } from "@stores/store";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";

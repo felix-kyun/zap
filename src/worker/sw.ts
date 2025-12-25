@@ -1,4 +1,4 @@
-import { VaultWorker } from "../services/vault.worker.service";
+import { VaultWorker } from "../services/vault.worker";
 import type {
 	VaultMethodParameters,
 	VaultMethodReturnType,

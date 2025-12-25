@@ -7,8 +7,8 @@ import type {
 	VaultUnlockData,
 } from "@/types/vault";
 
-import { Cacheable } from "@/decorators/cacheable";
-import { Executor } from "./executor.service";
+import { Cacheable } from "@decorators/cacheable";
+import { Executor } from "@services/executor";
 
 class VaultService {
 	private constructor() {}

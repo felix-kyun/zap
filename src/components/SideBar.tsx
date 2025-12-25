@@ -2,7 +2,7 @@ import { LabeledInput } from "@components/LabeledInput";
 import { MenuOption } from "@components/MenuOption";
 import { NewItemModal } from "@components/NewItemModal";
 import { Settings } from "@components/Settings";
-import { Auth } from "@services/auth.service";
+import { Auth } from "@services/auth";
 import { useStore } from "@stores/store";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { iconMap } from "@utils/iconMap";

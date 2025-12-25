@@ -1,6 +1,6 @@
 import { useThrottle } from "@hooks/useThrottle";
-import { Auth } from "@services/auth.service";
-import { Server } from "@services/server.service";
+import { Auth } from "@services/auth";
+import { Server } from "@services/server";
 import { useStore } from "@stores/store";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef } from "react";

@@ -4,7 +4,7 @@ import { VaultNotCreatedError } from "@/errors/VaultNotCreated";
 import { vaultSchema } from "@/schemas/vault";
 import type { Vault } from "@/types/vault";
 
-import { Api } from "./api.service";
+import { Api } from "@services/api";
 
 class ServerService {
 	async fetchVault(): Promise<Vault> {

@@ -1,5 +1,5 @@
 import { UserNotFoundError } from "@errors/UserNotFound";
-import { Auth } from "@services/auth.service";
+import { Auth } from "@services/auth";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";

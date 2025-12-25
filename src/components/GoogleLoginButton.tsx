@@ -1,4 +1,4 @@
-import { Api } from "@services/api.service";
+import { Api } from "@services/api";
 import { useEffect } from "react";
 
 import { AccentButton } from "./AccentButton";

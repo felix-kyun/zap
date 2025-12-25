@@ -1,4 +1,4 @@
-import { Opaque } from "@services/opaque.service";
+import { Opaque } from "@services/opaque";
 import Cookies from "js-cookie";
 
 import {
@@ -8,7 +8,7 @@ import {
 } from "@/schemas/login";
 import { type UserInfo, userInfoSchema } from "@/schemas/user";
 
-import { Api } from "./api.service";
+import { Api } from "@services/api";
 
 interface SignupData {
 	username: string;

@@ -1,8 +1,8 @@
-import { Api } from "@services/api.service";
-import { Key } from "@services/key.service";
-import { Server } from "@services/server.service";
-import { Utils } from "@services/utils.service";
-import { Vault } from "@services/vault.service";
+import { Api } from "@services/api";
+import { Key } from "@services/key";
+import { Server } from "@services/server";
+import { Utils } from "@services/utils";
+import { Vault } from "@services/vault";
 import type { StateCreator } from "zustand";
 
 import { AppError } from "@/errors/AppError";
